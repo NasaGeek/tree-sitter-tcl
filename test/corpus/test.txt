@@ -89,6 +89,65 @@ foreach a {1 2 3 4 5} {
             (id)))))))
 
 ================================================================================
+Foreach multi
+================================================================================
+
+foreach {a b} {1 2 4 5} {
+    put $i
+}
+
+--------------------------------------------------------------------------------
+
+(source_file
+  (foreach
+    (arguments
+      (braced_word_simple
+        (simple_word)
+        (simple_word)))
+    (braced_word_simple
+      (simple_word)
+      (simple_word)
+      (simple_word)
+      (simple_word))
+    (braced_word
+      (command
+        (simple_word)
+        (word_list
+          (variable_substitution
+            (id)))))))
+
+================================================================================
+Foreach multimulti
+================================================================================
+
+foreach a {1 2 4 5} b {6 7 8 9} {
+    put $i
+}
+
+--------------------------------------------------------------------------------
+
+(source_file
+  (foreach
+    (simple_word)
+    (braced_word_simple
+      (simple_word)
+      (simple_word)
+      (simple_word)
+      (simple_word))
+    (simple_word)
+    (braced_word_simple
+      (simple_word)
+      (simple_word)
+      (simple_word)
+      (simple_word))
+    (braced_word
+      (command
+        (simple_word)
+        (word_list
+          (variable_substitution
+            (id)))))))
+
+================================================================================
 Conditionals
 ================================================================================
 
@@ -160,3 +219,34 @@ echo "word$hi \$bye word"
         (variable_substitution
           (id))
         (escaped_character)))))
+
+================================================================================
+Array set
+================================================================================
+
+set arr(my) 0
+
+--------------------------------------------------------------------------------
+
+(source_file
+  (set
+    (simple_word)
+    (array_index
+      (simple_word))
+    (simple_word)))
+
+================================================================================
+Array ref
+================================================================================
+
+puts $arr(my)
+
+--------------------------------------------------------------------------------
+
+(source_file
+  (command
+    (simple_word)
+    (variable_substitution
+      (simple_word)
+      (array_index
+        (simple_word)))))

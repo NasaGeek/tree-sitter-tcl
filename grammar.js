@@ -24,7 +24,10 @@ module.exports = grammar({
   word: $ => $.simple_word,
 
   externals: $ => [
+    // looks for alpha followed by $, [, or _ but doesn't assign to result_symbol (seems like this should always happen)
+    // I don't really understand what this is all about
     $.concat,
+    // looks for :: followed by alpha
     $._ns_delim
   ],
 
@@ -36,8 +39,11 @@ module.exports = grammar({
   ],
 
   extras: $ => [
-    /\s+/,
-    /\\\r?\n/
+    // concerning, as whitespace is quite significant in Tcl. We probably want
+    // more control over it
+    // /[\s]+/,
+    // also possibly suspicious as you can't just have newlines wherever
+    // /\\\r?\n/
   ],
 
   rules: {
@@ -48,6 +54,8 @@ module.exports = grammar({
       interleaved1($._command, repeat1($._terminator)),
       repeat($._terminator)
     ),
+
+    _ws: $ => /[ \t]+/,
 
     _terminator: _ => choice('\n', ';'),
 
@@ -70,7 +78,30 @@ module.exports = grammar({
 
     expr_cmd: $ => seq('expr', $.expr),
 
-    foreach: $ => seq("foreach", $.arguments, $._word_simple, $._word),
+    // arguments doesn't make sense here. That's for procs
+    // foreach var {list of stuff} {code}
+    // foreach {var1 var2} {list of stuff} {code}
+    // foreach var {list1 of stuff} {var2 var3} {list2 of stuff} {code}
+    // dunno why this is giving me such trouble, it should work a lot like if -> elseif, ... -> else
+    // technically the "var" can also be an arbitrary command, fun!
+    foreach: $ => seq("foreach",
+      $._ws,
+      $.foreach_clauses,
+      $._ws,
+      $.foreach_body,
+  ),
+
+    foreach_clauses: $ => (interleaved1($.foreach_clause, $._ws)),
+
+    foreach_clause: $ => (seq($._word_simple, $._ws, $._word_simple)),
+
+    foreach_body: $ => prec.right($._word),
+    // foreach_var: $ => choice(
+    //   // simple
+    //   $.simple_word,
+    //   // nested, recurse
+    //   $.braced_word_simple
+    // ),
 
     global: $ => seq("global", repeat($._concat_word)),
 
@@ -96,15 +127,18 @@ module.exports = grammar({
       $.command
     ),
 
+    // commands are just _word's, okay
     command: $ => seq(
       field('name', $._word),
-      optional(field('arguments', $.word_list))
+      $._ws,
+      optional(field('arguments', $.word_list)),
     ),
 
-    word_list: $ => repeat1($._word),
+    word_list: $ => interleaved1($._word, $._ws),
 
     unpack: _ => '{*}',
 
+    // Code to execute (kind of?)
     _word: $ => seq(
       optional($.unpack),
       choice(
@@ -113,6 +147,11 @@ module.exports = grammar({
       )
     ),
 
+    // This was only used for the second clause of foreach statements (basically
+    // what you're iterating over). Not sure if the single-item seq is
+    // intentional, doesn't seem like it would matter.
+    // Why can't this just be one of the other constructs? Seems like it's just
+    // executing code.
     _word_simple: $ => seq(choice(
       $.braced_word_simple,
       $._concat_word,
@@ -131,28 +170,44 @@ module.exports = grammar({
 
     _ident: _ => token.immediate(/[a-zA-Z_][a-zA-Z0-9_]*/),
 
+    // var name (should use this liberally for practicality rather than
+    // allowing _word's everywhere
+    // oh actually maybe this isn't that useful because of token.immediate in _ident?
     id: $ => seq(optional($._ns_delim), interleaved1($._ident, $._ns_delim)),
 
     array_index: $ => seq('(', $._concat_word, ')'),
 
+    _array_ref: $ => seq('$', $.id, $.array_index),
+
     variable_substitution: $ => seq(
       choice(
         seq('$', $.id),
+        $._array_ref,
         seq('$', '{', /[^}]+/, '}'),
       ),
-      optional($.array_index)
     ),
 
+    // This seems like it would actually be code to execute
     braced_word: $ => seq('{', optional($._commands), '}'),
 
     braced_word_simple: $ => seq('{',
       repeat(choice(
         $.braced_word_simple,
         $._concat_word,
+        $._ws,
+        "\n",
       )),
     '}'),
 
-    set: $ => seq("set", $._word, $._word),
+    set: $ => seq("set",
+    choice(
+      // don't love this choice, _word is so flexible
+      // I guess it's technically allowed, though (var names don't have to be literals, though I wish they did)
+      $._word,
+      // cheating here a bit I think by oversimplifying what an array reference can be
+      seq($.simple_word, $.array_index)
+    ),
+    optional($._word)),
 
     procedure: $ => seq(
       "proc",
@@ -161,7 +216,7 @@ module.exports = grammar({
       field('body', $._word)
     ),
 
-    _argument_word: $ => choice($.simple_word, $.quoted_word, $.braced_word),
+    _argument_word: $ => choice($.simple_word, $.quoted_word, $.braced_word_simple),
 
     argument: $ => choice(
       field('name', $.simple_word),
@@ -174,7 +229,7 @@ module.exports = grammar({
     ),
 
     arguments: $ => choice(
-      seq('{', repeat($.argument) , '}'),
+      seq('{', interleaved1($.argument, $._ws) , '}'),
       $.simple_word,
     ),
 
@@ -252,6 +307,7 @@ module.exports = grammar({
     catch: $ => seq(
       "catch",
       $._word,
+      optional(seq($._word, optional($._word)))
     ),
 
     quoted_word: $ => seq(
@@ -267,10 +323,15 @@ module.exports = grammar({
 
     escaped_character: _ => /\\./,
 
+    // token() bit seems useless, unless it's needed due to the prec wrapper?
+    // this explains it kinda: https://github.com/tree-sitter/tree-sitter/issues/1087#issuecomment-833198651
     _quoted_word_content: _ => token(prec(-1, /[^$\\\[\]"]+/)),
 
     command_substitution: $ => seq('[', $._command, ']'),
 
+    // token() unneeded afaik
+    // basically seems to match just A-Za-z0-9_ but idk,
+    // how does this differ from _ident? oh it's the lack of token.immediate
     simple_word: _ => token(/[^!$\s\\\[\]{}();"]+/),
   }
 

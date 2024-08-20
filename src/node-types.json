@@ -8,7 +8,7 @@
         "required": false,
         "types": [
           {
-            "type": "braced_word",
+            "type": "braced_word_simple",
             "named": true
           },
           {
@@ -39,7 +39,7 @@
     "fields": {},
     "children": {
       "multiple": true,
-      "required": false,
+      "required": true,
       "types": [
         {
           "type": "argument",
@@ -665,15 +665,26 @@
       "required": true,
       "types": [
         {
-          "type": "arguments",
+          "type": "foreach_body",
           "named": true
         },
+        {
+          "type": "foreach_clauses",
+          "named": true
+        }
+      ]
+    }
+  },
+  {
+    "type": "foreach_body",
+    "named": true,
+    "fields": {},
+    "children": {
+      "multiple": true,
+      "required": true,
+      "types": [
         {
           "type": "braced_word",
-          "named": true
-        },
-        {
-          "type": "braced_word_simple",
           "named": true
         },
         {
@@ -702,6 +713,60 @@
         },
         {
           "type": "variable_substitution",
+          "named": true
+        }
+      ]
+    }
+  },
+  {
+    "type": "foreach_clause",
+    "named": true,
+    "fields": {},
+    "children": {
+      "multiple": true,
+      "required": true,
+      "types": [
+        {
+          "type": "braced_word_simple",
+          "named": true
+        },
+        {
+          "type": "command_substitution",
+          "named": true
+        },
+        {
+          "type": "concat",
+          "named": true
+        },
+        {
+          "type": "escaped_character",
+          "named": true
+        },
+        {
+          "type": "quoted_word",
+          "named": true
+        },
+        {
+          "type": "simple_word",
+          "named": true
+        },
+        {
+          "type": "variable_substitution",
+          "named": true
+        }
+      ]
+    }
+  },
+  {
+    "type": "foreach_clauses",
+    "named": true,
+    "fields": {},
+    "children": {
+      "multiple": true,
+      "required": true,
+      "types": [
+        {
+          "type": "foreach_clause",
           "named": true
         }
       ]
@@ -885,6 +950,10 @@
       "multiple": true,
       "required": true,
       "types": [
+        {
+          "type": "array_index",
+          "named": true
+        },
         {
           "type": "braced_word",
           "named": true
