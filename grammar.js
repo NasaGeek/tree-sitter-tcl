@@ -39,11 +39,18 @@ module.exports = grammar({
   ],
 
   extras: $ => [
+    token(seq('\\', choice(seq(optional('\r'), '\n'), '\0'))),
     // concerning, as whitespace is quite significant in Tcl. We probably want
     // more control over it
-    // /[\s]+/,
+    // /\s/,
+    /[ \t\v\f\r]/,
     // also possibly suspicious as you can't just have newlines wherever
+    // also doesn't the above rule handle this? Oh unless it's not multiline!
     // /\\\r?\n/
+  ],
+
+  conflicts: $ => [
+    [$.foreach_clauses]
   ],
 
   rules: {
@@ -59,7 +66,7 @@ module.exports = grammar({
 
     _terminator: _ => choice('\n', ';'),
 
-    comment: _ => /#[^\n]*/,
+    comment: _ => /#(\\(.|\r?\n)|[^\\\n])*/,
 
     _builtin: $ => choice(
       $.conditional,
@@ -84,24 +91,18 @@ module.exports = grammar({
     // foreach var {list1 of stuff} {var2 var3} {list2 of stuff} {code}
     // dunno why this is giving me such trouble, it should work a lot like if -> elseif, ... -> else
     // technically the "var" can also be an arbitrary command, fun!
+    // So how do we know when to stop matching clauses? Seems like a tough
+    // thing to do for some reason (maybe because t-s isn't looking far enough ahead?)
+    // Is this an external scanner thing? A precedence setting?
     foreach: $ => seq("foreach",
-      $._ws,
       $.foreach_clauses,
-      $._ws,
-      $.foreach_body,
-  ),
+      $._word,
+    ),
 
-    foreach_clauses: $ => (interleaved1($.foreach_clause, $._ws)),
+    // trying to hide or inline this causes conflicts oof
+    foreach_clauses: $ => repeat1($.foreach_clause),
 
-    foreach_clause: $ => (seq($._word_simple, $._ws, $._word_simple)),
-
-    foreach_body: $ => prec.right($._word),
-    // foreach_var: $ => choice(
-    //   // simple
-    //   $.simple_word,
-    //   // nested, recurse
-    //   $.braced_word_simple
-    // ),
+    foreach_clause: $ => seq($._word_simple, $._word_simple),
 
     global: $ => seq("global", repeat($._concat_word)),
 
@@ -130,11 +131,10 @@ module.exports = grammar({
     // commands are just _word's, okay
     command: $ => seq(
       field('name', $._word),
-      $._ws,
       optional(field('arguments', $.word_list)),
     ),
 
-    word_list: $ => interleaved1($._word, $._ws),
+    word_list: $ => repeat1($._word),
 
     unpack: _ => '{*}',
 
@@ -152,10 +152,10 @@ module.exports = grammar({
     // intentional, doesn't seem like it would matter.
     // Why can't this just be one of the other constructs? Seems like it's just
     // executing code.
-    _word_simple: $ => seq(choice(
+    _word_simple: $ => choice(
       $.braced_word_simple,
       $._concat_word,
-    )),
+    ),
 
     _concat_word: $ => interleaved1(
       choice(
@@ -194,8 +194,7 @@ module.exports = grammar({
       repeat(choice(
         $.braced_word_simple,
         $._concat_word,
-        $._ws,
-        "\n",
+        "\n", // still want?
       )),
     '}'),
 
@@ -229,7 +228,7 @@ module.exports = grammar({
     ),
 
     arguments: $ => choice(
-      seq('{', interleaved1($.argument, $._ws) , '}'),
+      seq('{', repeat($.argument) , '}'),
       $.simple_word,
     ),
 

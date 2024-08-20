@@ -39,7 +39,7 @@
     "fields": {},
     "children": {
       "multiple": true,
-      "required": true,
+      "required": false,
       "types": [
         {
           "type": "argument",
@@ -665,25 +665,6 @@
       "required": true,
       "types": [
         {
-          "type": "foreach_body",
-          "named": true
-        },
-        {
-          "type": "foreach_clauses",
-          "named": true
-        }
-      ]
-    }
-  },
-  {
-    "type": "foreach_body",
-    "named": true,
-    "fields": {},
-    "children": {
-      "multiple": true,
-      "required": true,
-      "types": [
-        {
           "type": "braced_word",
           "named": true
         },
@@ -697,6 +678,10 @@
         },
         {
           "type": "escaped_character",
+          "named": true
+        },
+        {
+          "type": "foreach_clauses",
           "named": true
         },
         {
