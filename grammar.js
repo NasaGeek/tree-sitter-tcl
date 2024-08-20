@@ -39,7 +39,7 @@ module.exports = grammar({
   ],
 
   extras: $ => [
-    token(seq('\\', choice(seq(optional('\r'), '\n'), '\0'))),
+    $._line_continuation,
     // concerning, as whitespace is quite significant in Tcl. We probably want
     // more control over it
     // /\s/,
@@ -62,7 +62,7 @@ module.exports = grammar({
       repeat($._terminator)
     ),
 
-    _ws: $ => /[ \t]+/,
+    _line_continuation: _ => token(seq('\\', choice(seq(optional('\r'), '\n'), '\0'))),
 
     _terminator: _ => choice('\n', ';'),
 
