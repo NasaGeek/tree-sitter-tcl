@@ -187,6 +187,31 @@
         }
       ]
     },
+    "for": {
+      "type": "SEQ",
+      "members": [
+        {
+          "type": "STRING",
+          "value": "for"
+        },
+        {
+          "type": "SYMBOL",
+          "name": "_word"
+        },
+        {
+          "type": "SYMBOL",
+          "name": "expr"
+        },
+        {
+          "type": "SYMBOL",
+          "name": "_word"
+        },
+        {
+          "type": "SYMBOL",
+          "name": "_word"
+        }
+      ]
+    },
     "foreach": {
       "type": "SEQ",
       "members": [
@@ -287,33 +312,79 @@
           "name": "_word"
         },
         {
-          "type": "CHOICE",
-          "members": [
-            {
-              "type": "SEQ",
-              "members": [
-                {
-                  "type": "STRING",
-                  "value": "on"
-                },
-                {
-                  "type": "STRING",
-                  "value": "error"
-                },
-                {
-                  "type": "SYMBOL",
-                  "name": "arguments"
-                },
-                {
-                  "type": "SYMBOL",
-                  "name": "_word"
-                }
-              ]
-            },
-            {
-              "type": "BLANK"
-            }
-          ]
+          "type": "REPEAT",
+          "content": {
+            "type": "CHOICE",
+            "members": [
+              {
+                "type": "SEQ",
+                "members": [
+                  {
+                    "type": "STRING",
+                    "value": "on"
+                  },
+                  {
+                    "type": "CHOICE",
+                    "members": [
+                      {
+                        "type": "STRING",
+                        "value": "ok"
+                      },
+                      {
+                        "type": "STRING",
+                        "value": "error"
+                      },
+                      {
+                        "type": "STRING",
+                        "value": "return"
+                      },
+                      {
+                        "type": "STRING",
+                        "value": "break"
+                      },
+                      {
+                        "type": "STRING",
+                        "value": "continue"
+                      },
+                      {
+                        "type": "PATTERN",
+                        "value": "[0-4]"
+                      }
+                    ]
+                  },
+                  {
+                    "type": "SYMBOL",
+                    "name": "_word_simple"
+                  },
+                  {
+                    "type": "SYMBOL",
+                    "name": "_word"
+                  }
+                ]
+              },
+              {
+                "type": "SEQ",
+                "members": [
+                  {
+                    "type": "STRING",
+                    "value": "trap"
+                  },
+                  {
+                    "type": "SYMBOL",
+                    "name": "_word_simple"
+                  },
+                  {
+                    "type": "SYMBOL",
+                    "name": "_word_simple"
+                  },
+                  {
+                    "type": "SYMBOL",
+                    "name": "_word"
+                  }
+                ]
+              }
+            ]
+          }
         },
         {
           "type": "CHOICE",

@@ -151,13 +151,23 @@ module.exports = grammar({
     try: $ => seq(
       "try",
       $._word,
-      optional(seq(
-        "on",
-        "error",
-        $.arguments,
-        $._word,
-      )),
-      optional($.finally)
+      repeat(choice(
+        seq(
+          "on",
+          choice(
+            "ok", "error", "return", "break", "continue", /[0-4]/
+          ),
+          $._word_simple,
+          $._word,
+        ),
+        seq(
+          "trap",
+          $._word_simple,
+          $._word_simple,
+          $._word,
+        ))
+      ),
+      optional($.finally),
     ),
 
     finally: $=> seq('finally', $._word),

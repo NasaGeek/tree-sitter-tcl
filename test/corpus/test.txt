@@ -437,3 +437,42 @@ while f {}
     (expr
       (bool_literal))
     (braced_word)))
+
+================================================================================
+Try
+================================================================================
+
+try { some code
+} on error {} {
+} on continue {var1 var2} {
+  puts "continue"
+} trap {PATTERN} {} {
+} finally { done }
+
+--------------------------------------------------------------------------------
+
+(source_file
+  (try
+    (braced_word
+      (command
+        (simple_word)
+        (word_list
+          (simple_word))))
+    (braced_word_simple)
+    (braced_word)
+    (braced_word_simple
+      (simple_word)
+      (simple_word))
+    (braced_word
+      (command
+        (simple_word)
+        (word_list
+          (quoted_word))))
+    (braced_word_simple
+      (simple_word))
+    (braced_word_simple)
+    (braced_word)
+    (finally
+      (braced_word
+        (command
+          (simple_word))))))
