@@ -141,6 +141,10 @@
         },
         {
           "type": "SYMBOL",
+          "name": "for"
+        },
+        {
+          "type": "SYMBOL",
           "name": "foreach"
         },
         {
@@ -700,8 +704,11 @@
       "type": "SEQ",
       "members": [
         {
-          "type": "STRING",
-          "value": "("
+          "type": "IMMEDIATE_TOKEN",
+          "content": {
+            "type": "STRING",
+            "value": "("
+          }
         },
         {
           "type": "SYMBOL",

@@ -85,7 +85,8 @@ module.exports = grammar({
   conflicts: $ => [
     [$.foreach_clauses],
     [$._concat_word, $._concat_word_expr],
-    [$.braced_word_simple, $._expr]
+    [$.braced_word_simple, $._expr],
+    // [$._concat_word, $.array_name],
   ],
 
   rules: {
@@ -110,6 +111,7 @@ module.exports = grammar({
       $.procedure,
       $.set,
       $.try,
+      $.for,
       $.foreach,
       $.expr_cmd,
       $.while,
@@ -119,6 +121,13 @@ module.exports = grammar({
     while: $ => seq('while', $.expr, $._word),
 
     expr_cmd: $ => seq('expr', $.expr),
+
+    for: $ => seq("for",
+      $._word,
+      $.expr,
+      $._word,
+      $._word,
+    ),
 
     // arguments doesn't make sense here. That's for procs
     // foreach var {list of stuff} {code}
@@ -236,7 +245,13 @@ module.exports = grammar({
     // oh actually maybe this isn't that useful because of token.immediate in _ident?
     id: $ => seq(optional($._ns_delim), interleaved1($._ident, $._ns_delim)),
 
-    array_index: $ => seq('(', $._concat_word, ')'),
+    // token.immediate breaks usage of () in bare words (maybe that's okay?)
+    // e.g. `puts (string)` should work fine, treat (string) as a string.
+    // maybe it makes sense to include () in simple_word or parse arrays in
+    // scanner.c?
+    // we want token.immediate so abc (xyz) isn't treated as an array, though.
+    // How do we let functions in exprs take precedence? Why is this stealing precedence?
+    array_index: $ => seq(token.immediate('('), $._concat_word, ')'),
 
     // cheating here a bit I think by oversimplifying what an array reference can be
     array_name: $ => seq($.simple_word, $.array_index),
@@ -418,6 +433,8 @@ module.exports = grammar({
     // token() unneeded afaik
     // basically seems to match just A-Za-z0-9_ but idk,
     // how does this differ from _ident? oh it's the lack of token.immediate
+    // I'd kind of like to remove () from the exclusion for matching array names,
+    // but there are knock-on effects like degraded recognition of function calls in exprs
     simple_word: _ => token(/[^!$\s\\\[\]{}();"]+/),
   }
 
