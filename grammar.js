@@ -18,14 +18,46 @@ const PREC = {
 
 const interleaved1 = (rule, delim) => seq(rule, repeat(seq(delim, rule)))
 
+// A lot of stealing from tree-sitter-go and then simplifying for Tcl
+const hexDigit = /[0-9a-fA-F]/;
+const octalDigit = /[0-7]/;
+const decimalDigit = /[0-9]/;
+const binaryDigit = /[01]/;
+
+const hexDigits = repeat1(hexDigit);
+const octalDigits = repeat1(octalDigit);
+const decimalDigits = repeat1(decimalDigit);
+const binaryDigits = repeat1(binaryDigit);
+
+const hexLiteral = seq('0', choice('x', 'X'), hexDigits);
+const octalLiteral = seq('0', optional(choice('o', 'O')), octalDigits);
+const decimalLiteral = choice('0', seq(/[1-9]/, optional(decimalDigits)));
+const binaryLiteral = seq('0', choice('b', 'B'), binaryDigits);
+
+const intLiteral = choice(binaryLiteral, decimalLiteral, octalLiteral, hexLiteral);
+
+const decimalExponent = seq(choice('e', 'E'), optional(choice('+', '-')), decimalDigits);
+const decimalFloatLiteral = choice(
+  seq(decimalDigits, '.', optional(decimalDigits), optional(decimalExponent)),
+  seq(decimalDigits, decimalExponent),
+  seq('.', decimalDigits, optional(decimalExponent)),
+);
+
+const infLiteral = /inf/i;
+const nanLiteral = /nan/i;
+
+const floatLiteral = choice(infLiteral, nanLiteral, decimalFloatLiteral);
+// theft over
+
 module.exports = grammar({
   name: 'tcl',
 
   word: $ => $.simple_word,
 
   externals: $ => [
-    // looks for alpha followed by $, [, or _ but doesn't assign to result_symbol (seems like this should always happen)
-    // I don't really understand what this is all about
+    // looks for if next token is alpha, $, [, or _
+    // I don't really understand what this is all about but I think it's covering
+    // cases like [func][func]?
     $.concat,
     // looks for :: followed by alpha
     $._ns_delim
@@ -43,6 +75,7 @@ module.exports = grammar({
     // concerning, as whitespace is quite significant in Tcl. We probably want
     // more control over it
     // /\s/,
+    // https://www.tcl-lang.org/cgi-bin/tct/tip/407.html#:~:text=Tcl%27s%20source%20code.-,String%20Representation%20of%20Lists,-The%20routines%20%5Bin
     /[ \t\v\f\r]/,
     // also possibly suspicious as you can't just have newlines wherever
     // also doesn't the above rule handle this? Oh unless it's not multiline!
@@ -50,7 +83,9 @@ module.exports = grammar({
   ],
 
   conflicts: $ => [
-    [$.foreach_clauses]
+    [$.foreach_clauses],
+    [$._concat_word, $._concat_word_expr],
+    [$.braced_word_simple, $._expr]
   ],
 
   rules: {
@@ -106,7 +141,12 @@ module.exports = grammar({
 
     global: $ => seq("global", repeat($._concat_word)),
 
-    namespace: $ => seq('namespace', $.word_list),
+    namespace: $ => seq('namespace', $._namespace_subcommand),
+
+    _namespace_subcommand: $ => choice(
+      seq("eval", $.word_list),
+      $.word_list,
+    ),
 
     try: $ => seq(
       "try",
@@ -162,6 +202,17 @@ module.exports = grammar({
         $.escaped_character,
         $.command_substitution,
         $.simple_word,
+        $.varname,
+        $.quoted_word,
+        $.variable_substitution,
+      ),
+      $.concat,
+    ),
+
+    _concat_word_expr: $ => interleaved1(
+      choice(
+        $.escaped_character,
+        $.command_substitution,
         $.quoted_word,
         $.variable_substitution,
       ),
@@ -177,7 +228,14 @@ module.exports = grammar({
 
     array_index: $ => seq('(', $._concat_word, ')'),
 
+    // cheating here a bit I think by oversimplifying what an array reference can be
+    array_name: $ => seq($.simple_word, $.array_index),
+
     _array_ref: $ => seq('$', $.id, $.array_index),
+
+    varname: $ => choice(
+      $.array_name,
+    ),
 
     variable_substitution: $ => seq(
       choice(
@@ -188,7 +246,7 @@ module.exports = grammar({
     ),
 
     // This seems like it would actually be code to execute
-    braced_word: $ => seq('{', optional($._commands), '}'),
+    braced_word: $ => seq('{', choice($._commands, repeat($._terminator)), '}'),
 
     braced_word_simple: $ => seq('{',
       repeat(choice(
@@ -203,8 +261,7 @@ module.exports = grammar({
       // don't love this choice, _word is so flexible
       // I guess it's technically allowed, though (var names don't have to be literals, though I wish they did)
       $._word,
-      // cheating here a bit I think by oversimplifying what an array reference can be
-      seq($.simple_word, $.array_index)
+      // $.array_name
     ),
     optional($._word)),
 
@@ -234,11 +291,22 @@ module.exports = grammar({
 
     _expr: $ => choice(
       seq("(", $._expr, ")"),
-      seq($.simple_word, "(", $._expr, ")"),
+      seq($.simple_word, "(", optional(interleaved1($._expr, ",")), ")"),
       $.unary_expr,
       $.binop_expr,
       $.ternary_expr,
-      $._concat_word,
+      $._concat_word_expr,
+      $.int_literal,
+      $.float_literal,
+      $.bool_literal,
+      // hmm this has some odd behavior where expr {} results in (expr_cmd (expr (braced_word_simple)))
+      // This happens because we allow for a braceless expr body but then match braced_word_simple.
+      // The issue goes away if we disallow braceless expr (best practice anyway).
+      // I think (expr_cmd (braced_word_simple)) or (expr_cmd (expr)) would make more sense
+      // expr {} isn't even a valid expr!
+      // expr {} doesn't even work if you imagine you're calling in in braceless mode, so maybe we just ban that.
+      // This also allows bad expressions like expr {any bare words} because the expression matches as a braced_word
+      $.braced_word_simple,
     ),
 
     expr: $ => choice(
@@ -287,6 +355,7 @@ module.exports = grammar({
     elseif: $ => seq(
       "elseif",
       field('condition', $.expr),
+      optional("then"),
       $._word,
     ),
 
@@ -298,6 +367,7 @@ module.exports = grammar({
     conditional: $ => seq(
       "if",
       field('condition', $.expr),
+      optional("then"),
       $._word,
       repeat($.elseif),
       optional($.else),
@@ -327,6 +397,13 @@ module.exports = grammar({
     _quoted_word_content: _ => token(prec(-1, /[^$\\\[\]"]+/)),
 
     command_substitution: $ => seq('[', $._command, ']'),
+
+    bool_literal: $ => /(((t)r?)u?)e?|((((f)a?)l?)s?)e?|on|(of)f?|((y)e?)s?|(n)o?/i,
+
+    inf_literal: $ => token(infLiteral),
+    nan_literal: $ => token(nanLiteral),
+    int_literal: $ => token(intLiteral),
+    float_literal: $ => token(floatLiteral),
 
     // token() unneeded afaik
     // basically seems to match just A-Za-z0-9_ but idk,

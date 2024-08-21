@@ -73,14 +73,15 @@ foreach a {1 2 3 4 5} {
 
 (source_file
   (foreach
-    (arguments
-      (simple_word))
-    (braced_word_simple
+   (foreach_clauses
+    (foreach_clause
+     (simple_word)
+     (braced_word_simple
       (simple_word)
       (simple_word)
       (simple_word)
       (simple_word)
-      (simple_word))
+      (simple_word))))
     (braced_word
       (command
         (simple_word)
@@ -99,22 +100,23 @@ foreach {a b} {1 2 4 5} {
 --------------------------------------------------------------------------------
 
 (source_file
-  (foreach
-    (arguments
-      (braced_word_simple
-        (simple_word)
-        (simple_word)))
+ (foreach
+  (foreach_clauses
+   (foreach_clause
     (braced_word_simple
-      (simple_word)
-      (simple_word)
-      (simple_word)
-      (simple_word))
+     (simple_word)
+     (simple_word))
+    (braced_word_simple
+     (simple_word)
+     (simple_word)
+     (simple_word)
+     (simple_word))))
     (braced_word
-      (command
-        (simple_word)
-        (word_list
-          (variable_substitution
-            (id)))))))
+     (command
+      (simple_word)
+      (word_list
+       (variable_substitution
+        (id)))))))
 
 ================================================================================
 Foreach multimulti
@@ -128,18 +130,21 @@ foreach a {1 2 4 5} b {6 7 8 9} {
 
 (source_file
   (foreach
+  (foreach_clauses
+   (foreach_clause
     (simple_word)
     (braced_word_simple
-      (simple_word)
-      (simple_word)
-      (simple_word)
-      (simple_word))
-    (simple_word)
+     (simple_word)
+     (simple_word)
+     (simple_word)
+     (simple_word)))
+   (foreach_clause
+   (simple_word)
     (braced_word_simple
-      (simple_word)
-      (simple_word)
-      (simple_word)
-      (simple_word))
+     (simple_word)
+     (simple_word)
+     (simple_word)
+     (simple_word))))
     (braced_word
       (command
         (simple_word)
@@ -151,9 +156,9 @@ foreach a {1 2 4 5} b {6 7 8 9} {
 Conditionals
 ================================================================================
 
-if hello {
+if 1 then {
     echo hi
-} elseif hello {
+} elseif {t} {
     echo hi
 } else {
     echo bye
@@ -164,7 +169,7 @@ if hello {
 (source_file
   (conditional
     (expr
-      (simple_word))
+      (int_literal))
     (braced_word
       (command
         (simple_word)
@@ -172,7 +177,7 @@ if hello {
           (simple_word))))
     (elseif
       (expr
-        (simple_word))
+        (bool_literal))
       (braced_word
         (command
           (simple_word)
@@ -230,9 +235,11 @@ set arr(my) 0
 
 (source_file
   (set
-    (simple_word)
-    (array_index
-      (simple_word))
+   (varname
+    (array_name
+     (simple_word)
+     (array_index
+      (simple_word))))
     (simple_word)))
 
 ================================================================================
@@ -246,7 +253,187 @@ puts $arr(my)
 (source_file
   (command
     (simple_word)
+    (word_list
     (variable_substitution
-      (simple_word)
+      (id)
       (array_index
+        (simple_word))))))
+
+
+================================================================================
+Array name ref
+================================================================================
+
+puts arr(my)
+
+--------------------------------------------------------------------------------
+
+(source_file
+  (command
+    (simple_word)
+    (word_list
+     (varname
+      (array_name
+       (simple_word)
+       (array_index
+        (simple_word)))))))
+
+
+================================================================================
+Namespaced vars
+================================================================================
+
+puts $::ns::var
+lassign [list 1] ::ns::var(key)
+
+--------------------------------------------------------------------------------
+
+(source_file
+  (command
+    (simple_word)
+    (word_list
+      (variable_substitution
+        (id))))
+  (command
+    (simple_word)
+    (word_list
+      (command_substitution
+        (command
+          (simple_word)
+          (word_list
+            (simple_word))))
+      (varname
+        (array_name
+          (simple_word)
+          (array_index
+            (simple_word)))))))
+
+================================================================================
+Exprs
+================================================================================
+
+expr {1 + 1}
+expr {3. / 4e-4}
+expr {t eq tr}
+expr { nO || Of }
+expr { inf + nan - (1) + [p 1] }
+expr { {} eq {123} }
+expr { $arr(abc) eq [a ::ar(xyz)] }
+expr { func() eq 0 }
+expr { spaceyfunc   ( "yes", [this], {works} ) }
+
+--------------------------------------------------------------------------------
+
+(source_file
+  (expr_cmd
+    (expr
+      (binop_expr
+        (int_literal)
+        (int_literal))))
+  (expr_cmd
+    (expr
+      (binop_expr
+        (float_literal)
+        (float_literal))))
+  (expr_cmd
+    (expr
+      (binop_expr
+        (bool_literal)
+        (bool_literal))))
+  (expr_cmd
+    (expr
+      (binop_expr
+        (bool_literal)
+        (bool_literal))))
+  (expr_cmd
+    (expr
+      (binop_expr
+        (binop_expr
+          (binop_expr
+            (float_literal)
+            (float_literal))
+          (int_literal))
+        (command_substitution
+          (command
+            name: (simple_word)
+            arguments: (word_list
+              (simple_word)))))))
+  (expr_cmd
+    (expr
+      (binop_expr
+       (braced_word_simple)
+       (braced_word_simple
         (simple_word)))))
+  (expr_cmd
+    (expr
+      (binop_expr
+        (variable_substitution
+          (id)
+          (array_index
+            (simple_word)))
+        (command_substitution
+          (command
+            name: (simple_word)
+            arguments: (word_list
+              (varname
+                (array_name
+                  (simple_word)
+                  (array_index
+                   (simple_word))))))))))
+      (expr_cmd
+        (expr
+          (binop_expr
+            (simple_word)
+            (int_literal))))
+      (expr_cmd
+        (expr
+          (simple_word)
+          (quoted_word)
+          (command_substitution
+            (command
+              name: (simple_word)))
+          (braced_word_simple
+            (simple_word)))))
+
+
+
+================================================================================
+Exprs in other places
+================================================================================
+
+if $a {
+} elseif {1 eq 2} {}
+if {
+1
+} {
+puts "good"
+}
+while f {}
+
+--------------------------------------------------------------------------------
+
+(source_file
+  (conditional
+    condition: (expr
+      (variable_substitution
+        (id)))
+    (braced_word)
+    (elseif
+      condition: (expr
+        (binop_expr
+          (int_literal)
+          (int_literal)))
+      (braced_word)))
+  (conditional
+    condition: (expr
+      (braced_word_simple
+        (simple_word)))
+    (braced_word
+      (command
+        name: (simple_word)
+        arguments: (word_list
+          (quoted_word)))))
+  (while
+    (expr
+      (bool_literal))
+    (braced_word)))
