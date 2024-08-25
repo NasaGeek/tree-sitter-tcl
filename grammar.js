@@ -128,6 +128,8 @@ module.exports = grammar({
       $.try,
       $.for,
       $.foreach,
+      $.regexp,
+      $.regsub,
       $.switch,
       $.expr_cmd,
       $.while,
@@ -137,6 +139,9 @@ module.exports = grammar({
     while: $ => seq('while', $.expr, $.script),
 
     expr_cmd: $ => seq('expr', $.expr),
+
+    regexp: $ => seq('regexp', repeat1($._word)),
+    regsub: $ => seq('regsub', repeat1($._word)),
 
     for: $ => seq("for",
       $.script,
@@ -194,8 +199,8 @@ module.exports = grammar({
     // evaluated,
     // terminator-delimited commands,
     // surrounded by "", {}, or nothing (though in the nothing case it must not have whitespace)
-    // I'd like to hide this in some places, and not in others. I've settled on
-    // just having it visible everywhere for now
+    // Name is slighty awkward, since we don't _know_ things will be eval'ed as
+    // scripts. We could call it maybe_script?
     script: $ => choice(
       $._concat_word,
       seq("{", choice($._commands, repeat($._terminator)), "}"),
