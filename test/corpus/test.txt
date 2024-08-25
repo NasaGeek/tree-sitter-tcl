@@ -18,6 +18,24 @@ set hi "heelo"
     (quoted_word)))
 
 ================================================================================
+Commands with strange barewords
+================================================================================
+
+join , - -flag
+
+--------------------------------------------------------------------------------
+
+(source_file
+  (command
+    (simple_word)
+    (script
+      (simple_word))
+    (script
+      (simple_word))
+    (script
+      (simple_word))))
+
+================================================================================
 Procedures
 ================================================================================
 
@@ -280,7 +298,8 @@ expr { nO || Of }
 expr { inf + nan - (1) + [p 1] }
 expr { {} eq {123} }
 expr { $arr(abc) eq [a ::ar(xyz)] }
-expr { func() eq 0 }
+expr { func() eq -1 }
+expr { func(1, 2) }
 expr { spaceyfunc   ( "yes", [this], {works} ) }
 
 --------------------------------------------------------------------------------
@@ -344,12 +363,20 @@ expr { spaceyfunc   ( "yes", [this], {works} ) }
     (expr
       (binop_expr
         (func_call
-          (simple_word))
-        (int_literal))))
+          (restricted_simple_word))
+        (unary_expr
+          (int_literal)))))
   (expr_cmd
     (expr
       (func_call
-        (simple_word)
+        (restricted_simple_word)
+        (func_args
+          (int_literal)
+          (int_literal)))))
+  (expr_cmd
+    (expr
+      (func_call
+        (restricted_simple_word)
         (func_args
           (quoted_word)
           (command_substitution
@@ -510,12 +537,3 @@ switch -glob aaab {
           (simple_word)))
       (simple_word)
       (script))))
-
-================================================================================
-Failing Exprs
-:error
-================================================================================
-# Valid (but I wouldn't say idiomatic) Tcl that we can't parse.
-expr 1
-expr {1+1}
-
