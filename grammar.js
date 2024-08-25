@@ -194,6 +194,8 @@ module.exports = grammar({
     // evaluated,
     // terminator-delimited commands,
     // surrounded by "", {}, or nothing (though in the nothing case it must not have whitespace)
+    // I'd like to hide this in some places, and not in others. I've settled on
+    // just having it visible everywhere for now
     script: $ => choice(
       $._concat_word,
       seq("{", choice($._commands, repeat($._terminator)), "}"),
@@ -208,8 +210,8 @@ module.exports = grammar({
     namespace: $ => seq('namespace', $._namespace_subcommand),
 
     _namespace_subcommand: $ => choice(
-      seq("eval", $.word_list),
-      $.word_list,
+      seq("eval", $._word_eval_list),
+      $._word_eval_list,
     ),
 
     try: $ => seq(
@@ -245,20 +247,25 @@ module.exports = grammar({
     // commands are just _word's, okay
     command: $ => seq(
       field('name', $._word),
-      optional(field('arguments', $.word_list)),
+      optional(field('arguments', $._word_eval_list)),
     ),
 
-    word_list: $ => repeat1($._word),
+    _word_eval_list: $ => repeat1($._word_eval),
 
     // https://www.tcl-lang.org/man/tcl8.6/TclCmd/Tcl.htm#M9
     unpack: _ => '{*}',
 
+    // A word that might possibly be evaluated as code
+    _word_eval: $ => seq(
+      optional($.unpack),
+      $.script,
+    ),
+
+    // A word that we know for sure will never be evaluated as code (basically
+    // only for use in builtins where the behavior is known)
     _word: $ => seq(
       optional($.unpack),
-      choice(
-        $.braced_word,
-        $._concat_word,
-      )
+      choice($.braced_word, $._concat_word)
     ),
 
     // Might end up useful for arbitrary quoted stuff...
@@ -484,13 +491,11 @@ module.exports = grammar({
 
     _nested_braces: $ => seq('{', repeat(choice($._nested_braces, $._braced_word_contents)), '}'),
 
-    // This a truly braced, no-substitution word
+    // This a truly braced, no-substitution word, only appropriate in places
+    // where we know no evaluation will occur (anywhere that it _might_ occur
+    // should be a _word).
     // It can have almost anything in it I think (other than unmatched {})
     // FIXME: escaped braces
-    // hmm maybe I've gone too far with this. It could be useful to distinguish
-    // the individual words in the braced word (like when we treat it as a list maybe) or
-    // even fully parse it and let runtime queries decide whether it should be
-    // highlighted or whatnot.
     braced_word: $ => seq('{', repeat(choice($._nested_braces, $._braced_word_contents)), '}'),
 
 

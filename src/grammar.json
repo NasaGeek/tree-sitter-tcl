@@ -489,13 +489,13 @@
             },
             {
               "type": "SYMBOL",
-              "name": "word_list"
+              "name": "_word_eval_list"
             }
           ]
         },
         {
           "type": "SYMBOL",
-          "name": "word_list"
+          "name": "_word_eval_list"
         }
       ]
     },
@@ -648,7 +648,7 @@
               "name": "arguments",
               "content": {
                 "type": "SYMBOL",
-                "name": "word_list"
+                "name": "_word_eval_list"
               }
             },
             {
@@ -658,16 +658,37 @@
         }
       ]
     },
-    "word_list": {
+    "_word_eval_list": {
       "type": "REPEAT1",
       "content": {
         "type": "SYMBOL",
-        "name": "_word"
+        "name": "_word_eval"
       }
     },
     "unpack": {
       "type": "STRING",
       "value": "{*}"
+    },
+    "_word_eval": {
+      "type": "SEQ",
+      "members": [
+        {
+          "type": "CHOICE",
+          "members": [
+            {
+              "type": "SYMBOL",
+              "name": "unpack"
+            },
+            {
+              "type": "BLANK"
+            }
+          ]
+        },
+        {
+          "type": "SYMBOL",
+          "name": "script"
+        }
+      ]
     },
     "_word": {
       "type": "SEQ",

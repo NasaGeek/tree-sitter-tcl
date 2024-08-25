@@ -1,5 +1,5 @@
 [
- (braced_word_simple)
+ (script)
  (namespace)
  (command)
  (conditional)

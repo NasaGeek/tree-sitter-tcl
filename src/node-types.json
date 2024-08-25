@@ -270,11 +270,15 @@
     "named": true,
     "fields": {
       "arguments": {
-        "multiple": false,
+        "multiple": true,
         "required": false,
         "types": [
           {
-            "type": "word_list",
+            "type": "script",
+            "named": true
+          },
+          {
+            "type": "unpack",
             "named": true
           }
         ]
@@ -812,11 +816,15 @@
     "named": true,
     "fields": {},
     "children": {
-      "multiple": false,
-      "required": true,
+      "multiple": true,
+      "required": false,
       "types": [
         {
-          "type": "word_list",
+          "type": "script",
+          "named": true
+        },
+        {
+          "type": "unpack",
           "named": true
         }
       ]
@@ -1502,53 +1510,6 @@
         },
         {
           "type": "script",
-          "named": true
-        }
-      ]
-    }
-  },
-  {
-    "type": "word_list",
-    "named": true,
-    "fields": {},
-    "children": {
-      "multiple": true,
-      "required": true,
-      "types": [
-        {
-          "type": "braced_word",
-          "named": true
-        },
-        {
-          "type": "command_substitution",
-          "named": true
-        },
-        {
-          "type": "concat",
-          "named": true
-        },
-        {
-          "type": "escaped_character",
-          "named": true
-        },
-        {
-          "type": "quoted_word",
-          "named": true
-        },
-        {
-          "type": "simple_word",
-          "named": true
-        },
-        {
-          "type": "unpack",
-          "named": true
-        },
-        {
-          "type": "variable_substitution",
-          "named": true
-        },
-        {
-          "type": "varname",
           "named": true
         }
       ]
