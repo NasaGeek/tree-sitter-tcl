@@ -1,3 +1,11 @@
+// General "issues" that persist:
+// hardcoded {} in various spots which should actually be interchangeable with ""
+//  except it's a thorny issue, so probably will just force braces for most places
+// poor bareword (simple_word) special character handling
+//  not sure this is worth fixing; just quote your stuff!
+// unbraced exprs and switches unsupported
+// exprs generally need whitespace between operators/operands
+
 const PREC = {
   unary        : 150,
   exp          : 140,
@@ -14,9 +22,15 @@ const PREC = {
   and_logical  : 30,
   or_logical   : 20,
   ternary      : 10,
+  comma        :  5,
 }
 
 const interleaved1 = (rule, delim) => seq(rule, repeat(seq(delim, rule)))
+const interleavednl1 = (rule, delim) => seqnl(rule, repeat(seqnl(delim, rule)))
+
+// Helper for rules within which newlines are irrelevant (essentially adding
+// them as faux-extras).
+const seqnl = (...rules) => seq(...rules.flatMap(e => [repeat("\n"), e]).slice(1))
 
 // A lot of stealing from tree-sitter-go and then simplifying for Tcl
 const hexDigit = /[0-9a-fA-F]/;
@@ -56,8 +70,8 @@ module.exports = grammar({
 
   externals: $ => [
     // looks for if next token is alpha, $, [, or _
-    // I don't really understand what this is all about but I think it's covering
-    // cases like [func][func]?
+    // Covers separation of tokens that aren't whitespace-separated, think of
+    // cases like [func][func] or a$a. Not sure what purpose the _ serves, though
     $.concat,
     // looks for :: followed by alpha
     $._ns_delim
@@ -72,26 +86,27 @@ module.exports = grammar({
 
   extras: $ => [
     $._line_continuation,
-    // concerning, as whitespace is quite significant in Tcl. We probably want
-    // more control over it
-    // /\s/,
     // https://www.tcl-lang.org/cgi-bin/tct/tip/407.html#:~:text=Tcl%27s%20source%20code.-,String%20Representation%20of%20Lists,-The%20routines%20%5Bin
+    // Don't blanket-ignore whitespace, because newlines are significant
     /[ \t\v\f\r]/,
-    // also possibly suspicious as you can't just have newlines wherever
-    // also doesn't the above rule handle this? Oh unless it's not multiline!
-    // /\\\r?\n/
   ],
 
   conflicts: $ => [
+    // The func ones cause the absolute strangest errors when removed. It's
+    // somehow related to allowing arbitrary newlines between things.
+    [$.func_call],
+    [$.func_args],
+
     [$.foreach_clauses],
-    [$._concat_word, $._concat_word_expr],
-    [$.braced_word_simple, $._expr],
-    // [$._concat_word, $.array_name],
+    [$.binop_expr, $.ternary_expr],
+    [$.switch_body],
   ],
 
   rules: {
-    source_file: $ => $._commands,
+    // https://wiki.tcl-lang.org/page/the+empty+command
+    source_file: $ => choice($._commands, repeat($._terminator)),
 
+    // https://www.tcl-lang.org/man/tcl8.6/TclCmd/Tcl.htm#M5
     _commands: $ => seq(
       repeat($._terminator),
       interleaved1($._command, repeat1($._terminator)),
@@ -113,42 +128,82 @@ module.exports = grammar({
       $.try,
       $.for,
       $.foreach,
+      $.switch,
       $.expr_cmd,
       $.while,
       $.catch,
     ),
 
-    while: $ => seq('while', $.expr, $._word),
+    while: $ => seq('while', $.expr, $.script),
 
     expr_cmd: $ => seq('expr', $.expr),
 
     for: $ => seq("for",
-      $._word,
+      $.script,
       $.expr,
-      $._word,
-      $._word,
+      $.script,
+      $.script,
     ),
 
-    // arguments doesn't make sense here. That's for procs
-    // foreach var {list of stuff} {code}
-    // foreach {var1 var2} {list of stuff} {code}
-    // foreach var {list1 of stuff} {var2 var3} {list2 of stuff} {code}
-    // dunno why this is giving me such trouble, it should work a lot like if -> elseif, ... -> else
-    // technically the "var" can also be an arbitrary command, fun!
-    // So how do we know when to stop matching clauses? Seems like a tough
-    // thing to do for some reason (maybe because t-s isn't looking far enough ahead?)
-    // Is this an external scanner thing? A precedence setting?
+    // https://www.tcl.tk/man/tcl/TclCmd/foreach.htm
     foreach: $ => seq("foreach",
       $.foreach_clauses,
-      $._word,
+      $.script,
     ),
 
-    // trying to hide or inline this causes conflicts oof
-    foreach_clauses: $ => repeat1($.foreach_clause),
+    // Unhiding either of these causes a bad parse in some cases
+    foreach_clauses: $ => (repeat1($.foreach_clause)),
+    foreach_clause: $ => seq($._word, $._word),
 
-    foreach_clause: $ => seq($._word_simple, $._word_simple),
 
-    global: $ => seq("global", repeat($._concat_word)),
+    // https://www.tcl.tk/man/tcl/TclCmd/switch.htm
+    switch: $ => seq("switch",
+      field("flags", repeat($._word)),
+      field("pattern", $._word),
+      $.switch_body,
+    ),
+
+    switch_body: $ => choice(
+      // Trouble with newlines, doesn't seem very useful anyway.
+      // Also makes it hard to properly detect the switch body because a case
+      // like `switch -flag pattern { ... }` looks like `-flag` is the pattern
+      // and then `pattern` is the first case. Unless there's some precedence
+      // magic that would work, I can only think of doing smarter parsing such
+      // that the specific flags are recognized.
+      // $._inner_switch,
+
+      // We were previously a bit on the strict side (honoring the actual Tcl
+      // behavior) by disallowing empty or whitespace-filled {}. Unfortunately
+      // parsing of later sibling constructs then ended up broken by an empty
+      // {}. Making it more permissive seems like the better call.
+      seqnl(
+        token(prec(1, "{")),
+        optional(interleaved1($._inner_switch, repeat('\n'))),
+        "}"
+      ),
+    ),
+
+    _inner_switch: $ => seqnl(
+      // This isn't really accurate since the patterns are interpreted "raw"
+      // with no substitution. Very similar to proc arg defaults actually.
+      $._word,
+      // Ehh not totally sold on the aliasing
+      choice($.script, alias('-', $.script)),
+    ),
+
+    // evaluated,
+    // terminator-delimited commands,
+    // surrounded by "", {}, or nothing (though in the nothing case it must not have whitespace)
+    script: $ => choice(
+      $._concat_word,
+      seq("{", choice($._commands, repeat($._terminator)), "}"),
+      // Broadly applicable quotes are really tough, need to ban them in
+      // certain constructs or otherwise figure out how to deal with them
+      // (custom lexing?)
+      // seqnl('"', choice($._commands, repeat($._terminator)), '"'),
+    ),
+
+    global: $ => seq("global", repeat($._word)),
 
     namespace: $ => seq('namespace', $._namespace_subcommand),
 
@@ -159,27 +214,27 @@ module.exports = grammar({
 
     try: $ => seq(
       "try",
-      $._word,
+      $.script,
       repeat(choice(
         seq(
           "on",
           choice(
             "ok", "error", "return", "break", "continue", /[0-4]/
           ),
-          $._word_simple,
           $._word,
+          $.script,
         ),
         seq(
           "trap",
-          $._word_simple,
-          $._word_simple,
           $._word,
+          $._word,
+          $.script,
         ))
       ),
       optional($.finally),
     ),
 
-    finally: $=> seq('finally', $._word),
+    finally: $=> seq('finally', $.script),
 
     _command: $ => choice(
       $._builtin,
@@ -195,9 +250,9 @@ module.exports = grammar({
 
     word_list: $ => repeat1($._word),
 
+    // https://www.tcl-lang.org/man/tcl8.6/TclCmd/Tcl.htm#M9
     unpack: _ => '{*}',
 
-    // Code to execute (kind of?)
     _word: $ => seq(
       optional($.unpack),
       choice(
@@ -206,28 +261,34 @@ module.exports = grammar({
       )
     ),
 
-    // This was only used for the second clause of foreach statements (basically
-    // what you're iterating over). Not sure if the single-item seq is
-    // intentional, doesn't seem like it would matter.
-    // Why can't this just be one of the other constructs? Seems like it's just
-    // executing code.
-    _word_simple: $ => choice(
-      $.braced_word_simple,
-      $._concat_word,
-    ),
+    // Might end up useful for arbitrary quoted stuff...
+    // _concat_word_noquote: $ => interleaved1(
+    //   choice(
+    //     $.escaped_character,
+    //     $.command_substitution,
+    //     $.simple_word,
+    //     $.varname,
+    //     $.variable_substitution,
+    //   ),
+    //   $.concat,
+    // ),
 
+    // All the stuff that can be mashed together without needing whitespace
+    // delimiters. These are generally the constructs that undergo first-pass
+    // evaluation.
     _concat_word: $ => interleaved1(
       choice(
         $.escaped_character,
         $.command_substitution,
-        $.simple_word,
-        $.varname,
         $.quoted_word,
         $.variable_substitution,
+        $.simple_word,
+        $.varname,
       ),
       $.concat,
     ),
 
+    // bare words are a no-no inside of expr's
     _concat_word_expr: $ => interleaved1(
       choice(
         $.escaped_character,
@@ -238,18 +299,17 @@ module.exports = grammar({
       $.concat,
     ),
 
+    // Specifically (only?) useful for variable substitution due to
+    // token.immediate
     _ident: _ => token.immediate(/[a-zA-Z_][a-zA-Z0-9_]*/),
 
-    // var name (should use this liberally for practicality rather than
-    // allowing _word's everywhere
-    // oh actually maybe this isn't that useful because of token.immediate in _ident?
     id: $ => seq(optional($._ns_delim), interleaved1($._ident, $._ns_delim)),
 
     // token.immediate breaks usage of () in bare words (maybe that's okay?)
     // e.g. `puts (string)` should work fine, treat (string) as a string.
     // maybe it makes sense to include () in simple_word or parse arrays in
     // scanner.c?
-    // we want token.immediate so abc (xyz) isn't treated as an array, though.
+    // We want token.immediate so abc (xyz) isn't treated as an array, though.
     // How do we let functions in exprs take precedence? Why is this stealing precedence?
     array_index: $ => seq(token.immediate('('), $._concat_word, ')'),
 
@@ -270,137 +330,142 @@ module.exports = grammar({
       ),
     ),
 
-    // This seems like it would actually be code to execute
-    braced_word: $ => seq('{', choice($._commands, repeat($._terminator)), '}'),
-
-    braced_word_simple: $ => seq('{',
-      repeat(choice(
-        $.braced_word_simple,
-        $._concat_word,
-        "\n", // still want?
-      )),
-    '}'),
-
     set: $ => seq("set",
-    choice(
-      // don't love this choice, _word is so flexible
-      // I guess it's technically allowed, though (var names don't have to be literals, though I wish they did)
+      // TODO: Change this up for arrays
       $._word,
-      // $.array_name
-    ),
-    optional($._word)),
+      optional($._word)),
 
     procedure: $ => seq(
       "proc",
       field('name', $._word),
       field('arguments', $.arguments),
-      field('body', $._word)
+      field('body', $.script)
     ),
 
-    _argument_word: $ => choice($.simple_word, $.quoted_word, $.braced_word_simple),
+    arguments: $ => choice(
+      seq('{', repeat($.argument), '}'),
+      $._concat_word,
+    ),
 
     argument: $ => choice(
       field('name', $.simple_word),
       seq(
         '{',
+         // More strict than Tcl, a convenience
          field('name', $.simple_word),
          optional(field('default', $._argument_word)),
          '}'
       )
     ),
 
-    arguments: $ => choice(
-      seq('{', repeat($.argument) , '}'),
-      $.simple_word,
-    ),
+    // quoted_word here isn't quite right because the argument is interpreted
+    // literally. Really should just allow roughly anything (close to braced_word)
+    _argument_word: $ => choice($.simple_word, $.quoted_word, $.braced_word),
 
+    // FIXME: errors out on certain braced expressions without spaces between
+    // operators/operands due to simple_words allowing operators within them.
+    // Gotta do something about the function call support here or adjust
+    // simple_word.
+    //
+    // expr in general is such a spin on Tcl's usual syntax that it's quite
+    // difficult to support well alongside many of Tcl's other idiosyncracies.
     _expr: $ => choice(
-      seq("(", $._expr, ")"),
-      seq($.simple_word, "(", optional(interleaved1($._expr, ",")), ")"),
+      seqnl("(", $._expr, ")"),
+      $.int_literal,
+      $.float_literal,
+      $.bool_literal,
       $.unary_expr,
       $.binop_expr,
       $.ternary_expr,
       $._concat_word_expr,
-      $.int_literal,
-      $.float_literal,
-      $.bool_literal,
-      // hmm this has some odd behavior where expr {} results in (expr_cmd (expr (braced_word_simple)))
-      // This happens because we allow for a braceless expr body but then match braced_word_simple.
-      // The issue goes away if we disallow braceless expr (best practice anyway).
-      // I think (expr_cmd (braced_word_simple)) or (expr_cmd (expr)) would make more sense
-      // expr {} isn't even a valid expr!
-      // expr {} doesn't even work if you imagine you're calling in in braceless mode, so maybe we just ban that.
-      // This also allows bad expressions like expr {any bare words} because the expression matches as a braced_word
-      $.braced_word_simple,
+      $.func_call,
+      $.braced_word,
     ),
 
     expr: $ => choice(
-      seq('{', $._expr, '}'),
-      $._expr,
+      // prec disambiguates from braced_word
+      seqnl(token(prec(1, '{')), $._expr, '}'),
+      // Might be easier to support some subset of expr's when unbraced (e.g.
+      // _concat_word and some literals). I've got way too much newline going
+      // on in _expr to be able to handle them fully. Besides, it's bad practice.
+      // I probably need to at least support single-arg expr's though.
+      // $._expr,
+      // Not delighted with this since it produces simple_words in some cases
+      // rather than more specific literals.
+      $._concat_word,
     ),
 
-    unary_expr: $ => prec.left(PREC.unary, seq(choice("-", "+", "~", "!"), $._expr)),
+    func_call: $ => seqnl(
+        field("name", $.simple_word),
+        "(",
+        field("args", optional($.func_args)),
+        ")"
+      ),
+
+    func_args: $ => interleavednl1($._expr, ","),
+
+    unary_expr: $ => prec.left(PREC.unary, seqnl(choice("-", "+", "~", "!"), $._expr)),
 
     binop_expr: $ => choice(
-      prec.left(PREC.exp,          seq($._expr, "**",  $._expr)),
+      prec.left(PREC.exp,          seqnl($._expr, "**",  $._expr)),
 
-      prec.left(PREC.muldiv,       seq($._expr, "/",  $._expr)),
-      prec.left(PREC.muldiv,       seq($._expr, "*",  $._expr)),
-      prec.left(PREC.muldiv,       seq($._expr, "%",  $._expr)),
-      prec.left(PREC.addsub,       seq($._expr, "+",  $._expr)),
-      prec.left(PREC.addsub,       seq($._expr, "-",  $._expr)),
+      prec.left(PREC.muldiv,       seqnl($._expr, "/",  $._expr)),
+      prec.left(PREC.muldiv,       seqnl($._expr, "*",  $._expr)),
+      prec.left(PREC.muldiv,       seqnl($._expr, "%",  $._expr)),
+      prec.left(PREC.addsub,       seqnl($._expr, "+",  $._expr)),
+      prec.left(PREC.addsub,       seqnl($._expr, "-",  $._expr)),
 
-      prec.left(PREC.shift,        seq($._expr, "<<", $._expr)),
-      prec.left(PREC.shift,        seq($._expr, ">>", $._expr)),
+      prec.left(PREC.shift,        seqnl($._expr, "<<", $._expr)),
+      prec.left(PREC.shift,        seqnl($._expr, ">>", $._expr)),
 
-      prec.left(PREC.compare,      seq($._expr, ">",  $._expr)),
-      prec.left(PREC.compare,      seq($._expr, "<",  $._expr)),
-      prec.left(PREC.compare,      seq($._expr, ">=", $._expr)),
-      prec.left(PREC.compare,      seq($._expr, "<=", $._expr)),
+      prec.left(PREC.compare,      seqnl($._expr, ">",  $._expr)),
+      prec.left(PREC.compare,      seqnl($._expr, "<",  $._expr)),
+      prec.left(PREC.compare,      seqnl($._expr, ">=", $._expr)),
+      prec.left(PREC.compare,      seqnl($._expr, "<=", $._expr)),
 
-      prec.left(PREC.equal_bool,   seq($._expr, "==", $._expr)),
-      prec.left(PREC.equal_bool,   seq($._expr, "!=", $._expr)),
+      prec.left(PREC.equal_bool,   seqnl($._expr, "==", $._expr)),
+      prec.left(PREC.equal_bool,   seqnl($._expr, "!=", $._expr)),
 
-      prec.left(PREC.equal_string, seq($._expr, "eq", $._expr)),
-      prec.left(PREC.equal_string, seq($._expr, "ne", $._expr)),
+      prec.left(PREC.equal_string, seqnl($._expr, "eq", $._expr)),
+      prec.left(PREC.equal_string, seqnl($._expr, "ne", $._expr)),
 
-      prec.left(PREC.contain,      seq($._expr, "in", choice($._concat_word, $.braced_word_simple))),
-      prec.left(PREC.contain,      seq($._expr, "ni", choice($._concat_word, $.braced_word_simple))),
+      prec.left(PREC.contain,      seqnl($._expr, "in", $._word)),
+      prec.left(PREC.contain,      seqnl($._expr, "ni", $._word)),
 
-      prec.left(PREC.and_bit,      seq($._expr, "&", $._expr)),
-      prec.left(PREC.xor_bit,      seq($._expr, "^", $._expr)),
-      prec.left(PREC.or_bit,       seq($._expr, "|", $._expr)),
+      prec.left(PREC.and_bit,      seqnl($._expr, "&", $._expr)),
+      prec.left(PREC.xor_bit,      seqnl($._expr, "^", $._expr)),
+      prec.left(PREC.or_bit,       seqnl($._expr, "|", $._expr)),
 
-      prec.left(PREC.and_logical,  seq($._expr, "&&", $._expr)),
-      prec.left(PREC.or_logical,   seq($._expr, "||", $._expr)),
+      prec.left(PREC.and_logical,  seqnl($._expr, "&&", $._expr)),
+      prec.left(PREC.or_logical,   seqnl($._expr, "||", $._expr)),
     ),
 
-    ternary_expr: $ => prec.left(PREC.ternary, seq($._expr, '?', $._expr, ':', $._expr)),
-
-    elseif: $ => seq(
-      "elseif",
-      field('condition', $.expr),
-      optional("then"),
-      $._word,
-    ),
-
-    else: $ => seq(
-      "else",
-      $._word,
-    ),
+    ternary_expr: $ => prec.left(PREC.ternary, seqnl($._expr, '?', $._expr, ':', $._expr)),
 
     conditional: $ => seq(
       "if",
       field('condition', $.expr),
       optional("then"),
-      $._word,
+      $.script,
       repeat($.elseif),
       optional($.else),
     ),
 
+    elseif: $ => seq(
+      "elseif",
+      field('condition', $.expr),
+      optional("then"),
+      $.script,
+    ),
+
+    else: $ => seq(
+      "else",
+      $.script,
+    ),
+
     catch: $ => seq(
       "catch",
-      $._word,
+      $.script,
       optional(seq($._word, optional($._word)))
     ),
 
@@ -415,27 +480,40 @@ module.exports = grammar({
       '"',
     ),
 
+    _braced_word_contents: _ => /[^{}]+/,
+
+    _nested_braces: $ => seq('{', repeat(choice($._nested_braces, $._braced_word_contents)), '}'),
+
+    // This a truly braced, no-substitution word
+    // It can have almost anything in it I think (other than unmatched {})
+    // FIXME: escaped braces
+    // hmm maybe I've gone too far with this. It could be useful to distinguish
+    // the individual words in the braced word (like when we treat it as a list maybe) or
+    // even fully parse it and let runtime queries decide whether it should be
+    // highlighted or whatnot.
+    braced_word: $ => seq('{', repeat(choice($._nested_braces, $._braced_word_contents)), '}'),
+
+
+    raw_word_contents: _ => token(/[^{}\s]+/),
+    // Need external lexer for this I think, essentially trying to not match
+    // on spaces unless they're between braces, but extras are getting in my way
+    // raw_word: $ => repeat1(choice($.raw_word_contents, $.braced_word)),
+
     escaped_character: _ => /\\./,
 
-    // token() bit seems useless, unless it's needed due to the prec wrapper?
-    // this explains it kinda: https://github.com/tree-sitter/tree-sitter/issues/1087#issuecomment-833198651
+    // https://github.com/tree-sitter/tree-sitter/issues/1087#issuecomment-833198651
     _quoted_word_content: _ => token(prec(-1, /[^$\\\[\]"]+/)),
 
     command_substitution: $ => seq('[', $._command, ']'),
 
-    bool_literal: $ => /(((t)r?)u?)e?|((((f)a?)l?)s?)e?|on|(of)f?|((y)e?)s?|(n)o?/i,
+    bool_literal: _ => token(prec.dynamic(-2, /(((t)r?)u?)e?|((((f)a?)l?)s?)e?|on|(of)f?|((y)e?)s?|(n)o?/i)),
 
-    inf_literal: $ => token(infLiteral),
-    nan_literal: $ => token(nanLiteral),
-    int_literal: $ => token(intLiteral),
-    float_literal: $ => token(floatLiteral),
+    int_literal: _ => token(prec.dynamic(-2, intLiteral)),
+    float_literal: _ => token(prec.dynamic(-2, floatLiteral)),
 
-    // token() unneeded afaik
-    // basically seems to match just A-Za-z0-9_ but idk,
-    // how does this differ from _ident? oh it's the lack of token.immediate
     // I'd kind of like to remove () from the exclusion for matching array names,
     // but there are knock-on effects like degraded recognition of function calls in exprs
-    simple_word: _ => token(/[^!$\s\\\[\]{}();"]+/),
+    simple_word: _ => token(prec.dynamic(-1, /[^!$\s\\\[\]{}(),;"]+/)),
   }
 
-});
+  });

@@ -37,7 +37,7 @@ proc foo {arg1 arg2} {
         (simple_word))
       (argument
         (simple_word)))
-    (braced_word
+    (script
       (command
         (simple_word)
         (word_list
@@ -76,13 +76,8 @@ foreach a {1 2 3 4 5} {
    (foreach_clauses
     (foreach_clause
      (simple_word)
-     (braced_word_simple
-      (simple_word)
-      (simple_word)
-      (simple_word)
-      (simple_word)
-      (simple_word))))
-    (braced_word
+     (braced_word)))
+    (script
       (command
         (simple_word)
         (word_list
@@ -98,25 +93,18 @@ foreach {a b} {1 2 4 5} {
 }
 
 --------------------------------------------------------------------------------
-
-(source_file
- (foreach
-  (foreach_clauses
-   (foreach_clause
-    (braced_word_simple
-     (simple_word)
-     (simple_word))
-    (braced_word_simple
-     (simple_word)
-     (simple_word)
-     (simple_word)
-     (simple_word))))
-    (braced_word
-     (command
-      (simple_word)
-      (word_list
-       (variable_substitution
-        (id)))))))
+    (source_file
+      (foreach
+        (foreach_clauses
+          (foreach_clause
+            (braced_word)
+            (braced_word)))
+        (script
+          (command
+            (simple_word)
+            (word_list
+              (variable_substitution
+                (id)))))))
 
 ================================================================================
 Foreach multimulti
@@ -128,29 +116,21 @@ foreach a {1 2 4 5} b {6 7 8 9} {
 
 --------------------------------------------------------------------------------
 
-(source_file
-  (foreach
-  (foreach_clauses
-   (foreach_clause
-    (simple_word)
-    (braced_word_simple
-     (simple_word)
-     (simple_word)
-     (simple_word)
-     (simple_word)))
-   (foreach_clause
-   (simple_word)
-    (braced_word_simple
-     (simple_word)
-     (simple_word)
-     (simple_word)
-     (simple_word))))
-    (braced_word
-      (command
-        (simple_word)
-        (word_list
-          (variable_substitution
-            (id)))))))
+    (source_file
+      (foreach
+        (foreach_clauses
+          (foreach_clause
+            (simple_word)
+            (braced_word))
+          (foreach_clause
+            (simple_word)
+            (braced_word)))
+        (script
+          (command
+            (simple_word)
+            (word_list
+              (variable_substitution
+                (id)))))))
 
 ================================================================================
 Conditionals
@@ -165,30 +145,29 @@ if 1 then {
 }
 
 --------------------------------------------------------------------------------
-
-(source_file
-  (conditional
-    (expr
-      (int_literal))
-    (braced_word
-      (command
-        (simple_word)
-        (word_list
-          (simple_word))))
-    (elseif
-      (expr
-        (bool_literal))
-      (braced_word
-        (command
-          (simple_word)
-          (word_list
-            (simple_word)))))
-    (else
-      (braced_word
-        (command
-          (simple_word)
-          (word_list
-            (simple_word)))))))
+    (source_file
+      (conditional
+        (expr
+          (simple_word))
+        (script
+          (command
+            (simple_word)
+            (word_list
+              (simple_word))))
+        (elseif
+          (expr
+            (bool_literal))
+          (script
+            (command
+              (simple_word)
+              (word_list
+                (simple_word)))))
+        (else
+          (script
+            (command
+              (simple_word)
+              (word_list
+                (simple_word)))))))
 
 ================================================================================
 Command substitution
@@ -197,16 +176,15 @@ Command substitution
 echo [echo hello]
 
 --------------------------------------------------------------------------------
-
-(source_file
-  (command
-    (simple_word)
-    (word_list
-      (command_substitution
-        (command
-          (simple_word)
-          (word_list
-            (simple_word)))))))
+    (source_file
+      (command
+        (simple_word)
+        (word_list
+          (command_substitution
+            (command
+              (simple_word)
+              (word_list
+                (simple_word)))))))
 
 ================================================================================
 Escaped string
@@ -215,15 +193,15 @@ Escaped string
 echo "word$hi \$bye word"
 
 --------------------------------------------------------------------------------
+    (source_file
+      (command
+        (simple_word)
+        (word_list
+          (quoted_word
+            (variable_substitution
+              (id))
+            (escaped_character)))))
 
-(source_file
-  (command
-    (simple_word)
-    (word_list
-      (quoted_word
-        (variable_substitution
-          (id))
-        (escaped_character)))))
 
 ================================================================================
 Array set
@@ -232,15 +210,14 @@ Array set
 set arr(my) 0
 
 --------------------------------------------------------------------------------
-
-(source_file
-  (set
-   (varname
-    (array_name
-     (simple_word)
-     (array_index
-      (simple_word))))
-    (simple_word)))
+    (source_file
+      (set
+        (varname
+          (array_name
+            (simple_word)
+            (array_index
+              (simple_word))))
+        (simple_word)))
 
 ================================================================================
 Array ref
@@ -249,34 +226,14 @@ Array ref
 puts $arr(my)
 
 --------------------------------------------------------------------------------
-
-(source_file
-  (command
-    (simple_word)
-    (word_list
-    (variable_substitution
-      (id)
-      (array_index
-        (simple_word))))))
-
-
-================================================================================
-Array name ref
-================================================================================
-
-puts arr(my)
-
---------------------------------------------------------------------------------
-
-(source_file
-  (command
-    (simple_word)
-    (word_list
-     (varname
-      (array_name
-       (simple_word)
-       (array_index
-        (simple_word)))))))
+    (source_file
+      (command
+        (simple_word)
+        (word_list
+          (variable_substitution
+            (id)
+            (array_index
+              (simple_word))))))
 
 
 ================================================================================
@@ -287,26 +244,33 @@ puts $::ns::var
 lassign [list 1] ::ns::var(key)
 
 --------------------------------------------------------------------------------
+    (source_file
+      (command
+        (simple_word)
+        (word_list
+          (variable_substitution
+            (id))))
+      (command
+        (simple_word)
+        (word_list
+          (command_substitution
+            (command
+              (simple_word)
+              (word_list
+                (simple_word))))
+          (varname
+            (array_name
+              (simple_word)
+              (array_index
+                (simple_word)))))))
 
-(source_file
-  (command
-    (simple_word)
-    (word_list
-      (variable_substitution
-        (id))))
-  (command
-    (simple_word)
-    (word_list
-      (command_substitution
-        (command
-          (simple_word)
-          (word_list
-            (simple_word))))
-      (varname
-        (array_name
-          (simple_word)
-          (array_index
-            (simple_word)))))))
+================================================================================
+Failing Exprs
+:error
+================================================================================
+# Valid (but I wouldn't say idiomatic) Tcl that we can't parse.
+expr 1
+expr {1+1}
 
 ================================================================================
 Exprs
@@ -319,81 +283,81 @@ expr { nO || Of }
 expr { inf + nan - (1) + [p 1] }
 expr { {} eq {123} }
 expr { $arr(abc) eq [a ::ar(xyz)] }
-# Broken with token.immediate() change
-# expr { func() eq 0 }
+expr { func() eq 0 }
 expr { spaceyfunc   ( "yes", [this], {works} ) }
 
 --------------------------------------------------------------------------------
-
-(source_file
-  (expr_cmd
-    (expr
-      (binop_expr
-        (int_literal)
-        (int_literal))))
-  (expr_cmd
-    (expr
-      (binop_expr
-        (float_literal)
-        (float_literal))))
-  (expr_cmd
-    (expr
-      (binop_expr
-        (bool_literal)
-        (bool_literal))))
-  (expr_cmd
-    (expr
-      (binop_expr
-        (bool_literal)
-        (bool_literal))))
-  (expr_cmd
-    (expr
-      (binop_expr
-        (binop_expr
-          (binop_expr
-            (float_literal)
-            (float_literal))
-          (int_literal))
-        (command_substitution
-          (command
-            name: (simple_word)
-            arguments: (word_list
-              (simple_word)))))))
-  (expr_cmd
-    (expr
-      (binop_expr
-       (braced_word_simple)
-       (braced_word_simple
-        (simple_word)))))
-  (expr_cmd
-    (expr
-      (binop_expr
-        (variable_substitution
-          (id)
-          (array_index
-            (simple_word)))
-        (command_substitution
-          (command
-            name: (simple_word)
-            arguments: (word_list
-              (varname
-                (array_name
-                  (simple_word)
-                  (array_index
-                   (simple_word))))))))))
-      (comment)
-      (comment)
+    (source_file
       (expr_cmd
         (expr
-          (simple_word)
-          (quoted_word)
-          (command_substitution
-            (command
-              name: (simple_word)))
-          (braced_word_simple
-            (simple_word)))))
-
-
+          (binop_expr
+            (int_literal)
+            (int_literal))))
+      (expr_cmd
+        (expr
+          (binop_expr
+            (float_literal)
+            (float_literal))))
+      (expr_cmd
+        (expr
+          (binop_expr
+            (bool_literal)
+            (bool_literal))))
+      (expr_cmd
+        (expr
+          (binop_expr
+            (bool_literal)
+            (bool_literal))))
+      (expr_cmd
+        (expr
+          (binop_expr
+            (binop_expr
+              (binop_expr
+                (float_literal)
+                (float_literal))
+              (int_literal))
+            (command_substitution
+              (command
+                (simple_word)
+                (word_list
+                  (simple_word)))))))
+      (expr_cmd
+        (expr
+          (binop_expr
+            (braced_word)
+            (braced_word))))
+      (expr_cmd
+        (expr
+          (binop_expr
+            (variable_substitution
+              (id)
+              (array_index
+                (simple_word)))
+            (command_substitution
+              (command
+                (simple_word)
+                (word_list
+                  (varname
+                    (array_name
+                      (simple_word)
+                      (array_index
+                        (simple_word))))))))))
+      (expr_cmd
+        (expr
+          (binop_expr
+            (func_call
+              (simple_word))
+            (int_literal))))
+      (expr_cmd
+        (expr
+          (func_call
+            (simple_word)
+            (func_args
+              (quoted_word)
+              (command_substitution
+                (command
+                  (simple_word)))
+              (braced_word))))))
 
 ================================================================================
 Exprs in other places
@@ -409,32 +373,30 @@ puts "good"
 while f {}
 
 --------------------------------------------------------------------------------
-
-(source_file
-  (conditional
-    condition: (expr
-      (variable_substitution
-        (id)))
-    (braced_word)
-    (elseif
-      condition: (expr
-        (binop_expr
-          (int_literal)
-          (int_literal)))
-      (braced_word)))
-  (conditional
-    condition: (expr
-      (braced_word_simple
-        (simple_word)))
-    (braced_word
-      (command
-        name: (simple_word)
-        arguments: (word_list
-          (quoted_word)))))
-  (while
-    (expr
-      (bool_literal))
-    (braced_word)))
+    (source_file
+      (conditional
+        (expr
+          (variable_substitution
+            (id)))
+        (script)
+        (elseif
+          (expr
+            (binop_expr
+              (int_literal)
+              (int_literal)))
+          (script)))
+      (conditional
+        (expr
+          (int_literal))
+        (script
+          (command
+            (simple_word)
+            (word_list
+              (quoted_word)))))
+      (while
+        (expr
+          (simple_word))
+        (script)))
 
 ================================================================================
 Try
@@ -448,32 +410,28 @@ try { some code
 } finally { done }
 
 --------------------------------------------------------------------------------
-
-(source_file
-  (try
-    (braced_word
-      (command
-        (simple_word)
-        (word_list
-          (simple_word))))
-    (braced_word_simple)
-    (braced_word)
-    (braced_word_simple
-      (simple_word)
-      (simple_word))
-    (braced_word
-      (command
-        (simple_word)
-        (word_list
-          (quoted_word))))
-    (braced_word_simple
-      (simple_word))
-    (braced_word_simple)
-    (braced_word)
-    (finally
-      (braced_word
-        (command
-          (simple_word))))))
+    (source_file
+      (try
+        (script
+          (command
+            (simple_word)
+            (word_list
+              (simple_word))))
+        (braced_word)
+        (script)
+        (braced_word)
+        (script
+          (command
+            (simple_word)
+            (word_list
+              (quoted_word))))
+        (braced_word)
+        (braced_word)
+        (script)
+        (finally
+          (script
+            (command
+              (simple_word))))))
 
 ================================================================================
 For
@@ -484,38 +442,71 @@ for {set a 0} {$a < 10} {} {
 }
 
 --------------------------------------------------------------------------------
+    (source_file
+      (for
+        (script
+          (set
+            (simple_word)
+            (simple_word)))
+        (expr
+          (binop_expr
+            (variable_substitution
+              (id))
+            (int_literal)))
+        (script
+          (command
+            (simple_word)
+            (word_list
+              (simple_word))))
+        (script
+          (command
+            (simple_word)
+            (word_list
+              (variable_substitution
+                (id))))))
+      (for
+        (script
+          (set
+            (simple_word)
+            (simple_word)))
+        (expr
+          (binop_expr
+            (variable_substitution
+              (id))
+            (int_literal)))
+        (script)
+        (script)))
 
-(source_file
-  (for
-    (braced_word
-      (set
+================================================================================
+Switch
+================================================================================
+
+switch -glob aaab {
+    b       -
+    r_rr     {[rrr]}
+    *      {a}
+    default {}
+}
+
+--------------------------------------------------------------------------------
+
+    (source_file
+      (switch
         (simple_word)
-        (simple_word)))
-    (expr
-      (binop_expr
-        (variable_substitution
-          (id))
-        (int_literal)))
-    (braced_word
-      (command
         (simple_word)
-        (word_list
-          (simple_word))))
-    (braced_word
-      (command
-        (simple_word)
-        (word_list
-          (variable_substitution
-            (id))))))
-  (for
-    (braced_word
-      (set
-        (simple_word)
-        (simple_word)))
-    (expr
-      (binop_expr
-        (variable_substitution
-          (id))
-        (int_literal)))
-    (braced_word)
-    (braced_word)))
+        (switch_body
+          (simple_word)
+          (script)
+          (simple_word)
+          (script
+            (command
+              (command_substitution
+                (command
+                  (simple_word)))))
+          (simple_word)
+          (script
+            (command
+              (simple_word)))
+          (simple_word)
+          (script))))
+
