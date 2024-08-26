@@ -74,7 +74,11 @@ module.exports = grammar({
     // cases like [func][func] or a$a. Not sure what purpose the _ serves, though
     $.concat,
     // looks for :: followed by alpha
-    $._ns_delim
+    $._ns_delim,
+    // Not used in the grammar, but used in the external scanner to check for error state.
+    // This relies on the tree-sitter behavior that when an error is encountered the external
+    // scanner is called with all symobls marked as valid.
+    $.error,
   ],
 
   inline: $ => [

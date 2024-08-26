@@ -4,6 +4,10 @@
 enum TokenType {
   CONCAT,
   NS_DELIM,
+  // Not used in the grammar, but used in the external scanner to check for error state.
+  // This relies on the tree-sitter behavior that when an error is encountered the external
+  // scanner is called with all symbols marked as valid.
+  ERROR,
 };
 
 static bool is_eof(TSLexer *lexer) {
@@ -47,6 +51,9 @@ void *tree_sitter_tcl_external_scanner_create() {
 
 bool tree_sitter_tcl_external_scanner_scan(void *payload, TSLexer *lexer,
                                           const bool *valid_symbols) {
+  if (valid_symbols[ERROR]) {
+      return false;
+  }
   if (valid_symbols[NS_DELIM]) {
     return scan_ns_delim(lexer);
   }
