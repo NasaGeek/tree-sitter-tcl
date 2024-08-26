@@ -568,7 +568,7 @@ module.exports = grammar({
 
     // I'd kind of like to remove () from the exclusion for matching array names,
     // but there are knock-on effects like degraded recognition of function calls in exprs
-    simple_word: _ => token(prec.dynamic(-1, /[^\s\\\[\]!${}();"]+/)),
+    simple_word: _ => token(prec.dynamic(-1, /[^\s\\\[\]${}();"]+/)),
 
     // Helps us out in exprs (though we're violating Tcl's fun "name everything
     // whatever you want" behavior)
