@@ -292,6 +292,9 @@ module.exports = grammar({
     // All the stuff that can be mashed together without needing whitespace
     // delimiters. These are generally the constructs that undergo first-pass
     // evaluation.
+    // FIXME: This splits on stuff like a"a" or a{a} which should actually end
+    // up as 1 token (probably needs handling in the scanner). The word just
+    // can't start with " or {.
     _concat_word: $ => interleaved1(
       choice(
         $.escaped_character,
@@ -299,7 +302,7 @@ module.exports = grammar({
         $.quoted_word,
         $.variable_substitution,
         $.simple_word,
-        $.varname,
+        $.array_name,
       ),
       $.concat,
     ),
@@ -327,22 +330,20 @@ module.exports = grammar({
     // scanner.c?
     // We want token.immediate so abc (xyz) isn't treated as an array, though.
     // How do we let functions in exprs take precedence? Why is this stealing precedence?
-    array_index: $ => seq(token.immediate('('), $._concat_word, ')'),
+    _array_index: $ => seq(token.immediate('('), $._concat_word, ')'),
 
-    // cheating here a bit I think by oversimplifying what an array reference can be
-    array_name: $ => seq($.simple_word, $.array_index),
+    // cheating here a bit by restricting what an array name can be. If we want
+    // stuff like arr(a)(b) to work then will probably need to implement it in
+    // the scanner (along with removing the () exclusion from simple_word).
+    array_name: $ => seq($.simple_word, field('index', $._array_index)),
 
-    _array_ref: $ => seq('$', $.id, $.array_index),
-
-    varname: $ => choice(
-      $.array_name,
-    ),
+    array_ref: $ => seq('$', $.id, field('index', $._array_index)),
 
     variable_substitution: $ => seq(
       choice(
         seq('$', $.id),
-        $._array_ref,
         seq('$', '{', /[^}]+/, '}'),
+        $.array_ref,
       ),
     ),
 
