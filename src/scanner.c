@@ -54,11 +54,12 @@ bool tree_sitter_tcl_external_scanner_scan(void *payload, TSLexer *lexer,
   if (valid_symbols[ERROR]) {
       return false;
   }
-  if (valid_symbols[NS_DELIM]) {
-    return scan_ns_delim(lexer);
+  if (valid_symbols[NS_DELIM] && scan_ns_delim(lexer)) {
+    return true;
   }
 
   if (is_concat_valid(lexer, valid_symbols)) {
+    lexer->result_symbol = CONCAT;
     return true;
   }
 
