@@ -155,13 +155,20 @@ module.exports = grammar({
     ),
 
     // https://www.tcl.tk/man/tcl/TclCmd/foreach.htm
+    // This unfortunately can be quite sensitive to parse errors in the body
+    // causing the foreach to just start stuffing things into foreach_clauses
+    // as braced_word instead of trying to recover somehow.
     foreach: $ => seq("foreach",
       $.foreach_clauses,
       $.script,
     ),
 
     // Unhiding either of these causes a bad parse in some cases
-    foreach_clauses: $ => (repeat1($.foreach_clause)),
+    foreach_clauses: $ => repeat1($.foreach_clause),
+
+    // Should come up with an alternative to _word that better handle
+    // braced_words that will be interpreted as lists (so shouldn't be
+    // represented opaquely)
     foreach_clause: $ => seq($._word, $._word),
 
 
@@ -307,6 +314,15 @@ module.exports = grammar({
       $.concat,
     ),
 
+    _concat_word_array_index: $ => interleaved1(
+      choice(
+        $.escaped_character,
+        $.command_substitution,
+        $.variable_substitution,
+      ),
+      $.concat,
+    ),
+
     // bare words are a no-no inside of expr's
     _concat_word_expr: $ => interleaved1(
       choice(
@@ -330,18 +346,33 @@ module.exports = grammar({
     // scanner.c?
     // We want token.immediate so abc (xyz) isn't treated as an array, though.
     // How do we let functions in exprs take precedence? Why is this stealing precedence?
-    _array_index: $ => seq(token.immediate('('), $._concat_word, ')'),
+
+    // An array index can contain almost any non-whitespace.
+    // Unfortunately since whitespace is an extra we still allow it incorrectly.
+    // Just another thing for the scanner to handle :)
+    // Also arr(...$) is treat as a literal $ by Tcl whereas we throw an error
+    _array_index: $ => seq(
+      token.immediate('('),
+      repeat(choice($.array_index_word, $._concat_word_array_index)),
+      token.immediate(')'),
+    ),
 
     // cheating here a bit by restricting what an array name can be. If we want
-    // stuff like arr(a)(b) to work then will probably need to implement it in
-    // the scanner (along with removing the () exclusion from simple_word).
+    // stuff like arr(a)(b) or (a) (yes the array name can be empty) to work
+    // then will probably need to implement it in the scanner (along with
+    // removing the () exclusion from simple_word).
+    // Also might have to remove _array_index's token.immediate
     array_name: $ => seq($.simple_word, field('index', $._array_index)),
 
+    // Somehow this manages to parse $(abc) even though it shouldn't be able to.
+    // Improving it with optional($.id) means we lose the node altogether which
+    // I don't like (can't we have an empty node instead?)
     array_ref: $ => seq('$', $.id, field('index', $._array_index)),
 
     variable_substitution: $ => seq(
       choice(
         seq('$', $.id),
+        // Missing parsing of array ref in here
         seq('$', '{', /[^}]+/, '}'),
         $.array_ref,
       ),
@@ -506,6 +537,10 @@ module.exports = grammar({
     // should be a _word).
     // It can have almost anything in it I think (other than unmatched {})
     // FIXME: escaped braces
+    // This can cause problems when we get into an error state because it's so
+    // flexible, resulting in large chunks of code just becoming braced_word.
+    // Not sure how to get better error recovery without just removing this or
+    // making it match less.
     braced_word: $ => seq('{', repeat(choice($._nested_braces, $._braced_word_contents)), '}'),
 
 
@@ -519,7 +554,7 @@ module.exports = grammar({
     // https://github.com/tree-sitter/tree-sitter/issues/1087#issuecomment-833198651
     _quoted_word_content: _ => token(prec(-1, /[^$\\\[\]"]+/)),
 
-    command_substitution: $ => seq('[', $._command, ']'),
+    command_substitution: $ => seq('[', optional($._command), ']'),
 
     bool_literal: _ => token(prec.dynamic(-2, /(((t)r?)u?)e?|((((f)a?)l?)s?)e?|on|(of)f?|((y)e?)s?|(n)o?/i)),
 
@@ -528,11 +563,16 @@ module.exports = grammar({
 
     // I'd kind of like to remove () from the exclusion for matching array names,
     // but there are knock-on effects like degraded recognition of function calls in exprs
-    simple_word: _ => token(prec.dynamic(-1, /[^!$\s\\\[\]{}();"]+/)),
+    simple_word: _ => token(prec.dynamic(-1, /[^\s\\\[\]!${}();"]+/)),
 
     // Helps us out in exprs (though we're violating Tcl's fun "name everything
     // whatever you want" behavior)
     restricted_simple_word: _ => token(/[A-Za-z_][A-Za-z0-9_]*/),
+
+    // True barewords matching. Doesn't match $/[ because this is expected to be
+    // used alongside _concat_word. We also exclude ) as a hack because otherwise
+    // we can't recognize the end of an array reference.
+    array_index_word: _ => token(/[^\s\\\[$;)]+/),
   }
 
   });
