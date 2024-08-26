@@ -668,3 +668,27 @@ switch -glob aaab {
           (simple_word)))
       (simple_word)
       (script))))
+
+===
+Command substitution of full scripts
+===
+
+puts [
+p a
+rty; party
+]
+---
+
+(source_file
+  (command
+    (simple_word)
+    (script
+      (command_substitution
+        (command
+          (simple_word)
+          (script
+            (simple_word)))
+        (command
+          (simple_word))
+        (command
+          (simple_word))))))

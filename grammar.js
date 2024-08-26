@@ -214,12 +214,14 @@ module.exports = grammar({
     // scripts. We could call it maybe_script?
     script: $ => choice(
       $._concat_word,
-      seq("{", choice($._commands, repeat($._terminator)), "}"),
+      seq("{", optional($._script_body), "}"),
       // Broadly applicable quotes are really tough, need to ban them in
       // certain constructs or otherwise figure out how to deal with them
       // (custom lexing?)
       // seqnl('"', choice($._commands, repeat($._terminator)), '"'),
     ),
+
+    _script_body: $ => choice($._commands, repeat1($._terminator)),
 
     global: $ => seq("global", repeat($._word)),
 
@@ -554,7 +556,7 @@ module.exports = grammar({
     // https://github.com/tree-sitter/tree-sitter/issues/1087#issuecomment-833198651
     _quoted_word_content: _ => token(prec(-1, /[^$\\\[\]"]+/)),
 
-    command_substitution: $ => seq('[', optional($._command), ']'),
+    command_substitution: $ => seq('[', optional($._script_body), ']'),
 
     bool_literal: _ => token(prec.dynamic(-2, /(((t)r?)u?)e?|((((f)a?)l?)s?)e?|on|(of)f?|((y)e?)s?|(n)o?/i)),
 

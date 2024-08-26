@@ -26,4 +26,6 @@ Errors that are really errors
 set a([) 1
 # This is the only whitespace we correctly error on
 set a(a ) 1
+# Semicolon still ends the statement
+set a(;) 1
 ---
