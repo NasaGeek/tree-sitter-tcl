@@ -836,55 +836,28 @@
       ]
     },
     "_concat_word_array_index": {
-      "type": "SEQ",
-      "members": [
-        {
-          "type": "CHOICE",
-          "members": [
-            {
-              "type": "SYMBOL",
-              "name": "escaped_character"
-            },
-            {
-              "type": "SYMBOL",
-              "name": "command_substitution"
-            },
-            {
-              "type": "SYMBOL",
-              "name": "variable_substitution"
-            }
-          ]
-        },
-        {
-          "type": "REPEAT",
-          "content": {
-            "type": "SEQ",
-            "members": [
-              {
-                "type": "SYMBOL",
-                "name": "concat"
-              },
-              {
-                "type": "CHOICE",
-                "members": [
-                  {
-                    "type": "SYMBOL",
-                    "name": "escaped_character"
-                  },
-                  {
-                    "type": "SYMBOL",
-                    "name": "command_substitution"
-                  },
-                  {
-                    "type": "SYMBOL",
-                    "name": "variable_substitution"
-                  }
-                ]
-              }
-            ]
+      "type": "REPEAT1",
+      "content": {
+        "type": "CHOICE",
+        "members": [
+          {
+            "type": "SYMBOL",
+            "name": "escaped_character"
+          },
+          {
+            "type": "SYMBOL",
+            "name": "command_substitution"
+          },
+          {
+            "type": "SYMBOL",
+            "name": "variable_substitution"
+          },
+          {
+            "type": "SYMBOL",
+            "name": "array_index_word"
           }
-        }
-      ]
+        ]
+      }
     },
     "_concat_word_expr": {
       "type": "SEQ",
@@ -1005,20 +978,16 @@
           }
         },
         {
-          "type": "REPEAT",
-          "content": {
-            "type": "CHOICE",
-            "members": [
-              {
-                "type": "SYMBOL",
-                "name": "array_index_word"
-              },
-              {
-                "type": "SYMBOL",
-                "name": "_concat_word_array_index"
-              }
-            ]
-          }
+          "type": "CHOICE",
+          "members": [
+            {
+              "type": "SYMBOL",
+              "name": "_concat_word_array_index"
+            },
+            {
+              "type": "BLANK"
+            }
+          ]
         },
         {
           "type": "IMMEDIATE_TOKEN",

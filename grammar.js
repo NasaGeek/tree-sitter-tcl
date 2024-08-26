@@ -314,13 +314,13 @@ module.exports = grammar({
       $.concat,
     ),
 
-    _concat_word_array_index: $ => interleaved1(
+    _concat_word_array_index: $ => repeat1(
       choice(
         $.escaped_character,
         $.command_substitution,
         $.variable_substitution,
+        $.array_index_word,
       ),
-      $.concat,
     ),
 
     // bare words are a no-no inside of expr's
@@ -353,7 +353,7 @@ module.exports = grammar({
     // Also arr(...$) is treat as a literal $ by Tcl whereas we throw an error
     _array_index: $ => seq(
       token.immediate('('),
-      repeat(choice($.array_index_word, $._concat_word_array_index)),
+      optional($._concat_word_array_index),
       token.immediate(')'),
     ),
 
