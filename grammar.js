@@ -4,7 +4,10 @@
 // poor bareword (simple_word) special character handling
 //  not sure this is worth fixing; just quote your stuff!
 // unbraced exprs and switches unsupported
+//  This has come up a few times in real code but only with single-arg exprs
 // exprs generally need whitespace between operators/operands
+//  In reality this doesn't come up much because it only affects expression with
+//  a bunch of literals
 
 const PREC = {
   unary        : 150,
@@ -574,7 +577,8 @@ module.exports = grammar({
     // True barewords matching. Doesn't match $/[ because this is expected to be
     // used alongside _concat_word. We also exclude ) as a hack because otherwise
     // we can't recognize the end of an array reference.
-    array_index_word: _ => token(/[^\s\\\[$;)]+/),
+    // And as yet another hack we have ( to allow for nested array accesses.
+    array_index_word: _ => token(/[^\s\\\[$;()]+/),
   }
 
   });

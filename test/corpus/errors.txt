@@ -17,6 +17,9 @@ set arr($) 0
 # Empty array name is valid
 set (a) 0
 puts $(a)
+# Broke for the sake of nested array acceses
+set $arr(()
+set arr(() 0
 
 --------------------------------------------------------------------------------
 ===

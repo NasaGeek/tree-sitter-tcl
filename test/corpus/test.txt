@@ -231,20 +231,15 @@ set arr(my) 0
 set arr(a,b) 0
 set arr(}) 0
 set arr({) 0
-set arr(() 0
 set arr(]) 0
 set arr() 0
 set arr(") 0
 set arr(${f}_f) 0
+set arr($arr(a)) 0
 
 --------------------------------------------------------------------------------
 
 (source_file
-  (set
-    (array_name
-      (simple_word)
-      (array_index_word))
-    (simple_word))
   (set
     (array_name
       (simple_word)
@@ -284,6 +279,14 @@ set arr(${f}_f) 0
       (simple_word)
       (variable_substitution)
       (array_index_word))
+    (simple_word))
+  (set
+    (array_name
+      (simple_word)
+      (variable_substitution
+        (array_ref
+          (id)
+          (array_index_word))))
     (simple_word)))
 
 ================================================================================
@@ -297,11 +300,11 @@ puts $a(a,b)
 puts $j($a,$b)
 set $arr(})
 set $arr({)
-set $arr(()
 set $arr(])
 set $arr()
 set $arr(")
 set $arr(${f}_f)
+set $arr($arr(a))
 
 --------------------------------------------------------------------------------
 
@@ -360,11 +363,6 @@ set $arr(${f}_f)
   (set
     (variable_substitution
       (array_ref
-        (id)
-        (array_index_word))))
-  (set
-    (variable_substitution
-      (array_ref
         (id))))
   (set
     (variable_substitution
@@ -376,7 +374,15 @@ set $arr(${f}_f)
       (array_ref
         (id)
         (variable_substitution)
-        (array_index_word)))))
+        (array_index_word))))
+  (set
+    (variable_substitution
+      (array_ref
+        (id)
+        (variable_substitution
+          (array_ref
+            (id)
+            (array_index_word)))))))
 
 ================================================================================
 Namespaced vars
