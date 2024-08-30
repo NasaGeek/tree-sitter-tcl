@@ -148,10 +148,11 @@ module.exports = grammar({
         field("name", alias("string", $.simple_word)),
         field("arguments",
           choice(
-            // This acts as an identity function. We can use it in code as an escape
-            // hatch when we don't want something interpreted as a $.script
-            seq(alias("cat", $.simple_word), repeat($._word)),
-            $._word_eval_list,
+            // This acts as an identity function. We can use it in code to force
+            // interpretation of an arg as a $.script. I know, clunky. Not my
+            // favorite solution to all this but it's all I've got.
+            seq(alias("cat", $.simple_word), optional($._word_eval_list)),
+            $._word_list,
           ),
         ),
       ),
@@ -246,7 +247,7 @@ module.exports = grammar({
 
     _namespace_subcommand: $ => choice(
       seq("eval", $._word_eval_list),
-      $._word_eval_list,
+      $._word_list,
     ),
 
     try: $ => seq(
@@ -282,7 +283,7 @@ module.exports = grammar({
     // commands are just _word's, okay
     command: $ => seq(
       field('name', $._word),
-      optional(field('arguments', $._word_eval_list)),
+      optional(field('arguments', $._word_list)),
     ),
 
     _word_eval_list: $ => repeat1($._word_eval),
@@ -295,6 +296,8 @@ module.exports = grammar({
       optional($.unpack),
       $.script,
     ),
+
+    _word_list: $ => repeat1($._word),
 
     // A word that we know for sure will never be evaluated as code (basically
     // only for use in builtins where the behavior is known)

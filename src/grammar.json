@@ -229,17 +229,22 @@
                     "value": "simple_word"
                   },
                   {
-                    "type": "REPEAT",
-                    "content": {
-                      "type": "SYMBOL",
-                      "name": "_word"
-                    }
+                    "type": "CHOICE",
+                    "members": [
+                      {
+                        "type": "SYMBOL",
+                        "name": "_word_eval_list"
+                      },
+                      {
+                        "type": "BLANK"
+                      }
+                    ]
                   }
                 ]
               },
               {
                 "type": "SYMBOL",
-                "name": "_word_eval_list"
+                "name": "_word_list"
               }
             ]
           }
@@ -608,7 +613,7 @@
         },
         {
           "type": "SYMBOL",
-          "name": "_word_eval_list"
+          "name": "_word_list"
         }
       ]
     },
@@ -761,7 +766,7 @@
               "name": "arguments",
               "content": {
                 "type": "SYMBOL",
-                "name": "_word_eval_list"
+                "name": "_word_list"
               }
             },
             {
@@ -802,6 +807,13 @@
           "name": "script"
         }
       ]
+    },
+    "_word_list": {
+      "type": "REPEAT1",
+      "content": {
+        "type": "SYMBOL",
+        "name": "_word"
+      }
     },
     "_word": {
       "type": "SEQ",

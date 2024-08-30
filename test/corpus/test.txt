@@ -11,8 +11,7 @@ set hi "heelo"
 (source_file
   (command
     (simple_word)
-    (script
-      (quoted_word)))
+    (quoted_word))
   (set
     (simple_word)
     (quoted_word)))
@@ -28,12 +27,9 @@ join , - -flag
 (source_file
   (command
     (simple_word)
-    (script
-      (simple_word))
-    (script
-      (simple_word))
-    (script
-      (simple_word))))
+    (simple_word)
+    (simple_word)
+    (simple_word)))
 
 ================================================================================
 Procedures
@@ -57,15 +53,13 @@ proc foo {arg1 arg2} {
     (script
       (command
         (simple_word)
-        (script
-          (quoted_word)))
+        (quoted_word))
       (command
         (simple_word)
-        (script
-          (quoted_word
-            (variable_substitution
-              (id))
-            (escaped_character)))))))
+        (quoted_word
+          (variable_substitution
+            (id))
+          (escaped_character))))))
 
 ================================================================================
 Comments
@@ -97,9 +91,8 @@ foreach a {1 2 3 4 5} {
     (script
       (command
         (simple_word)
-        (script
-          (variable_substitution
-            (id)))))))
+        (variable_substitution
+          (id))))))
 
 ================================================================================
 Foreach multi
@@ -120,9 +113,8 @@ foreach {a b} {1 2 4 5} {
     (script
       (command
         (simple_word)
-        (script
-          (variable_substitution
-            (id)))))))
+        (variable_substitution
+          (id))))))
 
 ================================================================================
 Foreach multimulti
@@ -146,9 +138,8 @@ foreach a {1 2 4 5} b {6 7 8 9} {
     (script
       (command
         (simple_word)
-        (script
-          (variable_substitution
-            (id)))))))
+        (variable_substitution
+          (id))))))
 
 ================================================================================
 Conditionals
@@ -171,22 +162,19 @@ if 1 then {
     (script
       (command
         (simple_word)
-        (script
-          (simple_word))))
+        (simple_word)))
     (elseif
       (expr
         (bool_literal))
       (script
         (command
           (simple_word)
-          (script
-            (simple_word)))))
+          (simple_word))))
     (else
       (script
         (command
           (simple_word)
-          (script
-            (simple_word)))))))
+          (simple_word))))))
 
 ================================================================================
 Command substitution
@@ -199,12 +187,10 @@ echo [echo hello]
 (source_file
   (command
     (simple_word)
-    (script
-      (command_substitution
-        (command
-          (simple_word)
-          (script
-            (simple_word)))))))
+    (command_substitution
+      (command
+        (simple_word)
+        (simple_word)))))
 
 ================================================================================
 Escaped string
@@ -217,11 +203,10 @@ echo "word$hi \$bye word"
 (source_file
   (command
     (simple_word)
-    (script
-      (quoted_word
-        (variable_substitution
-          (id))
-        (escaped_character)))))
+    (quoted_word
+      (variable_substitution
+        (id))
+      (escaped_character))))
 
 ================================================================================
 Array set
@@ -311,40 +296,36 @@ set $arr($arr(a))
 (source_file
   (command
     (simple_word)
-    (script
-      (variable_substitution
-        (array_ref
-          (id)
-          (array_index_word)))))
+    (variable_substitution
+      (array_ref
+        (id)
+        (array_index_word))))
   (command
     (simple_word)
-    (script
-      (variable_substitution
-        (array_ref
-          (id)
-          (variable_substitution
-            (id))
-          (variable_substitution
-            (id))))))
+    (variable_substitution
+      (array_ref
+        (id)
+        (variable_substitution
+          (id))
+        (variable_substitution
+          (id)))))
   (comment)
   (command
     (simple_word)
-    (script
-      (variable_substitution
-        (array_ref
-          (id)
-          (array_index_word)))))
+    (variable_substitution
+      (array_ref
+        (id)
+        (array_index_word))))
   (command
     (simple_word)
-    (script
-      (variable_substitution
-        (array_ref
-          (id)
-          (variable_substitution
-            (id))
-          (array_index_word)
-          (variable_substitution
-            (id))))))
+    (variable_substitution
+      (array_ref
+        (id)
+        (variable_substitution
+          (id))
+        (array_index_word)
+        (variable_substitution
+          (id)))))
   (set
     (variable_substitution
       (array_ref
@@ -399,14 +380,12 @@ lassign [list 1] ::ns::var(key)
 (source_file
   (command
     (simple_word)
-    (script
-      (variable_substitution
-        (id))))
+    (variable_substitution
+      (id)))
   (command
     (simple_word)
-    (script
-      (variable_substitution
-        (id))))
+    (variable_substitution
+      (id)))
   (set
     (simple_word)
     (simple_word))
@@ -415,16 +394,13 @@ lassign [list 1] ::ns::var(key)
     (simple_word))
   (command
     (simple_word)
-    (script
-      (command_substitution
-        (command
-          (simple_word)
-          (script
-            (simple_word)))))
-    (script
-      (array_name
+    (command_substitution
+      (command
         (simple_word)
-        (array_index_word)))))
+        (simple_word)))
+    (array_name
+      (simple_word)
+      (array_index_word))))
 
 ================================================================================
 Exprs
@@ -475,8 +451,7 @@ expr { spaceyfunc   ( "yes", [this], {works} ) }
         (command_substitution
           (command
             (simple_word)
-            (script
-              (simple_word)))))))
+            (simple_word))))))
   (expr_cmd
     (expr
       (binop_expr
@@ -492,10 +467,9 @@ expr { spaceyfunc   ( "yes", [this], {works} ) }
         (command_substitution
           (command
             (simple_word)
-            (script
-              (array_name
-                (simple_word)
-                (array_index_word))))))))
+            (array_name
+              (simple_word)
+              (array_index_word)))))))
   (expr_cmd
     (expr
       (binop_expr
@@ -554,8 +528,7 @@ while f {}
     (script
       (command
         (simple_word)
-        (script
-          (quoted_word)))))
+        (quoted_word))))
   (while
     (expr
       (simple_word))
@@ -579,16 +552,14 @@ try { some code
     (script
       (command
         (simple_word)
-        (script
-          (simple_word))))
+        (simple_word)))
     (braced_word)
     (script)
     (braced_word)
     (script
       (command
         (simple_word)
-        (script
-          (quoted_word))))
+        (quoted_word)))
     (braced_word)
     (braced_word)
     (script)
@@ -621,14 +592,12 @@ for {set a 0} {$a < 10} {} {
     (script
       (command
         (simple_word)
-        (script
-          (simple_word))))
+        (simple_word)))
     (script
       (command
         (simple_word)
-        (script
-          (variable_substitution
-            (id))))))
+        (variable_substitution
+          (id)))))
   (for
     (script
       (set
@@ -688,16 +657,14 @@ rty; party
 (source_file
   (command
     (simple_word)
-    (script
-      (command_substitution
-        (command
-          (simple_word)
-          (script
-            (simple_word)))
-        (command
-          (simple_word))
-        (command
-          (simple_word))))))
+    (command_substitution
+      (command
+        (simple_word)
+        (simple_word))
+      (command
+        (simple_word))
+      (command
+        (simple_word)))))
 
 =======
 Variable substitution characters
@@ -711,19 +678,16 @@ puts [func]1
 (source_file
   (command
     (simple_word)
-    (script
-      (variable_substitution
-        (id))))
+    (variable_substitution
+      (id)))
   (command
     (simple_word)
-    (script
-      (variable_substitution
-        (id))))
+    (variable_substitution
+      (id)))
   (command
     (simple_word)
-    (script
-      (command_substitution
-        (command
-          (simple_word)))
-      (concat)
-      (simple_word))))
+    (command_substitution
+      (command
+        (simple_word)))
+    (concat)
+    (simple_word)))
