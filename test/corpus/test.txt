@@ -698,3 +698,32 @@ rty; party
           (simple_word))
         (command
           (simple_word))))))
+
+=======
+Variable substitution characters
+=======
+
+puts $::2::1
+puts $_::_
+puts [func]1
+---
+
+(source_file
+  (command
+    (simple_word)
+    (script
+      (variable_substitution
+        (id))))
+  (command
+    (simple_word)
+    (script
+      (variable_substitution
+        (id))))
+  (command
+    (simple_word)
+    (script
+      (command_substitution
+        (command
+          (simple_word)))
+      (concat)
+      (simple_word))))

@@ -32,25 +32,16 @@ static bool myprintf(const char *format, ...) {
     return 1;
 }
 
-static bool is_eof(TSLexer *lexer) {
-  return lexer->lookahead == 0;
+static bool is_bare_word(int32_t chr) {
+    return iswalnum(chr) || chr == '_';
 }
 
 static bool is_concat_valid(TSLexer *lexer, const bool *valid_symbols) {
   return valid_symbols[CONCAT] && (
-    iswalpha(lexer->lookahead) ||
+    is_bare_word(lexer->lookahead) ||
     lexer->lookahead == '$' ||
-    lexer->lookahead == '[' ||
-    lexer->lookahead == '_'
+    lexer->lookahead == '['
   );
-  // return valid_symbols[CONCAT] && !(
-  //         is_eof(lexer) ||
-  //         iswspace(lexer->lookahead) ||
-  //         lexer->lookahead == ']' ||
-  //         lexer->lookahead == '$' ||
-  //         lexer->lookahead == ')' ||
-  //         lexer->lookahead == '}'
-  //         );
 }
 
 static bool scan_ns_delim(TSLexer *lexer) {
@@ -58,7 +49,7 @@ static bool scan_ns_delim(TSLexer *lexer) {
     lexer->advance(lexer, false);
     if (lexer->lookahead == ':') {
       lexer->advance(lexer, false);
-      if (iswalpha(lexer->lookahead)) {
+      if (is_bare_word(lexer->lookahead)) {
         lexer->result_symbol = NS_DELIM;
         return true;
       }

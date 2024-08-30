@@ -341,7 +341,7 @@ module.exports = grammar({
 
     // Specifically (only?) useful for variable substitution due to
     // token.immediate
-    _ident: _ => token.immediate(/[a-zA-Z_][a-zA-Z0-9_]*/),
+    _ident: _ => token.immediate(/[a-zA-Z0-9_]+/),
 
     id: $ => seq(optional($._ns_delim), interleaved1($._ident, $._ns_delim)),
 
