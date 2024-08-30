@@ -182,6 +182,67 @@
         {
           "type": "SYMBOL",
           "name": "catch"
+        },
+        {
+          "type": "ALIAS",
+          "content": {
+            "type": "SYMBOL",
+            "name": "string_cmd"
+          },
+          "named": true,
+          "value": "command"
+        }
+      ]
+    },
+    "string_cmd": {
+      "type": "SEQ",
+      "members": [
+        {
+          "type": "FIELD",
+          "name": "name",
+          "content": {
+            "type": "ALIAS",
+            "content": {
+              "type": "STRING",
+              "value": "string"
+            },
+            "named": true,
+            "value": "simple_word"
+          }
+        },
+        {
+          "type": "FIELD",
+          "name": "arguments",
+          "content": {
+            "type": "CHOICE",
+            "members": [
+              {
+                "type": "SEQ",
+                "members": [
+                  {
+                    "type": "ALIAS",
+                    "content": {
+                      "type": "STRING",
+                      "value": "cat"
+                    },
+                    "named": true,
+                    "value": "simple_word"
+                  },
+                  {
+                    "type": "REPEAT",
+                    "content": {
+                      "type": "SYMBOL",
+                      "name": "_word"
+                    }
+                  }
+                ]
+              },
+              {
+                "type": "SYMBOL",
+                "name": "_word_eval_list"
+              }
+            ]
+          }
         }
       ]
     },

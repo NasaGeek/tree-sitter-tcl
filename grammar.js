@@ -141,7 +141,20 @@ module.exports = grammar({
       $.expr_cmd,
       $.while,
       $.catch,
+      alias($.string_cmd, $.command),
     ),
+
+    string_cmd: $ => seq(
+        field("name", alias("string", $.simple_word)),
+        field("arguments",
+          choice(
+            // This acts as an identity function. We can use it in code as an escape
+            // hatch when we don't want something interpreted as a $.script
+            seq(alias("cat", $.simple_word), repeat($._word)),
+            $._word_eval_list,
+          ),
+        ),
+      ),
 
     while: $ => seq('while', $.expr, $.script),
 
@@ -215,6 +228,7 @@ module.exports = grammar({
     // surrounded by "", {}, or nothing (though in the nothing case it must not have whitespace)
     // Name is slighty awkward, since we don't _know_ things will be eval'ed as
     // scripts. We could call it maybe_script?
+    // Also consider hiding this, it's just a wrapper.
     script: $ => choice(
       $._concat_word,
       seq("{", optional($._script_body), "}"),
