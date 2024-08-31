@@ -812,3 +812,24 @@ puts {this is not a script}
   (command
     (simple_word)
     (braced_word)))
+
+===
+Escapes in bare words
+===
+this\cmd
+this\$cmd
+---
+
+(source_file
+  (command
+    (simple_word)
+    (concat)
+    (escaped_character)
+    (concat)
+    (simple_word))
+  (command
+    (simple_word)
+    (concat)
+    (escaped_character)
+    (concat)
+    (simple_word)))

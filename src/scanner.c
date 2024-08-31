@@ -40,7 +40,8 @@ static bool is_concat_valid(TSLexer *lexer, const bool *valid_symbols) {
   return valid_symbols[CONCAT] && (
     is_bare_word(lexer->lookahead) ||
     lexer->lookahead == '$' ||
-    lexer->lookahead == '['
+    lexer->lookahead == '[' ||
+    lexer->lookahead == '\\'
   );
 }
 
