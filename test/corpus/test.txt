@@ -691,3 +691,61 @@ puts [func]1
         (simple_word)))
     (concat)
     (simple_word)))
+
+================================================================================
+Exprs with newlines
+================================================================================
+
+expr {1
++ 1
+}
+expr {3. /
+4e-4}
+expr {
+  t
+eq tr}
+expr { nan - (
+1
+)}
+expr { arr
+(f,t) eq arr(
+123
+,
+456)
+}
+--------------------------------------------------------------------------------
+
+(source_file
+  (expr_cmd
+    (expr
+      (binop_expr
+        (int_literal)
+        (int_literal))))
+  (expr_cmd
+    (expr
+      (binop_expr
+        (float_literal)
+        (float_literal))))
+  (expr_cmd
+    (expr
+      (binop_expr
+        (bool_literal)
+        (bool_literal))))
+  (expr_cmd
+    (expr
+      (binop_expr
+        (float_literal)
+        (int_literal))))
+  (expr_cmd
+    (expr
+      (binop_expr
+        (func_call
+          (restricted_simple_word)
+          (func_args
+            (bool_literal)
+            (bool_literal)))
+        (func_call
+          (restricted_simple_word)
+          (func_args
+            (int_literal)
+            (int_literal)))))))
