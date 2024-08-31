@@ -1,34 +1,132 @@
 ================================================================================
-Errors that should actually work
+Parser deficiency: If multi-arg expr, we don't support braces
 :error
 ================================================================================
-# Valid (but I wouldn't say idiomatic) Tcl that we can't parse.
-expr 1 + 1
 expr 1 {+} 1
-expr {1+1}
+---
+
+================================================================================
+Parser deficiency: Poor array name parsing, inner )(
+:error
+================================================================================
 set(a)(b) 1
+---
+
+================================================================================
+Parser deficiency: Poor array name variabe expansion parsing, trailing )
+:error
+================================================================================
 # Tcl treats the last ) as a literal char
 puts $arr())
+---
+
+================================================================================
+Parser deficiency: Poor array name parsing, trailing )
+:error
+================================================================================
 # Tcl treats the first ) as a literal char
 set arr()) 0
+---
+
+===
+Parser deficiency: Poor array name parsing, trailing $
+:error
+===
+# Tcl treats $ at the end as a lteral char
+set arr($) 0
+---
+
+===
+Parser deficiency: Poor array name variable expansion parsing, trailing $
+:error
+===
 # Tcl treats $ at the end as a lteral char
 set $arr($)
-set arr($) 0
+---
+
+===
+Parser deficiency: Poor array name parsing, empty name
+:error
+===
 # Empty array name is valid
 set (a) 0
+---
+
+===
+Parser deficiency: Poor array name variable expansion parsing, empty name
+:error
+===
+# Empty array name is valid
 puts $(a)
-# Broke for the sake of nested array acceses
+---
+
+===
+Parser deficiency: Poor array name variable expansion parsing, leading (
+:error
+===
+# Broke this for the sake of nested array acceses
 set $arr(()
+---
+
+===
+Parser deficiency: Poor array name parsing, leading (
+:error
+===
+# Broke this for the sake of nested array acceses
 set arr(() 0
+---
+
+===
+Parser deficiency: Full unbraced expressions for while/for/if
+:error
+===
+# Maybe one day can support this.
+while 1+1 {}
 
 --------------------------------------------------------------------------------
+
 ===
-Errors that are really errors
+Real error: [ in array index
 :error
 ===
 set a([) 1
+---
+
+===
+Real error: trailing whitespace in array index
+:error
+===
 # This is the only whitespace we correctly error on
 set a(a ) 1
+---
+
+===
+Real error: semicolon in array index
+:error
+===
 # Semicolon still ends the statement
 set a(;) 1
+---
+
+===
+Real error: multi-word expr for while
+:error
+===
+while 1 + 1 {}
+---
+
+===
+Real error: unexpected newline in expr +
+:error
+===
+expr 1 +
+1
+---
+
+===
+Real error: unexpected newline in expr func_call
+:error
+===
+expr 2func(1,
+2)
 ---

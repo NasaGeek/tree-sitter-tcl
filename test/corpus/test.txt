@@ -158,7 +158,7 @@ if 1 then {
 (source_file
   (conditional
     (expr
-      (simple_word))
+      (int_literal))
     (script
       (command
         (simple_word)
@@ -531,7 +531,7 @@ while f {}
         (quoted_word))))
   (while
     (expr
-      (simple_word))
+      (bool_literal))
     (script)))
 
 ================================================================================
@@ -749,3 +749,66 @@ expr { arr
           (func_args
             (int_literal)
             (int_literal)))))))
+
+================================================================================
+Braceless exprs
+================================================================================
+
+expr 1+1
+expr 1
+expr 3./4e-4
+expr t==f
+expr func(1,2)
+----
+
+(source_file
+  (expr_cmd
+    (expr
+      (binop_expr
+        (int_literal)
+        (int_literal))))
+  (expr_cmd
+    (expr
+      (int_literal)))
+  (expr_cmd
+    (expr
+      (binop_expr
+        (float_literal)
+        (float_literal))))
+  (expr_cmd
+    (expr
+      (binop_expr
+        (bool_literal)
+        (bool_literal))))
+  (expr_cmd
+    (expr
+      (func_call
+        (restricted_simple_word)
+        (func_args
+          (int_literal)
+          (int_literal))))))
+
+===
+Force eval as script
+===
+
+puts [string cat {this is a script}]
+puts {this is not a script}
+---
+
+(source_file
+  (command
+    (simple_word)
+    (command_substitution
+      (command
+        (simple_word)
+        (simple_word)
+        (script
+          (command
+            (simple_word)
+            (simple_word)
+            (simple_word)
+            (simple_word))))))
+  (command
+    (simple_word)
+    (braced_word)))

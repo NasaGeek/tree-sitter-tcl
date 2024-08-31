@@ -552,10 +552,6 @@
       "required": true,
       "types": [
         {
-          "type": "array_name",
-          "named": true
-        },
-        {
           "type": "binop_expr",
           "named": true
         },
@@ -593,10 +589,6 @@
         },
         {
           "type": "quoted_word",
-          "named": true
-        },
-        {
-          "type": "simple_word",
           "named": true
         },
         {

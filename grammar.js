@@ -28,8 +28,93 @@ const PREC = {
   comma        :  5,
 }
 
+
+
+const expr_seq = (seqfn, suffix) => {
+  // Enables the creation of multiple "subtrees" of the grammar, one supporting
+  // exprs with newlines basically everywhere, and the other supporting only
+  // the usual extras (enabling exprs inside and outside {})
+  const _expr = "_expr"+suffix;
+  const unary_expr = "unary_expr"+suffix;
+  const binop_expr = "binop_expr"+suffix;
+  const func_call = "func_call"+suffix;
+  const func_args = "func_args"+suffix;
+  const ternary_expr = "ternary_expr"+suffix;
+
+  return {
+    // expr in general is such a spin on Tcl's usual syntax that it's quite
+    // difficult to support well alongside many of Tcl's other idiosyncracies.
+    [_expr]: $ => choice(
+      seqfn("(", $[_expr], ")"),
+      alias($[unary_expr], $.unary_expr),
+      alias($[binop_expr], $.binop_expr),
+      alias($[ternary_expr], $.ternary_expr),
+      alias($[func_call], $.func_call),
+      $.braced_word,
+      $._non_seq_expr,
+    ),
+
+    // Splitting out expr elements that don't use seq so I can reuse this
+    // for both expr-based and non-expr-based expressions.
+    _non_seq_expr: $ => choice(
+      $.int_literal,
+      $.float_literal,
+      $.bool_literal,
+      $._concat_word_expr,
+    ),
+
+    [func_call]: $ => seqfn(
+        field("name", $.restricted_simple_word),
+        "(",
+        field("args", optional(alias($[func_args], $.func_args))),
+        ")"
+      ),
+
+    [func_args]: $ => prec.left(interleaved_seq1($[_expr], ",", seqfn)),
+
+    [unary_expr]: $ => prec.left(PREC.unary, seqfn(choice("-", "+", "~", "!"), $[_expr])),
+
+    [binop_expr]: $ => choice(
+      prec.left(PREC.exp,          seqfn($[_expr], "**",  $[_expr])),
+
+      prec.left(PREC.muldiv,       seqfn($[_expr], "/",  $[_expr])),
+      prec.left(PREC.muldiv,       seqfn($[_expr], "*",  $[_expr])),
+      prec.left(PREC.muldiv,       seqfn($[_expr], "%",  $[_expr])),
+      prec.left(PREC.addsub,       seqfn($[_expr], "+",  $[_expr])),
+      prec.left(PREC.addsub,       seqfn($[_expr], "-",  $[_expr])),
+
+      prec.left(PREC.shift,        seqfn($[_expr], "<<", $[_expr])),
+      prec.left(PREC.shift,        seqfn($[_expr], ">>", $[_expr])),
+
+      prec.left(PREC.compare,      seqfn($[_expr], ">",  $[_expr])),
+      prec.left(PREC.compare,      seqfn($[_expr], "<",  $[_expr])),
+      prec.left(PREC.compare,      seqfn($[_expr], ">=", $[_expr])),
+      prec.left(PREC.compare,      seqfn($[_expr], "<=", $[_expr])),
+
+      prec.left(PREC.equal_bool,   seqfn($[_expr], "==", $[_expr])),
+      prec.left(PREC.equal_bool,   seqfn($[_expr], "!=", $[_expr])),
+
+      prec.left(PREC.equal_string, seqfn($[_expr], "eq", $[_expr])),
+      prec.left(PREC.equal_string, seqfn($[_expr], "ne", $[_expr])),
+
+      prec.left(PREC.contain,      seqfn($[_expr], "in", $._word)),
+      prec.left(PREC.contain,      seqfn($[_expr], "ni", $._word)),
+
+      prec.left(PREC.and_bit,      seqfn($[_expr], "&", $[_expr])),
+      prec.left(PREC.xor_bit,      seqfn($[_expr], "^", $[_expr])),
+      prec.left(PREC.or_bit,       seqfn($[_expr], "|", $[_expr])),
+
+      prec.left(PREC.and_logical,  seqfn($[_expr], "&&", $[_expr])),
+      prec.left(PREC.or_logical,   seqfn($[_expr], "||", $[_expr])),
+    ),
+
+    [ternary_expr]: $ => prec.left(PREC.ternary, seqfn($[_expr], '?', $[_expr], ':', $[_expr])),
+  }
+}
+
+
 const interleaved1 = (rule, delim) => seq(rule, repeat(seq(delim, rule)))
-const interleavednl1 = (rule, delim) => seqnl(rule, repeat(seqnl(delim, rule)))
+const interleaved_seq1 = (rule, delim, seqfn) => seqnl(rule, repeat(seqfn(delim, rule)))
 
 // Helper for rules within which newlines are irrelevant (essentially adding
 // them as faux-extras).
@@ -99,14 +184,11 @@ module.exports = grammar({
   ],
 
   conflicts: $ => [
-    // The func ones cause the absolute strangest errors when removed. It's
-    // somehow related to allowing arbitrary newlines between things.
-    [$.func_call],
-    [$.func_args],
-
-    [$.foreach_clauses],
-    [$.binop_expr, $.ternary_expr],
     [$.switch_body],
+    [$.foreach_clauses],
+
+    [$.binop_expr_nl, $.ternary_expr_nl],
+    [$.func_call_nl],
   ],
 
   rules: {
@@ -159,7 +241,7 @@ module.exports = grammar({
 
     while: $ => seq('while', $.expr, $.script),
 
-    expr_cmd: $ => seq('expr', $.expr),
+    expr_cmd: $ => seq('expr', alias($.expr_cmd_expr, $.expr)),
 
     regexp: $ => seq('regexp', repeat1($._word)),
     regsub: $ => seq('regsub', repeat1($._word)),
@@ -401,7 +483,6 @@ module.exports = grammar({
     ),
 
     set: $ => seq("set",
-      // TODO: Change this up for arrays
       $._word,
       optional($._word)),
 
@@ -432,85 +513,25 @@ module.exports = grammar({
     // literally. Really should just allow roughly anything (close to braced_word)
     _argument_word: $ => choice($.simple_word, $.quoted_word, $.braced_word),
 
-    // FIXME: errors out on certain braced expressions without spaces between
-    // operators/operands due to simple_words allowing operators within them.
-    // Gotta do something about the function call support here or adjust
-    // simple_word.
-    //
-    // expr in general is such a spin on Tcl's usual syntax that it's quite
-    // difficult to support well alongside many of Tcl's other idiosyncracies.
-    _expr: $ => choice(
-      seqnl("(", $._expr, ")"),
-      $.int_literal,
-      $.float_literal,
-      $.bool_literal,
-      $.unary_expr,
-      $.binop_expr,
-      $.ternary_expr,
-      $._concat_word_expr,
-      $.func_call,
-      $.braced_word,
-    ),
 
+    // This is specifically used for expressions that aren't `expr`, since
+    // everywhere else requires it to be one word. This is also intentionally
+    // restricted to match a subset of unbraced valid expressions due to the
+    // current $._expr approach allowing arbitrary whitespace. If people want
+    // max flexibility, just wrap in {}
     expr: $ => choice(
-      // prec disambiguates from braced_word
-      seqnl(token(prec(1, '{')), $._expr, '}'),
-      // Might be easier to support some subset of expr's when unbraced (e.g.
-      // _concat_word and some literals). I've got way too much newline going
-      // on in _expr to be able to handle them fully. Besides, it's bad practice.
-      // I probably need to at least support single-arg expr's though.
-      // $._expr,
-      // Not delighted with this since it produces simple_words in some cases
-      // rather than more specific literals.
-      $._concat_word,
+      seqnl(token(prec(1, '{')), $._expr_nl, '}'),
+      $._non_seq_expr,
     ),
 
-    func_call: $ => seqnl(
-        field("name", $.restricted_simple_word),
-        "(",
-        field("args", optional($.func_args)),
-        ")"
-      ),
+    // prec disambiguates from braced_word
+    expr_cmd_expr: $ => (choice(
+      seqnl(token(prec(1, '{')), $._expr_nl, '}'),
+      $._expr,
+    )),
 
-    func_args: $ => interleavednl1($._expr, ","),
-
-    unary_expr: $ => prec.left(PREC.unary, seqnl(choice("-", "+", "~", "!"), $._expr)),
-
-    binop_expr: $ => choice(
-      prec.left(PREC.exp,          seqnl($._expr, "**",  $._expr)),
-
-      prec.left(PREC.muldiv,       seqnl($._expr, "/",  $._expr)),
-      prec.left(PREC.muldiv,       seqnl($._expr, "*",  $._expr)),
-      prec.left(PREC.muldiv,       seqnl($._expr, "%",  $._expr)),
-      prec.left(PREC.addsub,       seqnl($._expr, "+",  $._expr)),
-      prec.left(PREC.addsub,       seqnl($._expr, "-",  $._expr)),
-
-      prec.left(PREC.shift,        seqnl($._expr, "<<", $._expr)),
-      prec.left(PREC.shift,        seqnl($._expr, ">>", $._expr)),
-
-      prec.left(PREC.compare,      seqnl($._expr, ">",  $._expr)),
-      prec.left(PREC.compare,      seqnl($._expr, "<",  $._expr)),
-      prec.left(PREC.compare,      seqnl($._expr, ">=", $._expr)),
-      prec.left(PREC.compare,      seqnl($._expr, "<=", $._expr)),
-
-      prec.left(PREC.equal_bool,   seqnl($._expr, "==", $._expr)),
-      prec.left(PREC.equal_bool,   seqnl($._expr, "!=", $._expr)),
-
-      prec.left(PREC.equal_string, seqnl($._expr, "eq", $._expr)),
-      prec.left(PREC.equal_string, seqnl($._expr, "ne", $._expr)),
-
-      prec.left(PREC.contain,      seqnl($._expr, "in", $._word)),
-      prec.left(PREC.contain,      seqnl($._expr, "ni", $._word)),
-
-      prec.left(PREC.and_bit,      seqnl($._expr, "&", $._expr)),
-      prec.left(PREC.xor_bit,      seqnl($._expr, "^", $._expr)),
-      prec.left(PREC.or_bit,       seqnl($._expr, "|", $._expr)),
-
-      prec.left(PREC.and_logical,  seqnl($._expr, "&&", $._expr)),
-      prec.left(PREC.or_logical,   seqnl($._expr, "||", $._expr)),
-    ),
-
-    ternary_expr: $ => prec.left(PREC.ternary, seqnl($._expr, '?', $._expr, ':', $._expr)),
+    ...expr_seq(seqnl, '_nl'),
+    ...expr_seq(seq, ''),
 
     conditional: $ => seq(
       "if",
