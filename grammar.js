@@ -157,9 +157,10 @@ module.exports = grammar({
   word: $ => $.simple_word,
 
   externals: $ => [
-    // looks for if next token is alpha, $, [, or _
+    // looks for if next token is alphanum, _, $, [, or \(not-whitespace).
     // Covers separation of tokens that aren't whitespace-separated, think of
-    // cases like [func][func] or a$a. Not sure what purpose the _ serves, though
+    // cases like [func][func] or a$a.
+    // May or may not want to end up hiding this.
     $.concat,
     // looks for :: followed by alpha
     $._ns_delim,
@@ -259,7 +260,6 @@ module.exports = grammar({
       $.script,
     ),
 
-    // Unhiding either of these causes a bad parse in some cases
     foreach_clauses: $ => repeat1($.foreach_clause),
 
     // Should come up with an alternative to _word that better handle
@@ -296,8 +296,9 @@ module.exports = grammar({
     ),
 
     _inner_switch: $ => seqnl(
-      // This isn't really accurate since the patterns are interpreted "raw"
-      // with no substitution. Very similar to proc arg defaults actually.
+      // FIXME: This isn't really accurate since the patterns are interpreted
+      // "raw" with no substitution. Very similar to proc arg defaults
+      // actually.
       $._word,
       // Ehh not totally sold on the aliasing
       choice($.script, alias('-', $.script)),
@@ -365,10 +366,10 @@ module.exports = grammar({
       optional(field('arguments', $._word_list)),
     ),
 
-    _word_eval_list: $ => repeat1($._word_eval),
-
     // https://www.tcl-lang.org/man/tcl8.6/TclCmd/Tcl.htm#M9
     unpack: _ => '{*}',
+
+    _word_eval_list: $ => repeat1($._word_eval),
 
     // A word that might possibly be evaluated as code
     _word_eval: $ => seq(
@@ -378,8 +379,11 @@ module.exports = grammar({
 
     _word_list: $ => repeat1($._word),
 
-    // A word that we know for sure will never be evaluated as code (basically
-    // only for use in builtins where the behavior is known)
+    // A word that we don't expect to be evaluated as code. This is used by
+    // default for most arguments, as the alternative is attempting to parse
+    // literally everything in any string which can fall over quickly. Instead
+    // we follow a whitelist approach of whether words should be treated as
+    // code, along with the `string cat` escape hatch.
     _word: $ => seq(
       optional($.unpack),
       choice($.braced_word, $._concat_word)
@@ -446,12 +450,11 @@ module.exports = grammar({
     // maybe it makes sense to include () in simple_word or parse arrays in
     // scanner.c?
     // We want token.immediate so abc (xyz) isn't treated as an array, though.
-    // How do we let functions in exprs take precedence? Why is this stealing precedence?
 
     // An array index can contain almost any non-whitespace.
     // Unfortunately since whitespace is an extra we still allow it incorrectly.
     // Just another thing for the scanner to handle :)
-    // Also arr(...$) is treat as a literal $ by Tcl whereas we throw an error
+    // Also arr(...$) is treated as a literal $ by Tcl whereas we throw an error
     _array_index: $ => seq(
       token.immediate('('),
       optional($._concat_word_array_index),
@@ -465,15 +468,14 @@ module.exports = grammar({
     // Also might have to remove _array_index's token.immediate
     array_name: $ => seq($.simple_word, field('index', $._array_index)),
 
-    // Somehow this manages to parse $(abc) even though it shouldn't be able to.
-    // Improving it with optional($.id) means we lose the node altogether which
+    // Improving this with optional($.id) means we lose the node altogether which
     // I don't like (can't we have an empty node instead?)
     array_ref: $ => seq('$', $.id, field('index', $._array_index)),
 
     variable_substitution: $ => seq(
       choice(
         seq('$', $.id),
-        // Missing parsing of array ref in here
+        // FIXME: Missing parsing of array ref in here
         seq('$', '{', /[^}]+/, '}'),
         $.array_ref,
       ),
@@ -597,6 +599,7 @@ module.exports = grammar({
 
     command_substitution: $ => seq('[', optional($._script_body), ']'),
 
+    // lol Tcl you cray
     bool_literal: _ => token(prec.dynamic(-2, /(((t)r?)u?)e?|((((f)a?)l?)s?)e?|on|(of)f?|((y)e?)s?|(n)o?/i)),
 
     int_literal: _ => token(prec.dynamic(-2, intLiteral)),
