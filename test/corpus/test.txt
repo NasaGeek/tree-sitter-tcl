@@ -833,3 +833,55 @@ this\$cmd
     (escaped_character)
     (concat)
     (simple_word)))
+
+===
+Line continuations
+===
+puts \
+"a string"
+puts\
+"a string"
+puts\
+ "a string"
+puts "\
+a string"
+puts {\
+a string}
+cmd\
+with\
+args
+cmd \
+with \
+args
+# comment\
+with cont
+# comment \
+# with cont
+---
+
+(source_file
+  (command
+    name: (simple_word)
+    arguments: (quoted_word))
+  (command
+    name: (simple_word)
+    arguments: (quoted_word))
+  (command
+    name: (simple_word)
+    arguments: (quoted_word))
+  (command
+    name: (simple_word)
+    arguments: (quoted_word))
+  (command
+    name: (simple_word)
+    arguments: (braced_word))
+  (command
+    name: (simple_word)
+    arguments: (simple_word)
+    arguments: (simple_word))
+  (command
+    name: (simple_word)
+    arguments: (simple_word)
+    arguments: (simple_word))
+  (comment)
+  (comment))

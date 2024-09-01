@@ -176,11 +176,10 @@ module.exports = grammar({
     $._word,
   ],
 
-  extras: $ => [
-    $._line_continuation,
+  extras: _ => [
     // https://www.tcl-lang.org/cgi-bin/tct/tip/407.html#:~:text=Tcl%27s%20source%20code.-,String%20Representation%20of%20Lists,-The%20routines%20%5Bin
     // Don't blanket-ignore whitespace, because newlines are significant
-    /[ \t\v\f\r]/,
+    /[ \t\v\f\r]|\\\r?\n/,
   ],
 
   conflicts: $ => [
@@ -201,8 +200,6 @@ module.exports = grammar({
       interleaved1($._command, repeat1($._terminator)),
       repeat($._terminator)
     ),
-
-    _line_continuation: _ => token(seq('\\', choice(seq(optional('\r'), '\n'), '\0'))),
 
     _terminator: _ => choice('\n', ';'),
 

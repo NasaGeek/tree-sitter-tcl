@@ -37,12 +37,18 @@ static bool is_bare_word(int32_t chr) {
 }
 
 static bool is_concat_valid(TSLexer *lexer, const bool *valid_symbols) {
-  return valid_symbols[CONCAT] && (
-    is_bare_word(lexer->lookahead) ||
-    lexer->lookahead == '$' ||
-    lexer->lookahead == '[' ||
-    lexer->lookahead == '\\'
-  );
+    if (valid_symbols[CONCAT]) {
+        if (is_bare_word(lexer->lookahead) ||
+                lexer->lookahead == '$' ||
+                lexer->lookahead == '[') {
+            return true;
+        } else if (lexer->lookahead == '\\') {
+            lexer->mark_end(lexer);
+            lexer->advance(lexer, false);
+            return lexer->lookahead != '\n';
+        }
+    }
+    return false;
 }
 
 static bool scan_ns_delim(TSLexer *lexer) {
