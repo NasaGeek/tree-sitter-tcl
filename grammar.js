@@ -592,6 +592,7 @@ module.exports = grammar({
     // on spaces unless they're between braces, but extras are getting in my way
     // raw_word: $ => repeat1(choice($.raw_word_contents, $.braced_word)),
 
+    // TODO: match longer escapes (\xNN \uNNNN etc)
     escaped_character: _ => /\\./,
 
     // https://github.com/tree-sitter/tree-sitter/issues/1087#issuecomment-833198651
