@@ -1489,7 +1489,7 @@
           "name": "name",
           "content": {
             "type": "SYMBOL",
-            "name": "restricted_simple_word"
+            "name": "expr_function_name"
           }
         },
         {
@@ -2569,7 +2569,7 @@
           "name": "name",
           "content": {
             "type": "SYMBOL",
-            "name": "restricted_simple_word"
+            "name": "expr_function_name"
           }
         },
         {
@@ -3879,11 +3879,11 @@
         }
       }
     },
-    "restricted_simple_word": {
+    "expr_function_name": {
       "type": "TOKEN",
       "content": {
         "type": "PATTERN",
-        "value": "[A-Za-z_][A-Za-z0-9_]*"
+        "value": "[A-Za-z0-9][A-Za-z0-9_]*"
       }
     },
     "array_index_word": {

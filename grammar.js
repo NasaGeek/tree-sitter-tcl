@@ -64,7 +64,7 @@ const expr_seq = (seqfn, suffix) => {
     ),
 
     [func_call]: $ => seqfn(
-        field("name", $.restricted_simple_word),
+        field("name", $.expr_function_name),
         "(",
         field("args", optional(alias($[func_args], $.func_args))),
         ")"
@@ -606,9 +606,9 @@ module.exports = grammar({
     // but there are knock-on effects like degraded recognition of function calls in exprs
     simple_word: _ => token(prec.dynamic(-1, /[^\s\\\[\]${}();"]+/)),
 
-    // Helps us out in exprs (though we're violating Tcl's fun "name everything
-    // whatever you want" behavior)
-    restricted_simple_word: _ => token(/[A-Za-z_][A-Za-z0-9_]*/),
+    // Functions in exprs are actually slightly more restricted bare words (no
+    // leading _ for arbitrary reasons: https://github.com/tcltk/tcl/blob/core-8-6-14/generic/tclCompExpr.c#L2063-L2065, sigh...)
+    expr_function_name: _ => token(/[A-Za-z0-9][A-Za-z0-9_]*/),
 
     // True barewords matching. Doesn't match $/[ because this is expected to be
     // used alongside _concat_word. We also exclude ) as a hack because otherwise

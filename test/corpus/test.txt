@@ -474,20 +474,20 @@ expr { spaceyfunc   ( "yes", [this], {works} ) }
     (expr
       (binop_expr
         (func_call
-          (restricted_simple_word))
+          (expr_function_name))
         (unary_expr
           (int_literal)))))
   (expr_cmd
     (expr
       (func_call
-        (restricted_simple_word)
+        (expr_function_name)
         (func_args
           (int_literal)
           (int_literal)))))
   (expr_cmd
     (expr
       (func_call
-        (restricted_simple_word)
+        (expr_function_name)
         (func_args
           (quoted_word)
           (command_substitution
@@ -740,12 +740,12 @@ expr { arr
     (expr
       (binop_expr
         (func_call
-          (restricted_simple_word)
+          (expr_function_name)
           (func_args
             (bool_literal)
             (bool_literal)))
         (func_call
-          (restricted_simple_word)
+          (expr_function_name)
           (func_args
             (int_literal)
             (int_literal)))))))
@@ -783,7 +783,7 @@ expr func(1,2)
   (expr_cmd
     (expr
       (func_call
-        (restricted_simple_word)
+        (expr_function_name)
         (func_args
           (int_literal)
           (int_literal))))))

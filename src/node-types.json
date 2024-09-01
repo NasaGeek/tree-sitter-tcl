@@ -818,7 +818,7 @@
         "required": true,
         "types": [
           {
-            "type": "restricted_simple_word",
+            "type": "expr_function_name",
             "named": true
           }
         ]
@@ -1881,6 +1881,10 @@
     "named": false
   },
   {
+    "type": "expr_function_name",
+    "named": true
+  },
+  {
     "type": "finally",
     "named": false
   },
@@ -1943,10 +1947,6 @@
   {
     "type": "regsub",
     "named": false
-  },
-  {
-    "type": "restricted_simple_word",
-    "named": true
   },
   {
     "type": "return",
