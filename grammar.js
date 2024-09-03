@@ -231,6 +231,7 @@ module.exports = grammar({
 
     [$.binop_expr_nl, $.ternary_expr_nl],
     [$.func_call_nl],
+    [$.expr_cmd],
 
     [$.command],
     [$.set],
@@ -308,7 +309,9 @@ module.exports = grammar({
 
     while: $ => seqgap('while', $.expr, $.script),
 
-    expr_cmd: $ => seqgap('expr', alias($.expr_cmd_expr, $.expr)),
+    // We technically support multi-arg expr's, but make no attempt to parse
+    // them as such (except for the first argument)
+    expr_cmd: $ => seqgap('expr', $.expr, optional($._word_list)),
 
     for: $ => seqgap("for",
       $.script,
@@ -585,12 +588,7 @@ module.exports = grammar({
     // current $._expr approach allowing arbitrary whitespace. If people want
     // max flexibility, just wrap in {}
     expr: $ => choice(
-      seqnl(token(prec(1, '{')), $._expr_nl, '}'),
-      $._non_seq_expr,
-    ),
-
-    // prec disambiguates from braced_word
-    expr_cmd_expr: $ => choice(
+      // prec disambiguates from braced_word
       seqnl(token(prec(1, '{')), $._expr_nl, '}'),
       $._expr,
     ),

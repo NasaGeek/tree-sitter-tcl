@@ -421,8 +421,6 @@ expr { {} eq {123} }
 expr { $arr(abc) eq [a ::ar(xyz)] }
 expr { func() eq -1 }
 expr { func(1, 2) }
-# The space before the ) breaks everything and I have no idea why
-# expr { spaceyfunc   ( "yes", [this], {works} ) }
 
 --------------------------------------------------------------------------------
 
@@ -490,9 +488,7 @@ expr { func(1, 2) }
         (expr_function_name)
         (func_args
           (int_literal)
-          (int_literal)))))
-  (comment)
-  (comment))
+          (int_literal))))))
 
 ================================================================================
 Exprs in other places
@@ -505,6 +501,7 @@ if {
 puts "good"
 }
 while f {}
+if 1+$a/0 {dostuff}
 --------------------------------------------------------------------------------
 
 (source_file
@@ -529,7 +526,18 @@ while f {}
   (while
     (expr
       (bool_literal))
-    (script)))
+    (script))
+  (conditional
+    (expr
+      (binop_expr
+        (int_literal)
+        (binop_expr
+          (variable_substitution
+            (id))
+          (int_literal))))
+    (script
+      (command
+        (simple_word)))))
 
 ================================================================================
 Try
@@ -756,6 +764,7 @@ expr 1
 expr 3./4e-4
 expr t==f
 expr func(1,2)
+expr 1+1 anything goes
 ----
 
 (source_file
@@ -783,7 +792,14 @@ expr func(1,2)
         (expr_function_name)
         (func_args
           (int_literal)
-          (int_literal))))))
+          (int_literal)))))
+  (expr_cmd
+    (expr
+      (binop_expr
+        (int_literal)
+        (int_literal)))
+    (simple_word)
+    (simple_word)))
 
 ===
 Force eval as script

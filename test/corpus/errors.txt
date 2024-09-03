@@ -4,12 +4,6 @@ Parser deficiency: trailing space in multi-arg function call breaks
 ===
 expr {fn(1,1 )} {}
 ---
-================================================================================
-Parser deficiency: If multi-arg expr, we don't support braces
-:error
-================================================================================
-expr 1 {+} 1
----
 
 ================================================================================
 Parser deficiency: Poor array name parsing, inner )(
@@ -134,22 +128,6 @@ Real error: multi-word expr for while
 :error
 ===
 while 1 + 1 {}
----
-
-===
-Real error: unexpected newline in expr +
-:error
-===
-expr 1 +
-1
----
-
-===
-Real error: unexpected newline in expr func_call
-:error
-===
-expr 2func(1,
-2)
 ---
 
 ===
