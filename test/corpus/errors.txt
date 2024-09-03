@@ -171,3 +171,17 @@ Real error: brace concat nuance
 ===
 puts {a}a
 ---
+
+===
+Real error: bare word with int literal as prefix
+:error
+===
+expr {1 eq 1bad}
+---
+
+===
+Real error: bare word with bool literal as prefix
+:error
+===
+expr {"str" eq falsey}
+---

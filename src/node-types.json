@@ -8,15 +8,7 @@
         "required": false,
         "types": [
           {
-            "type": "braced_word",
-            "named": true
-          },
-          {
-            "type": "quoted_word",
-            "named": true
-          },
-          {
-            "type": "simple_word",
+            "type": "raw_word",
             "named": true
           }
         ]
@@ -25,6 +17,10 @@
         "multiple": false,
         "required": true,
         "types": [
+          {
+            "type": "raw_word",
+            "named": true
+          },
           {
             "type": "simple_word",
             "named": true
@@ -723,6 +719,14 @@
           "named": true
         },
         {
+          "type": "list_item",
+          "named": true
+        },
+        {
+          "type": "literal_list",
+          "named": true
+        },
+        {
           "type": "quoted_word",
           "named": true
         },
@@ -894,6 +898,30 @@
     "fields": {}
   },
   {
+    "type": "list_item",
+    "named": true,
+    "fields": {}
+  },
+  {
+    "type": "literal_list",
+    "named": true,
+    "fields": {},
+    "children": {
+      "multiple": true,
+      "required": false,
+      "types": [
+        {
+          "type": "list_item",
+          "named": true
+        },
+        {
+          "type": "literal_list",
+          "named": true
+        }
+      ]
+    }
+  },
+  {
     "type": "namespace",
     "named": true,
     "fields": {},
@@ -1034,6 +1062,11 @@
         }
       ]
     }
+  },
+  {
+    "type": "raw_word",
+    "named": true,
+    "fields": {}
   },
   {
     "type": "script",
@@ -1349,43 +1382,11 @@
       "required": false,
       "types": [
         {
-          "type": "array_name",
-          "named": true
-        },
-        {
-          "type": "braced_word",
-          "named": true
-        },
-        {
-          "type": "command_substitution",
-          "named": true
-        },
-        {
-          "type": "concat",
-          "named": true
-        },
-        {
-          "type": "escaped_character",
-          "named": true
-        },
-        {
-          "type": "quoted_word",
+          "type": "raw_word",
           "named": true
         },
         {
           "type": "script",
-          "named": true
-        },
-        {
-          "type": "simple_word",
-          "named": true
-        },
-        {
-          "type": "unpack",
-          "named": true
-        },
-        {
-          "type": "variable_substitution",
           "named": true
         }
       ]
@@ -1459,47 +1460,23 @@
       "required": true,
       "types": [
         {
-          "type": "array_name",
-          "named": true
-        },
-        {
-          "type": "braced_word",
-          "named": true
-        },
-        {
-          "type": "command_substitution",
-          "named": true
-        },
-        {
-          "type": "concat",
-          "named": true
-        },
-        {
-          "type": "escaped_character",
-          "named": true
-        },
-        {
           "type": "finally",
           "named": true
         },
         {
-          "type": "quoted_word",
+          "type": "list_item",
+          "named": true
+        },
+        {
+          "type": "literal_list",
+          "named": true
+        },
+        {
+          "type": "raw_word",
           "named": true
         },
         {
           "type": "script",
-          "named": true
-        },
-        {
-          "type": "simple_word",
-          "named": true
-        },
-        {
-          "type": "unpack",
-          "named": true
-        },
-        {
-          "type": "variable_substitution",
           "named": true
         }
       ]

@@ -39,6 +39,7 @@ proc foo {arg1 arg2 {arg3 default3} { arg4 default4 } } {
     echo "hello"
     echo "word$hi \$bye word"
 }
+proc f {{a w$][[]}} {}
 
 --------------------------------------------------------------------------------
 
@@ -51,11 +52,11 @@ proc foo {arg1 arg2 {arg3 default3} { arg4 default4 } } {
       (argument
         name: (simple_word))
       (argument
-        name: (simple_word)
-        default: (simple_word))
+        name: (raw_word)
+        default: (raw_word))
       (argument
-        name: (simple_word)
-        default: (simple_word)))
+        name: (raw_word)
+        default: (raw_word)))
     body: (script
       (command
         name: (simple_word)
@@ -65,7 +66,14 @@ proc foo {arg1 arg2 {arg3 default3} { arg4 default4 } } {
         arguments: (quoted_word
           (variable_substitution
             (id))
-          (escaped_character))))))
+          (escaped_character)))))
+  (procedure
+    name: (simple_word)
+    arguments: (arguments
+      (argument
+        name: (raw_word)
+        default: (raw_word)))
+    body: (script)))
 
 ================================================================================
 Comments
@@ -92,7 +100,7 @@ foreach a {1 2 3 4 5} {
   (foreach
     (foreach_clauses
       (foreach_clause
-        (simple_word)
+        (list_item)
         (braced_word)))
     (script
       (command
@@ -114,7 +122,9 @@ foreach {a b} {1 2 4 5} {
   (foreach
     (foreach_clauses
       (foreach_clause
-        (braced_word)
+        (literal_list
+          (list_item)
+          (list_item))
         (braced_word)))
     (script
       (command
@@ -136,10 +146,10 @@ foreach a {1 2 4 5} b {6 7 8 9} {
   (foreach
     (foreach_clauses
       (foreach_clause
-        (simple_word)
+        (list_item)
         (braced_word))
       (foreach_clause
-        (simple_word)
+        (list_item)
         (braced_word)))
     (script
       (command
@@ -491,7 +501,24 @@ expr {"str"eq"str"}
         (expr_function_name)
         (func_args
           (int_literal)
-          (int_literal))))))
+          (int_literal)))))
+  (expr_cmd
+    (expr
+      (binop_expr
+        (variable_substitution
+          (id))
+        (int_literal))))
+  (expr_cmd
+    (expr
+      (binop_expr
+        (variable_substitution
+          (id))
+        (int_literal))))
+  (expr_cmd
+    (expr
+      (binop_expr
+        (quoted_word)
+        (quoted_word)))))
 
 ================================================================================
 Exprs in other places
@@ -561,15 +588,17 @@ try { some code
       (command
         (simple_word)
         (simple_word)))
-    (braced_word)
+    (literal_list)
     (script)
-    (braced_word)
+    (literal_list
+      (list_item)
+      (list_item))
     (script
       (command
         (simple_word)
         (quoted_word)))
-    (braced_word)
-    (braced_word)
+    (raw_word)
+    (literal_list)
     (script)
     (finally
       (script
@@ -637,19 +666,19 @@ switch -glob aaab {
     (simple_word)
     (simple_word)
     (switch_body
-      (simple_word)
+      (raw_word)
       (script)
-      (simple_word)
+      (raw_word)
       (script
         (command
           (command_substitution
             (command
               (simple_word)))))
-      (simple_word)
+      (raw_word)
       (script
         (command
           (simple_word)))
-      (simple_word)
+      (raw_word)
       (script))))
 
 ===

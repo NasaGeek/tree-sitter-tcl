@@ -245,6 +245,8 @@ module.exports = grammar({
     [$.catch],
     [$.arguments],
     [$._argument_content],
+    [$._nested_raw_braces],
+    [$.literal_list],
   ],
 
   rules: {
@@ -334,7 +336,7 @@ module.exports = grammar({
     // Should come up with an alternative to _word that better handle
     // braced_words that will be interpreted as lists (so shouldn't be
     // represented opaquely)
-    foreach_clause: $ => seqgap($._word, $._word),
+    foreach_clause: $ => seqgap(choice($.literal_list, $.list_item), $._word),
 
 
     // https://www.tcl.tk/man/tcl/TclCmd/switch.htm
@@ -365,10 +367,7 @@ module.exports = grammar({
     ),
 
     _inner_switch: $ => seqgapnl(
-      // FIXME: This isn't really accurate since the patterns are interpreted
-      // "raw" with no substitution. Very similar to proc arg defaults
-      // actually.
-      $._word,
+      $.raw_word,
       // Ehh not totally sold on the aliasing
       choice($.script, alias('-', $.script)),
     ),
@@ -408,13 +407,13 @@ module.exports = grammar({
           choice(
             "ok", "error", "return", "break", "continue", /[0-4]/
           ),
-          $._word,
+          choice($.literal_list, $.list_item),
           $.script,
         ),
         seqgap(
           "trap",
-          $._word,
-          $._word,
+          $.raw_word,
+          choice($.literal_list, $.list_item),
           $.script,
         )
       )),
@@ -573,14 +572,9 @@ module.exports = grammar({
 
     _argument_content: $ => seqgapnl(
         // More strict than Tcl, a convenience
-        field('name', $.simple_word),
-        optional(field('default', $._argument_word)),
+        field('name', $.raw_word),
+        optional(field('default', $.raw_word)),
     ),
-
-    // quoted_word here isn't quite right because the argument is interpreted
-    // literally. Really should just allow roughly anything (close to braced_word)
-    _argument_word: $ => choice($.simple_word, $.quoted_word, $.braced_word),
-
 
     // This is specifically used for expressions that aren't `expr`, since
     // everywhere else requires it to be one word. This is also intentionally
@@ -650,10 +644,19 @@ module.exports = grammar({
     braced_word: $ => seq('{', repeat(choice($._nested_braces, $._braced_word_contents)), '}'),
 
 
-    raw_word_contents: _ => token(/[^{}\s]+/),
-    // Need external lexer for this I think, essentially trying to not match
-    // on spaces unless they're between braces, but extras are getting in my way
-    // raw_word: $ => repeat1(choice($.raw_word_contents, $.braced_word)),
+    _raw_word_contents: _ => token(/[^{}\s]+/),
+
+    _nested_raw_braces: $ => seqnl('{', repeat(choice('\n', $.gap, $._nested_raw_braces, $._raw_word_contents)), '}'),
+
+    // Covers mostly literal lists like proc args, foreach vars, etc
+    raw_word: $ => repeat1(choice($._raw_word_contents, $._nested_raw_braces)),
+
+    list_item: _ => token(/[^{}\s]+/),
+
+    // Covers the kind of list you'd find in foreach var defs or trap variable
+    // list, essentially a list literal.
+    // Feels very similar to raw_word, but is not opaque within.
+    literal_list: $ => seqnl('{', repeat(choice('\n', $.gap, $.literal_list, $.list_item)), '}'),
 
     // TODO: match longer escapes (\xNN \uNNNN etc)
     escaped_character: _ => /\\./,
