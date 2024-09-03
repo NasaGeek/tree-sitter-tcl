@@ -496,15 +496,16 @@ module.exports = grammar({
       ),
     ),
 
-    // bare words are a no-no inside of expr's
-    _concat_word_expr: $ => interleaved1(
+    // bare words are a no-no inside of expr's, but quoted is okay. The rules
+    // in expr's are generally much looser, too, meaning we don't need the
+    // concat check.
+    _concat_word_expr: $ => repeat1(
       choice(
         $.escaped_character,
         $.command_substitution,
         $.quoted_word,
         $.variable_substitution,
       ),
-      $.concat,
     ),
 
     // Specifically (only?) useful for variable substitution due to

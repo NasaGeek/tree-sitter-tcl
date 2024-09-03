@@ -143,3 +143,31 @@ Real error: spaces in array index
 ===
 set arr( a b) 1
 ---
+
+===
+Real error: bare word with int literal as prefix
+:error
+===
+expr {1 eq 1bad}
+---
+
+===
+Real error: bare word with bool literal as prefix
+:error
+===
+expr {"str" eq falsey}
+---
+
+===
+Real error: quote concat nuance
+:error
+===
+puts "a"e
+---
+
+===
+Real error: brace concat nuance
+:error
+===
+puts {a}a
+---

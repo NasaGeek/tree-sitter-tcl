@@ -556,10 +556,6 @@
           "named": true
         },
         {
-          "type": "concat",
-          "named": true
-        },
-        {
           "type": "escaped_character",
           "named": true
         },
@@ -782,10 +778,6 @@
         },
         {
           "type": "command_substitution",
-          "named": true
-        },
-        {
-          "type": "concat",
           "named": true
         },
         {
@@ -1424,10 +1416,6 @@
           "named": true
         },
         {
-          "type": "concat",
-          "named": true
-        },
-        {
           "type": "escaped_character",
           "named": true
         },
@@ -1539,10 +1527,6 @@
         },
         {
           "type": "command_substitution",
-          "named": true
-        },
-        {
-          "type": "concat",
           "named": true
         },
         {

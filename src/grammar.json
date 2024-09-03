@@ -1312,63 +1312,28 @@
       }
     },
     "_concat_word_expr": {
-      "type": "SEQ",
-      "members": [
-        {
-          "type": "CHOICE",
-          "members": [
-            {
-              "type": "SYMBOL",
-              "name": "escaped_character"
-            },
-            {
-              "type": "SYMBOL",
-              "name": "command_substitution"
-            },
-            {
-              "type": "SYMBOL",
-              "name": "quoted_word"
-            },
-            {
-              "type": "SYMBOL",
-              "name": "variable_substitution"
-            }
-          ]
-        },
-        {
-          "type": "REPEAT",
-          "content": {
-            "type": "SEQ",
-            "members": [
-              {
-                "type": "SYMBOL",
-                "name": "concat"
-              },
-              {
-                "type": "CHOICE",
-                "members": [
-                  {
-                    "type": "SYMBOL",
-                    "name": "escaped_character"
-                  },
-                  {
-                    "type": "SYMBOL",
-                    "name": "command_substitution"
-                  },
-                  {
-                    "type": "SYMBOL",
-                    "name": "quoted_word"
-                  },
-                  {
-                    "type": "SYMBOL",
-                    "name": "variable_substitution"
-                  }
-                ]
-              }
-            ]
+      "type": "REPEAT1",
+      "content": {
+        "type": "CHOICE",
+        "members": [
+          {
+            "type": "SYMBOL",
+            "name": "escaped_character"
+          },
+          {
+            "type": "SYMBOL",
+            "name": "command_substitution"
+          },
+          {
+            "type": "SYMBOL",
+            "name": "quoted_word"
+          },
+          {
+            "type": "SYMBOL",
+            "name": "variable_substitution"
           }
-        }
-      ]
+        ]
+      }
     },
     "_ident": {
       "type": "IMMEDIATE_TOKEN",

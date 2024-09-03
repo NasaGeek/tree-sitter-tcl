@@ -421,6 +421,9 @@ expr { {} eq {123} }
 expr { $arr(abc) eq [a ::ar(xyz)] }
 expr { func() eq -1 }
 expr { func(1, 2) }
+expr {$a >0}
+expr {$a eq0}
+expr {"str"eq"str"}
 
 --------------------------------------------------------------------------------
 
