@@ -455,7 +455,7 @@ module.exports = grammar({
     // code, along with the `string cat` escape hatch.
     _word: $ => seq(
       optional($.unpack),
-      choice($.braced_word, $._concat_word)
+      choice($.braced_word, $._concat_word, $.quoted_word)
     ),
 
     // Might end up useful for arbitrary quoted stuff...
@@ -480,7 +480,6 @@ module.exports = grammar({
       choice(
         $.escaped_character,
         $.command_substitution,
-        $.quoted_word,
         $.variable_substitution,
         $.simple_word,
         $.array_name,

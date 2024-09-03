@@ -1211,6 +1211,10 @@
             {
               "type": "SYMBOL",
               "name": "_concat_word"
+            },
+            {
+              "type": "SYMBOL",
+              "name": "quoted_word"
             }
           ]
         }
@@ -1229,10 +1233,6 @@
             {
               "type": "SYMBOL",
               "name": "command_substitution"
-            },
-            {
-              "type": "SYMBOL",
-              "name": "quoted_word"
             },
             {
               "type": "SYMBOL",
@@ -1267,10 +1267,6 @@
                   {
                     "type": "SYMBOL",
                     "name": "command_substitution"
-                  },
-                  {
-                    "type": "SYMBOL",
-                    "name": "quoted_word"
                   },
                   {
                     "type": "SYMBOL",

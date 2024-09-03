@@ -62,10 +62,6 @@
           "named": true
         },
         {
-          "type": "quoted_word",
-          "named": true
-        },
-        {
           "type": "simple_word",
           "named": true
         },
@@ -1109,10 +1105,6 @@
         },
         {
           "type": "procedure",
-          "named": true
-        },
-        {
-          "type": "quoted_word",
           "named": true
         },
         {
