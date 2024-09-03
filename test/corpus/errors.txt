@@ -1,3 +1,9 @@
+===
+Parser deficiency: trailing space in multi-arg function call breaks
+:error
+===
+expr {fn(1,1 )} {}
+---
 ================================================================================
 Parser deficiency: If multi-arg expr, we don't support braces
 :error
@@ -83,6 +89,21 @@ Parser deficiency: Full unbraced expressions for while/for/if
 # Maybe one day can support this.
 while 1+1 {}
 
+===
+Parser deficiency: Words starting with not-"/{ aren't interpreted literally
+:error
+===
+# Should parse as a single simple_word
+puts a"a"
+---
+
+===
+Parser deficiency: Words starting with not-"/{ aren't interpreted literally
+:error
+===
+# Should parse as a single simple_word
+puts a{a}
+
 --------------------------------------------------------------------------------
 
 ===
@@ -129,4 +150,18 @@ Real error: unexpected newline in expr func_call
 ===
 expr 2func(1,
 2)
+---
+
+===
+Real error: characters after closing quote
+:error
+===
+puts "a"a
+---
+
+===
+Real error: spaces in array index
+:error
+===
+set arr( a b) 1
 ---

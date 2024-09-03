@@ -112,13 +112,53 @@ const expr_seq = (seqfn, suffix) => {
   }
 }
 
+// https://www.tcl-lang.org/cgi-bin/tct/tip/407.html#:~:text=Tcl%27s%20source%20code.-,String%20Representation%20of%20Lists,-The%20routines%20%5Bin
+const gap = token(/[ \t\v\f\r]+|\\\r?\n/)
 
+const intergappednl1 = (rule) => interleaved1(rule, repeat1(choice(gap, '\n')))
+const intergappednl = (rule) => optional(intergappednl1(rule))
+const intergapped1 = (rule) => interleaved1(rule, gap)
+const intergapped = (rule) => optional(intergapped1(rule))
 const interleaved1 = (rule, delim) => seq(rule, repeat(seq(delim, rule)))
-const interleaved_seq1 = (rule, delim, seqfn) => seqnl(rule, repeat(seqfn(delim, rule)))
+const interleaved = (rule, delim) => optional(interleaved1(rule, delim))
+// interleaved1 but accepting a custom seq function
+const interleaved_seq1 = (rule, delim, seqfn) => seqfn(rule, repeat(seqfn(delim, rule)))
 
-// Helper for rules within which newlines are irrelevant (essentially adding
-// them as faux-extras).
-const seqnl = (...rules) => seq(...rules.flatMap(e => [repeat("\n"), e]).slice(1))
+// Helper for rules within which whitespace/newlines are irrelevant
+// (essentially adding them as faux-extras). Note that this allows for _no_
+// whitespace (making it primarily useful for expr). No need to implement this
+// in term of seqdelim since the delims can collapse to blank.
+const seqnl = (...rules) => seq(...rules.flatMap(e => [repeat(choice("\n", gap)), e]).slice(1))
+
+
+// Helper for sequences that require some delimiter between their elements.
+// Intelligently handles optional elements where the leading delimiter should
+// be tucked inside the optional().
+const seqdelim = (delim, ...rules) => {
+  let result = rules.flatMap(e => {
+    // This is what optionals are turned into
+    if (e.type === "CHOICE" && e.members?.length === 2 && e.members[1].type == 'BLANK') {
+      return [optional(seq(delim, e.members[0]))]
+    } else if (e.type == "REPEAT") {
+      return [repeat(seq(delim, e.content))]
+    } else {
+      return [delim, e]
+    }
+  })
+  // Because we tuck the delim into certain rules, it won't necessarily always
+  // be first. I'm not actually certain that this works correctly.
+  if (result[0] == delim) {
+    result = result.slice(1)
+  } else {
+    console.log("We didn't trim")
+  }
+  return seq(...result)
+}
+
+const seqgap = (...rules) => seqdelim(gap, ...rules)
+// Similar to seqnl, but at least some whitespace/newline is required vs being
+// completely irrelevant, useful for various constructs in {}
+const seqgapnl = (...rules) => seqdelim(repeat1(choice('\n', gap)), ...rules)
 
 // A lot of stealing from tree-sitter-go and then simplifying for Tcl
 const hexDigit = /[0-9a-fA-F]/;
@@ -164,6 +204,7 @@ module.exports = grammar({
     $.concat,
     // looks for :: followed by alpha
     $._ns_delim,
+    $._command_separator,
     // Not used in the grammar, but used in the external scanner to check for error state.
     // This relies on the tree-sitter behavior that when an error is encountered the external
     // scanner is called with all symobls marked as valid.
@@ -173,14 +214,15 @@ module.exports = grammar({
   inline: $ => [
     $._commands,
     $._builtin,
-    $._terminator,
+    $.terminator,
+    $.termgap,
+    $.gap,
     $._word,
   ],
 
   extras: _ => [
-    // https://www.tcl-lang.org/cgi-bin/tct/tip/407.html#:~:text=Tcl%27s%20source%20code.-,String%20Representation%20of%20Lists,-The%20routines%20%5Bin
     // Don't blanket-ignore whitespace, because newlines are significant
-    /[ \t\v\f\r]|\\\r?\n/,
+    /\\\r?\n/,
   ],
 
   conflicts: $ => [
@@ -189,20 +231,49 @@ module.exports = grammar({
 
     [$.binop_expr_nl, $.ternary_expr_nl],
     [$.func_call_nl],
+
+    [$.command],
+    [$.set],
+    [$.try],
+    [$._word_list],
+    [$._word_eval_list],
+    [$.conditional],
+    [$.switch],
+    [$.string_cmd],
+    [$.global],
+    [$.catch],
+    [$.arguments],
+    [$._argument_content],
   ],
 
   rules: {
     // https://wiki.tcl-lang.org/page/the+empty+command
-    source_file: $ => choice($._commands, repeat($._terminator)),
+    source_file: $ => choice($._commands, optional($.termgap)),
 
     // https://www.tcl-lang.org/man/tcl8.6/TclCmd/Tcl.htm#M5
     _commands: $ => seq(
-      repeat($._terminator),
-      interleaved1($._command, repeat1($._terminator)),
-      repeat($._terminator)
+      optional($.termgap),
+      $._command,
+      repeat(
+        seq(
+          $._command_separator,
+          optional($.termgap),
+          $._command
+        )
+      ),
+      optional($.termgap),
     ),
 
-    _terminator: _ => choice('\n', ';'),
+    terminator: _ => choice('\n', ';'),
+
+    gap: _ => gap,
+
+    termgap: $ => repeat1(
+        choice(
+          $.terminator,
+          $.gap,
+        )
+    ),
 
     comment: _ => /#(\\(.|\r?\n)|[^\\\n])*/,
 
@@ -215,8 +286,6 @@ module.exports = grammar({
       $.try,
       $.for,
       $.foreach,
-      $.regexp,
-      $.regsub,
       $.switch,
       $.expr_cmd,
       $.while,
@@ -224,27 +293,24 @@ module.exports = grammar({
       alias($.string_cmd, $.command),
     ),
 
-    string_cmd: $ => seq(
+    string_cmd: $ => seqgap(
         field("name", alias("string", $.simple_word)),
         field("arguments",
           choice(
             // This acts as an identity function. We can use it in code to force
             // interpretation of an arg as a $.script. I know, clunky. Not my
             // favorite solution to all this but it's all I've got.
-            seq(alias("cat", $.simple_word), optional($._word_eval_list)),
+            seqgap(alias("cat", $.simple_word), optional($._word_eval_list)),
             $._word_list,
           ),
         ),
       ),
 
-    while: $ => seq('while', $.expr, $.script),
+    while: $ => seqgap('while', $.expr, $.script),
 
-    expr_cmd: $ => seq('expr', alias($.expr_cmd_expr, $.expr)),
+    expr_cmd: $ => seqgap('expr', alias($.expr_cmd_expr, $.expr)),
 
-    regexp: $ => seq('regexp', repeat1($._word)),
-    regsub: $ => seq('regsub', repeat1($._word)),
-
-    for: $ => seq("for",
+    for: $ => seqgap("for",
       $.script,
       $.expr,
       $.script,
@@ -255,22 +321,22 @@ module.exports = grammar({
     // This unfortunately can be quite sensitive to parse errors in the body
     // causing the foreach to just start stuffing things into foreach_clauses
     // as braced_word instead of trying to recover somehow.
-    foreach: $ => seq("foreach",
+    foreach: $ => seqgap("foreach",
       $.foreach_clauses,
       $.script,
     ),
 
-    foreach_clauses: $ => repeat1($.foreach_clause),
+    foreach_clauses: $ => intergapped1($.foreach_clause),
 
     // Should come up with an alternative to _word that better handle
     // braced_words that will be interpreted as lists (so shouldn't be
     // represented opaquely)
-    foreach_clause: $ => seq($._word, $._word),
+    foreach_clause: $ => seqgap($._word, $._word),
 
 
     // https://www.tcl.tk/man/tcl/TclCmd/switch.htm
-    switch: $ => seq("switch",
-      field("flags", repeat($._word)),
+    switch: $ => seqgap("switch",
+      field("flags", intergapped($._word)),
       field("pattern", $._word),
       $.switch_body,
     ),
@@ -290,12 +356,12 @@ module.exports = grammar({
       // {}. Making it more permissive seems like the better call.
       seqnl(
         token(prec(1, "{")),
-        optional(interleaved1($._inner_switch, repeat('\n'))),
+        intergappednl($._inner_switch),
         "}"
       ),
     ),
 
-    _inner_switch: $ => seqnl(
+    _inner_switch: $ => seqgapnl(
       // FIXME: This isn't really accurate since the patterns are interpreted
       // "raw" with no substitution. Very similar to proc arg defaults
       // actually.
@@ -316,25 +382,25 @@ module.exports = grammar({
       // Broadly applicable quotes are really tough, need to ban them in
       // certain constructs or otherwise figure out how to deal with them
       // (custom lexing?)
-      // seqnl('"', choice($._commands, repeat($._terminator)), '"'),
+      // seqnl('"', choice($._commands, repeat($.terminator)), '"'),
     ),
 
-    _script_body: $ => choice($._commands, repeat1($._terminator)),
+    _script_body: $ => choice($._commands, $.termgap),
 
-    global: $ => seq("global", repeat($._word)),
+    global: $ => seqgap("global", intergapped($._word)),
 
-    namespace: $ => seq('namespace', $._namespace_subcommand),
+    namespace: $ => seqgap('namespace', $._namespace_subcommand),
 
     _namespace_subcommand: $ => choice(
-      seq("eval", $._word_eval_list),
+      seqgap("eval", $._word_eval_list),
       $._word_list,
     ),
 
-    try: $ => seq(
+    try: $ => seqgap(
       "try",
       $.script,
       repeat(choice(
-        seq(
+        seqgap(
           "on",
           choice(
             "ok", "error", "return", "break", "continue", /[0-4]/
@@ -342,17 +408,17 @@ module.exports = grammar({
           $._word,
           $.script,
         ),
-        seq(
+        seqgap(
           "trap",
           $._word,
           $._word,
           $.script,
-        ))
-      ),
+        )
+      )),
       optional($.finally),
     ),
 
-    finally: $=> seq('finally', $.script),
+    finally: $=> seqgap('finally', $.script),
 
     _command: $ => choice(
       $._builtin,
@@ -361,7 +427,7 @@ module.exports = grammar({
     ),
 
     // commands are just _word's, okay
-    command: $ => seq(
+    command: $ => seqgap(
       field('name', $._word),
       optional(field('arguments', $._word_list)),
     ),
@@ -369,7 +435,7 @@ module.exports = grammar({
     // https://www.tcl-lang.org/man/tcl8.6/TclCmd/Tcl.htm#M9
     unpack: _ => '{*}',
 
-    _word_eval_list: $ => repeat1($._word_eval),
+    _word_eval_list: $ => intergapped1($._word_eval),
 
     // A word that might possibly be evaluated as code
     _word_eval: $ => seq(
@@ -377,7 +443,7 @@ module.exports = grammar({
       $.script,
     ),
 
-    _word_list: $ => repeat1($._word),
+    _word_list: $ => intergapped1($._word),
 
     // A word that we don't expect to be evaluated as code. This is used by
     // default for most arguments, as the alternative is attempting to parse
@@ -481,11 +547,11 @@ module.exports = grammar({
       ),
     ),
 
-    set: $ => seq("set",
+    set: $ => seqgap("set",
       $._word,
       optional($._word)),
 
-    procedure: $ => seq(
+    procedure: $ => seqgap(
       "proc",
       field('name', $._word),
       field('arguments', $.arguments),
@@ -493,19 +559,19 @@ module.exports = grammar({
     ),
 
     arguments: $ => choice(
-      seq('{', repeat($.argument), '}'),
+      seqnl('{', intergapped($.argument), '}'),
       $._concat_word,
     ),
 
     argument: $ => choice(
       field('name', $.simple_word),
-      seq(
-        '{',
-         // More strict than Tcl, a convenience
-         field('name', $.simple_word),
-         optional(field('default', $._argument_word)),
-         '}'
-      )
+      seqnl('{', $._argument_content, '}')
+    ),
+
+    _argument_content: $ => seqgapnl(
+        // More strict than Tcl, a convenience
+        field('name', $.simple_word),
+        optional(field('default', $._argument_word)),
     ),
 
     // quoted_word here isn't quite right because the argument is interpreted
@@ -524,39 +590,39 @@ module.exports = grammar({
     ),
 
     // prec disambiguates from braced_word
-    expr_cmd_expr: $ => (choice(
+    expr_cmd_expr: $ => choice(
       seqnl(token(prec(1, '{')), $._expr_nl, '}'),
       $._expr,
-    )),
+    ),
 
     ...expr_seq(seqnl, '_nl'),
     ...expr_seq(seq, ''),
 
-    conditional: $ => seq(
+    conditional: $ => seqgap(
       "if",
       field('condition', $.expr),
       optional("then"),
       $.script,
-      repeat($.elseif),
+      intergapped($.elseif),
       optional($.else),
     ),
 
-    elseif: $ => seq(
+    elseif: $ => seqgap(
       "elseif",
       field('condition', $.expr),
       optional("then"),
       $.script,
     ),
 
-    else: $ => seq(
+    else: $ => seqgap(
       "else",
       $.script,
     ),
 
-    catch: $ => seq(
+    catch: $ => seqgap(
       "catch",
       $.script,
-      optional(seq($._word, optional($._word)))
+      optional(seqgap($._word, optional($._word)))
     ),
 
     quoted_word: $ => seq(

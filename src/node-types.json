@@ -442,14 +442,6 @@
           "named": true
         },
         {
-          "type": "regexp",
-          "named": true
-        },
-        {
-          "type": "regsub",
-          "named": true
-        },
-        {
           "type": "set",
           "named": true
         },
@@ -1020,100 +1012,6 @@
     }
   },
   {
-    "type": "regexp",
-    "named": true,
-    "fields": {},
-    "children": {
-      "multiple": true,
-      "required": true,
-      "types": [
-        {
-          "type": "array_name",
-          "named": true
-        },
-        {
-          "type": "braced_word",
-          "named": true
-        },
-        {
-          "type": "command_substitution",
-          "named": true
-        },
-        {
-          "type": "concat",
-          "named": true
-        },
-        {
-          "type": "escaped_character",
-          "named": true
-        },
-        {
-          "type": "quoted_word",
-          "named": true
-        },
-        {
-          "type": "simple_word",
-          "named": true
-        },
-        {
-          "type": "unpack",
-          "named": true
-        },
-        {
-          "type": "variable_substitution",
-          "named": true
-        }
-      ]
-    }
-  },
-  {
-    "type": "regsub",
-    "named": true,
-    "fields": {},
-    "children": {
-      "multiple": true,
-      "required": true,
-      "types": [
-        {
-          "type": "array_name",
-          "named": true
-        },
-        {
-          "type": "braced_word",
-          "named": true
-        },
-        {
-          "type": "command_substitution",
-          "named": true
-        },
-        {
-          "type": "concat",
-          "named": true
-        },
-        {
-          "type": "escaped_character",
-          "named": true
-        },
-        {
-          "type": "quoted_word",
-          "named": true
-        },
-        {
-          "type": "simple_word",
-          "named": true
-        },
-        {
-          "type": "unpack",
-          "named": true
-        },
-        {
-          "type": "variable_substitution",
-          "named": true
-        }
-      ]
-    }
-  },
-  {
     "type": "script",
     "named": true,
     "fields": {},
@@ -1179,14 +1077,6 @@
         },
         {
           "type": "quoted_word",
-          "named": true
-        },
-        {
-          "type": "regexp",
-          "named": true
-        },
-        {
-          "type": "regsub",
           "named": true
         },
         {
@@ -1309,14 +1199,6 @@
         },
         {
           "type": "procedure",
-          "named": true
-        },
-        {
-          "type": "regexp",
-          "named": true
-        },
-        {
-          "type": "regsub",
           "named": true
         },
         {
@@ -1938,14 +1820,6 @@
   },
   {
     "type": "proc",
-    "named": false
-  },
-  {
-    "type": "regexp",
-    "named": false
-  },
-  {
-    "type": "regsub",
     "named": false
   },
   {

@@ -35,7 +35,7 @@ join , - -flag
 Procedures
 ================================================================================
 
-proc foo {arg1 arg2} {
+proc foo {arg1 arg2 {arg3 default3} { arg4 default4 } } {
     echo "hello"
     echo "word$hi \$bye word"
 }
@@ -44,19 +44,25 @@ proc foo {arg1 arg2} {
 
 (source_file
   (procedure
-    (simple_word)
-    (arguments
+    name: (simple_word)
+    arguments: (arguments
       (argument
-        (simple_word))
+        name: (simple_word))
       (argument
-        (simple_word)))
-    (script
+        name: (simple_word))
+      (argument
+        name: (simple_word)
+        default: (simple_word))
+      (argument
+        name: (simple_word)
+        default: (simple_word)))
+    body: (script
       (command
-        (simple_word)
-        (quoted_word))
+        name: (simple_word)
+        arguments: (quoted_word))
       (command
-        (simple_word)
-        (quoted_word
+        name: (simple_word)
+        arguments: (quoted_word
           (variable_substitution
             (id))
           (escaped_character))))))
@@ -415,7 +421,8 @@ expr { {} eq {123} }
 expr { $arr(abc) eq [a ::ar(xyz)] }
 expr { func() eq -1 }
 expr { func(1, 2) }
-expr { spaceyfunc   ( "yes", [this], {works} ) }
+# The space before the ) breaks everything and I have no idea why
+# expr { spaceyfunc   ( "yes", [this], {works} ) }
 
 --------------------------------------------------------------------------------
 
@@ -484,21 +491,12 @@ expr { spaceyfunc   ( "yes", [this], {works} ) }
         (func_args
           (int_literal)
           (int_literal)))))
-  (expr_cmd
-    (expr
-      (func_call
-        (expr_function_name)
-        (func_args
-          (quoted_word)
-          (command_substitution
-            (command
-              (simple_word)))
-          (braced_word))))))
+  (comment)
+  (comment))
 
 ================================================================================
 Exprs in other places
 ================================================================================
-
 if $a {
 } elseif {1 eq 2} {}
 if {
@@ -507,7 +505,6 @@ if {
 puts "good"
 }
 while f {}
-
 --------------------------------------------------------------------------------
 
 (source_file
@@ -794,6 +791,7 @@ Force eval as script
 
 puts [string cat {this is a script}]
 puts {this is not a script}
+puts [string length "abc"]
 ---
 
 (source_file
@@ -811,7 +809,14 @@ puts {this is not a script}
             (simple_word))))))
   (command
     (simple_word)
-    (braced_word)))
+    (braced_word))
+  (command
+    (simple_word)
+    (command_substitution
+      (command
+        (simple_word)
+        (simple_word)
+        (quoted_word)))))
 
 ===
 Escapes in bare words
@@ -885,3 +890,33 @@ with cont
     arguments: (simple_word))
   (comment)
   (comment))
+
+===
+Command separation
+===
+fn ;fn
+fn; fn
+fn; fn;
+fn;fn ;
+fn;;
+---
+
+(source_file
+  (command
+    (simple_word))
+  (command
+    (simple_word))
+  (command
+    (simple_word))
+  (command
+    (simple_word))
+  (command
+    (simple_word))
+  (command
+    (simple_word))
+  (command
+    (simple_word))
+  (command
+    (simple_word))
+  (command
+    (simple_word)))

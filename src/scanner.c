@@ -8,6 +8,7 @@
 enum TokenType {
   CONCAT,
   NS_DELIM,
+  COMMAND_SEPARATOR,
   // Not used in the grammar, but used in the external scanner to check for error state.
   // This relies on the tree-sitter behavior that when an error is encountered the external
   // scanner is called with all symbols marked as valid.
@@ -36,6 +37,14 @@ static bool is_bare_word(int32_t chr) {
     return iswalnum(chr) || chr == '_';
 }
 
+static bool is_tcl_whitespace(int32_t chr) {
+    return iswspace(chr) && chr != '\n';
+}
+
+static bool is_tcl_separator(int32_t chr) {
+    return chr == '\n' || chr == ';';
+}
+
 static bool is_concat_valid(TSLexer *lexer, const bool *valid_symbols) {
     if (valid_symbols[CONCAT]) {
         if (is_bare_word(lexer->lookahead) ||
@@ -49,6 +58,10 @@ static bool is_concat_valid(TSLexer *lexer, const bool *valid_symbols) {
         }
     }
     return false;
+}
+
+static bool has_followup_command(TSLexer *lexer) {
+    return !(lexer->lookahead == ']' || lexer->lookahead == '}' || lexer->eof(lexer));
 }
 
 static bool scan_ns_delim(TSLexer *lexer) {
@@ -71,13 +84,36 @@ void *tree_sitter_tcl_external_scanner_create() {
 
 bool tree_sitter_tcl_external_scanner_scan(void *payload, TSLexer *lexer,
                                           const bool *valid_symbols) {
-  myprintf("Column: %d, lookahead: '%c', symbols: %d %d %d\n", lexer->get_column(lexer), lexer->lookahead, valid_symbols[CONCAT], valid_symbols[NS_DELIM], valid_symbols[ERROR]);
+  myprintf("Column: %d, lookahead: '%c', symbols: %d %d %d %d\n", lexer->get_column(lexer), lexer->lookahead, valid_symbols[CONCAT], valid_symbols[NS_DELIM], valid_symbols[COMMAND_SEPARATOR], valid_symbols[ERROR]);
   if (valid_symbols[ERROR]) {
       return false;
   }
   if (valid_symbols[NS_DELIM] && scan_ns_delim(lexer)) {
     myprintf("We picked ns\n");
     return true;
+  }
+
+  if (valid_symbols[COMMAND_SEPARATOR] && (is_tcl_whitespace(lexer->lookahead) || is_tcl_separator(lexer->lookahead))) {
+      bool saw_separator = false;
+      lexer->mark_end(lexer);
+      do {
+          while (is_tcl_whitespace(lexer->lookahead)) {
+              lexer->advance(lexer, false);
+          }
+          while (is_tcl_separator(lexer->lookahead)) {
+              lexer->advance(lexer, false);
+              if (!saw_separator) {
+                  lexer->mark_end(lexer);
+                  saw_separator = true;
+              }
+          }
+      } while (is_tcl_whitespace(lexer->lookahead));
+      if (saw_separator && has_followup_command(lexer)) {
+          myprintf("We picked separator\n");
+          lexer->result_symbol = COMMAND_SEPARATOR;
+      }
+      myprintf("Seemed like separator but picked nothing\n");
+      return saw_separator && has_followup_command(lexer);
   }
 
   if (is_concat_valid(lexer, valid_symbols)) {
