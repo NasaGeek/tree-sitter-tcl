@@ -460,7 +460,7 @@ module.exports = grammar({
     // Might end up useful for arbitrary quoted stuff...
     // _concat_word_noquote: $ => interleaved1(
     //   choice(
-    //     $.escaped_character,
+    //     $.escape_sequence,
     //     $.command_substitution,
     //     $.simple_word,
     //     $.varname,
@@ -477,7 +477,7 @@ module.exports = grammar({
     // can't start with " or {.
     _concat_word: $ => interleaved1(
       choice(
-        $.escaped_character,
+        $.escape_sequence,
         $.command_substitution,
         $.variable_substitution,
         $.simple_word,
@@ -488,7 +488,7 @@ module.exports = grammar({
 
     _concat_word_array_index: $ => repeat1(
       choice(
-        $.escaped_character,
+        $.escape_sequence,
         $.command_substitution,
         $.variable_substitution,
         $.array_index_word,
@@ -500,7 +500,7 @@ module.exports = grammar({
     // concat check.
     _concat_word_expr: $ => repeat1(
       choice(
-        $.escaped_character,
+        $.escape_sequence,
         $.command_substitution,
         $.quoted_word,
         $.variable_substitution,
@@ -623,7 +623,7 @@ module.exports = grammar({
         $.variable_substitution,
         $._quoted_word_content,
         $.command_substitution,
-        $.escaped_character,
+        $.escape_sequence,
       )),
       '"',
     ),
@@ -658,8 +658,16 @@ module.exports = grammar({
     // Feels very similar to raw_word, but is not opaque within.
     literal_list: $ => seqnl('{', repeat(choice('\n', $.gap, $.literal_list, $.list_item)), '}'),
 
-    // TODO: match longer escapes (\xNN \uNNNN etc)
-    escaped_character: _ => /\\./,
+    escape_sequence: _ => token(seq(
+      '\\',
+      choice(
+        /./,
+        /[0-7]{1,3}/,
+        /x[0-9a-fA-F]{1,2}/,
+        /u[0-9a-fA-F]{1,4}/,
+        /U[0-9a-fA-F]{1,8}/,
+      ),
+    )),
 
     // https://github.com/tree-sitter/tree-sitter/issues/1087#issuecomment-833198651
     _quoted_word_content: _ => token(prec(-1, /[^$\\\[\]"]+/)),

@@ -66,7 +66,7 @@ proc f {{a w$][[]}} {}
         arguments: (quoted_word
           (variable_substitution
             (id))
-          (escaped_character)))))
+          (escape_sequence)))))
   (procedure
     name: (simple_word)
     arguments: (arguments
@@ -213,6 +213,8 @@ Escaped string
 ================================================================================
 
 echo "word$hi \$bye word"
+puts "\1 \11 \x123a \u123a \U "
+puts \1\11\x123a\u123a\U
 
 --------------------------------------------------------------------------------
 
@@ -222,7 +224,28 @@ echo "word$hi \$bye word"
     (quoted_word
       (variable_substitution
         (id))
-      (escaped_character))))
+      (escape_sequence)))
+  (command
+    (simple_word)
+    (quoted_word
+      (escape_sequence)
+      (escape_sequence)
+      (escape_sequence)
+      (escape_sequence)
+      (escape_sequence)))
+  (command
+    (simple_word)
+    (escape_sequence)
+    (concat)
+    (escape_sequence)
+    (concat)
+    (escape_sequence)
+    (concat)
+    (simple_word)
+    (concat)
+    (escape_sequence)
+    (concat)
+    (escape_sequence)))
 
 ================================================================================
 Array set
@@ -877,13 +900,13 @@ this\$cmd
   (command
     (simple_word)
     (concat)
-    (escaped_character)
+    (escape_sequence)
     (concat)
     (simple_word))
   (command
     (simple_word)
     (concat)
-    (escaped_character)
+    (escape_sequence)
     (concat)
     (simple_word)))
 
