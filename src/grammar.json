@@ -494,57 +494,34 @@
         },
         {
           "type": "FIELD",
-          "name": "flags",
+          "name": "arguments",
           "content": {
-            "type": "CHOICE",
+            "type": "SEQ",
             "members": [
               {
-                "type": "SEQ",
-                "members": [
-                  {
-                    "type": "SYMBOL",
-                    "name": "_word"
-                  },
-                  {
-                    "type": "REPEAT",
-                    "content": {
-                      "type": "SEQ",
-                      "members": [
-                        {
-                          "type": "TOKEN",
-                          "content": {
-                            "type": "PATTERN",
-                            "value": "[ \\t\\v\\f\\r]+|\\\\\\r?\\n"
-                          }
-                        },
-                        {
-                          "type": "SYMBOL",
-                          "name": "_word"
-                        }
-                      ]
-                    }
-                  }
-                ]
+                "type": "SYMBOL",
+                "name": "_word"
               },
               {
-                "type": "BLANK"
+                "type": "REPEAT",
+                "content": {
+                  "type": "SEQ",
+                  "members": [
+                    {
+                      "type": "TOKEN",
+                      "content": {
+                        "type": "PATTERN",
+                        "value": "[ \\t\\v\\f\\r]+|\\\\\\r?\\n"
+                      }
+                    },
+                    {
+                      "type": "SYMBOL",
+                      "name": "_word"
+                    }
+                  ]
+                }
               }
             ]
-          }
-        },
-        {
-          "type": "TOKEN",
-          "content": {
-            "type": "PATTERN",
-            "value": "[ \\t\\v\\f\\r]+|\\\\\\r?\\n"
-          }
-        },
-        {
-          "type": "FIELD",
-          "name": "pattern",
-          "content": {
-            "type": "SYMBOL",
-            "name": "_word"
           }
         },
         {

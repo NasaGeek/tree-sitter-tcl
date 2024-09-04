@@ -1277,49 +1277,7 @@
     "type": "switch",
     "named": true,
     "fields": {
-      "flags": {
-        "multiple": true,
-        "required": false,
-        "types": [
-          {
-            "type": "array_name",
-            "named": true
-          },
-          {
-            "type": "braced_word",
-            "named": true
-          },
-          {
-            "type": "command_substitution",
-            "named": true
-          },
-          {
-            "type": "concat",
-            "named": true
-          },
-          {
-            "type": "escape_sequence",
-            "named": true
-          },
-          {
-            "type": "quoted_word",
-            "named": true
-          },
-          {
-            "type": "simple_word",
-            "named": true
-          },
-          {
-            "type": "unpack",
-            "named": true
-          },
-          {
-            "type": "variable_substitution",
-            "named": true
-          }
-        ]
-      },
-      "pattern": {
+      "arguments": {
         "multiple": true,
         "required": true,
         "types": [

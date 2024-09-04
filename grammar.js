@@ -239,7 +239,6 @@ module.exports = grammar({
     [$._word_list],
     [$._word_eval_list],
     [$.conditional],
-    [$.switch],
     [$.string_cmd],
     [$.global],
     [$.catch],
@@ -341,8 +340,11 @@ module.exports = grammar({
 
     // https://www.tcl.tk/man/tcl/TclCmd/switch.htm
     switch: $ => seqgap("switch",
-      field("flags", intergapped($._word)),
-      field("pattern", $._word),
+      field("arguments", intergapped1($._word)),
+      // Maybe this is too complicated for poor tree-sitter. It used to work
+      // alright, but I broke it at some point.
+      // field("flags", intergapped($._word)),
+      // field("pattern", $._word),
       $.switch_body,
     ),
 

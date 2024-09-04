@@ -682,6 +682,12 @@ switch -glob aaab {
     default {}
 }
 
+switch $justthepattern {
+  *B* -
+  /a/ -
+  $a  { do the thing }
+}
+
 --------------------------------------------------------------------------------
 
 (source_file
@@ -702,7 +708,21 @@ switch -glob aaab {
         (command
           (simple_word)))
       (raw_word)
-      (script))))
+      (script)))
+  (switch
+    (variable_substitution
+      (id))
+    (switch_body
+      (raw_word)
+      (script)
+      (raw_word)
+      (script)
+      (raw_word)
+      (script
+        (command
+          (simple_word)
+          (simple_word)
+          (simple_word))))))
 
 ===
 Command substitution of full scripts
