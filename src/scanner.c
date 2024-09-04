@@ -37,6 +37,22 @@ static bool is_bare_word(int32_t chr) {
     return iswalnum(chr) || chr == '_';
 }
 
+static bool is_simple_word(TSLexer *lexer, int32_t chr) {
+    // Matches simple_word definition in grammar.js
+    return (!iswspace(chr) &&
+            !lexer->eof(lexer) &&
+            chr != '\\' &&
+            chr != '[' &&
+            chr != ']' &&
+            chr != '$' &&
+            chr != '{' &&
+            chr != '}' &&
+            chr != '(' &&
+            chr != ')' &&
+            chr != ';' &&
+            chr != '"');
+}
+
 static bool is_tcl_whitespace(int32_t chr) {
     return iswspace(chr) && chr != '\n';
 }
@@ -46,8 +62,11 @@ static bool is_tcl_separator(int32_t chr) {
 }
 
 static bool is_concat_valid(TSLexer *lexer, const bool *valid_symbols) {
+    /* Don't yet have a good answer to how we allow stuff like ]/{/}/" in strings
+     * that didn't start with " or {
+     */
     if (valid_symbols[CONCAT]) {
-        if (is_bare_word(lexer->lookahead) ||
+        if (is_simple_word(lexer, lexer->lookahead) ||
                 lexer->lookahead == '$' ||
                 lexer->lookahead == '[') {
             return true;

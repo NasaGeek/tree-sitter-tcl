@@ -1011,3 +1011,25 @@ fn;;
     (simple_word))
   (command
     (simple_word)))
+
+===
+Concat eval
+===
+puts %*&$vfa':[]\aa
+---
+
+(source_file
+  (command
+    name: (simple_word)
+    arguments: (simple_word)
+    arguments: (concat)
+    arguments: (variable_substitution
+      (id))
+    arguments: (concat)
+    arguments: (simple_word)
+    arguments: (concat)
+    arguments: (command_substitution)
+    arguments: (concat)
+    arguments: (escape_sequence)
+    arguments: (concat)
+    arguments: (simple_word)))
