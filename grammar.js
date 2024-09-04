@@ -113,7 +113,7 @@ const expr_seq = (seqfn, suffix) => {
 }
 
 // https://www.tcl-lang.org/cgi-bin/tct/tip/407.html#:~:text=Tcl%27s%20source%20code.-,String%20Representation%20of%20Lists,-The%20routines%20%5Bin
-const gap = token(/[ \t\v\f\r]+|\\\r?\n/)
+const gap = token(/([ \t\v\f\r]|\\\r?\n)+/)
 
 const intergappednl1 = (rule) => interleaved1(rule, repeat1(choice(gap, '\n')))
 const intergappednl = (rule) => optional(intergappednl1(rule))
@@ -220,10 +220,7 @@ module.exports = grammar({
     $._word,
   ],
 
-  extras: _ => [
-    // Don't blanket-ignore whitespace, because newlines are significant
-    /\\\r?\n/,
-  ],
+  extras: _ => [],
 
   conflicts: $ => [
     [$.switch_body],
@@ -663,7 +660,7 @@ module.exports = grammar({
     escape_sequence: _ => token(seq(
       '\\',
       choice(
-        /./,
+        /./, // note this won't match newlines
         /[0-7]{1,3}/,
         /x[0-9a-fA-F]{1,2}/,
         /u[0-9a-fA-F]{1,4}/,
@@ -672,7 +669,7 @@ module.exports = grammar({
     )),
 
     // https://github.com/tree-sitter/tree-sitter/issues/1087#issuecomment-833198651
-    _quoted_word_content: _ => token(prec(-1, /[^$\\\[\]"]+/)),
+    _quoted_word_content: _ => token(prec(-1, /([^$\\\[\]"]|\\\r?\n)+/)),
 
     command_substitution: $ => seq('[', optional($._script_body), ']'),
 

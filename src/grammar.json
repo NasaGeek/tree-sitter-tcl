@@ -101,7 +101,7 @@
       "type": "TOKEN",
       "content": {
         "type": "PATTERN",
-        "value": "[ \\t\\v\\f\\r]+|\\\\\\r?\\n"
+        "value": "([ \\t\\v\\f\\r]|\\\\\\r?\\n)+"
       }
     },
     "termgap": {
@@ -206,7 +206,7 @@
           "type": "TOKEN",
           "content": {
             "type": "PATTERN",
-            "value": "[ \\t\\v\\f\\r]+|\\\\\\r?\\n"
+            "value": "([ \\t\\v\\f\\r]|\\\\\\r?\\n)+"
           }
         },
         {
@@ -237,7 +237,7 @@
                             "type": "TOKEN",
                             "content": {
                               "type": "PATTERN",
-                              "value": "[ \\t\\v\\f\\r]+|\\\\\\r?\\n"
+                              "value": "([ \\t\\v\\f\\r]|\\\\\\r?\\n)+"
                             }
                           },
                           {
@@ -273,7 +273,7 @@
           "type": "TOKEN",
           "content": {
             "type": "PATTERN",
-            "value": "[ \\t\\v\\f\\r]+|\\\\\\r?\\n"
+            "value": "([ \\t\\v\\f\\r]|\\\\\\r?\\n)+"
           }
         },
         {
@@ -284,7 +284,7 @@
           "type": "TOKEN",
           "content": {
             "type": "PATTERN",
-            "value": "[ \\t\\v\\f\\r]+|\\\\\\r?\\n"
+            "value": "([ \\t\\v\\f\\r]|\\\\\\r?\\n)+"
           }
         },
         {
@@ -304,7 +304,7 @@
           "type": "TOKEN",
           "content": {
             "type": "PATTERN",
-            "value": "[ \\t\\v\\f\\r]+|\\\\\\r?\\n"
+            "value": "([ \\t\\v\\f\\r]|\\\\\\r?\\n)+"
           }
         },
         {
@@ -321,7 +321,7 @@
                   "type": "TOKEN",
                   "content": {
                     "type": "PATTERN",
-                    "value": "[ \\t\\v\\f\\r]+|\\\\\\r?\\n"
+                    "value": "([ \\t\\v\\f\\r]|\\\\\\r?\\n)+"
                   }
                 },
                 {
@@ -348,7 +348,7 @@
           "type": "TOKEN",
           "content": {
             "type": "PATTERN",
-            "value": "[ \\t\\v\\f\\r]+|\\\\\\r?\\n"
+            "value": "([ \\t\\v\\f\\r]|\\\\\\r?\\n)+"
           }
         },
         {
@@ -359,7 +359,7 @@
           "type": "TOKEN",
           "content": {
             "type": "PATTERN",
-            "value": "[ \\t\\v\\f\\r]+|\\\\\\r?\\n"
+            "value": "([ \\t\\v\\f\\r]|\\\\\\r?\\n)+"
           }
         },
         {
@@ -370,7 +370,7 @@
           "type": "TOKEN",
           "content": {
             "type": "PATTERN",
-            "value": "[ \\t\\v\\f\\r]+|\\\\\\r?\\n"
+            "value": "([ \\t\\v\\f\\r]|\\\\\\r?\\n)+"
           }
         },
         {
@@ -381,7 +381,7 @@
           "type": "TOKEN",
           "content": {
             "type": "PATTERN",
-            "value": "[ \\t\\v\\f\\r]+|\\\\\\r?\\n"
+            "value": "([ \\t\\v\\f\\r]|\\\\\\r?\\n)+"
           }
         },
         {
@@ -401,7 +401,7 @@
           "type": "TOKEN",
           "content": {
             "type": "PATTERN",
-            "value": "[ \\t\\v\\f\\r]+|\\\\\\r?\\n"
+            "value": "([ \\t\\v\\f\\r]|\\\\\\r?\\n)+"
           }
         },
         {
@@ -412,7 +412,7 @@
           "type": "TOKEN",
           "content": {
             "type": "PATTERN",
-            "value": "[ \\t\\v\\f\\r]+|\\\\\\r?\\n"
+            "value": "([ \\t\\v\\f\\r]|\\\\\\r?\\n)+"
           }
         },
         {
@@ -437,7 +437,7 @@
                 "type": "TOKEN",
                 "content": {
                   "type": "PATTERN",
-                  "value": "[ \\t\\v\\f\\r]+|\\\\\\r?\\n"
+                  "value": "([ \\t\\v\\f\\r]|\\\\\\r?\\n)+"
                 }
               },
               {
@@ -469,7 +469,7 @@
           "type": "TOKEN",
           "content": {
             "type": "PATTERN",
-            "value": "[ \\t\\v\\f\\r]+|\\\\\\r?\\n"
+            "value": "([ \\t\\v\\f\\r]|\\\\\\r?\\n)+"
           }
         },
         {
@@ -489,7 +489,7 @@
           "type": "TOKEN",
           "content": {
             "type": "PATTERN",
-            "value": "[ \\t\\v\\f\\r]+|\\\\\\r?\\n"
+            "value": "([ \\t\\v\\f\\r]|\\\\\\r?\\n)+"
           }
         },
         {
@@ -511,7 +511,7 @@
                       "type": "TOKEN",
                       "content": {
                         "type": "PATTERN",
-                        "value": "[ \\t\\v\\f\\r]+|\\\\\\r?\\n"
+                        "value": "([ \\t\\v\\f\\r]|\\\\\\r?\\n)+"
                       }
                     },
                     {
@@ -528,7 +528,7 @@
           "type": "TOKEN",
           "content": {
             "type": "PATTERN",
-            "value": "[ \\t\\v\\f\\r]+|\\\\\\r?\\n"
+            "value": "([ \\t\\v\\f\\r]|\\\\\\r?\\n)+"
           }
         },
         {
@@ -567,7 +567,7 @@
                     "type": "TOKEN",
                     "content": {
                       "type": "PATTERN",
-                      "value": "[ \\t\\v\\f\\r]+|\\\\\\r?\\n"
+                      "value": "([ \\t\\v\\f\\r]|\\\\\\r?\\n)+"
                     }
                   }
                 ]
@@ -597,7 +597,7 @@
                                   "type": "TOKEN",
                                   "content": {
                                     "type": "PATTERN",
-                                    "value": "[ \\t\\v\\f\\r]+|\\\\\\r?\\n"
+                                    "value": "([ \\t\\v\\f\\r]|\\\\\\r?\\n)+"
                                   }
                                 },
                                 {
@@ -634,7 +634,7 @@
                     "type": "TOKEN",
                     "content": {
                       "type": "PATTERN",
-                      "value": "[ \\t\\v\\f\\r]+|\\\\\\r?\\n"
+                      "value": "([ \\t\\v\\f\\r]|\\\\\\r?\\n)+"
                     }
                   }
                 ]
@@ -668,7 +668,7 @@
                 "type": "TOKEN",
                 "content": {
                   "type": "PATTERN",
-                  "value": "[ \\t\\v\\f\\r]+|\\\\\\r?\\n"
+                  "value": "([ \\t\\v\\f\\r]|\\\\\\r?\\n)+"
                 }
               }
             ]
@@ -758,7 +758,7 @@
                   "type": "TOKEN",
                   "content": {
                     "type": "PATTERN",
-                    "value": "[ \\t\\v\\f\\r]+|\\\\\\r?\\n"
+                    "value": "([ \\t\\v\\f\\r]|\\\\\\r?\\n)+"
                   }
                 },
                 {
@@ -777,7 +777,7 @@
                             "type": "TOKEN",
                             "content": {
                               "type": "PATTERN",
-                              "value": "[ \\t\\v\\f\\r]+|\\\\\\r?\\n"
+                              "value": "([ \\t\\v\\f\\r]|\\\\\\r?\\n)+"
                             }
                           },
                           {
@@ -809,7 +809,7 @@
           "type": "TOKEN",
           "content": {
             "type": "PATTERN",
-            "value": "[ \\t\\v\\f\\r]+|\\\\\\r?\\n"
+            "value": "([ \\t\\v\\f\\r]|\\\\\\r?\\n)+"
           }
         },
         {
@@ -832,7 +832,7 @@
               "type": "TOKEN",
               "content": {
                 "type": "PATTERN",
-                "value": "[ \\t\\v\\f\\r]+|\\\\\\r?\\n"
+                "value": "([ \\t\\v\\f\\r]|\\\\\\r?\\n)+"
               }
             },
             {
@@ -858,7 +858,7 @@
           "type": "TOKEN",
           "content": {
             "type": "PATTERN",
-            "value": "[ \\t\\v\\f\\r]+|\\\\\\r?\\n"
+            "value": "([ \\t\\v\\f\\r]|\\\\\\r?\\n)+"
           }
         },
         {
@@ -874,7 +874,7 @@
                 "type": "TOKEN",
                 "content": {
                   "type": "PATTERN",
-                  "value": "[ \\t\\v\\f\\r]+|\\\\\\r?\\n"
+                  "value": "([ \\t\\v\\f\\r]|\\\\\\r?\\n)+"
                 }
               },
               {
@@ -891,7 +891,7 @@
                         "type": "TOKEN",
                         "content": {
                           "type": "PATTERN",
-                          "value": "[ \\t\\v\\f\\r]+|\\\\\\r?\\n"
+                          "value": "([ \\t\\v\\f\\r]|\\\\\\r?\\n)+"
                         }
                       },
                       {
@@ -927,7 +927,7 @@
                         "type": "TOKEN",
                         "content": {
                           "type": "PATTERN",
-                          "value": "[ \\t\\v\\f\\r]+|\\\\\\r?\\n"
+                          "value": "([ \\t\\v\\f\\r]|\\\\\\r?\\n)+"
                         }
                       },
                       {
@@ -947,7 +947,7 @@
                         "type": "TOKEN",
                         "content": {
                           "type": "PATTERN",
-                          "value": "[ \\t\\v\\f\\r]+|\\\\\\r?\\n"
+                          "value": "([ \\t\\v\\f\\r]|\\\\\\r?\\n)+"
                         }
                       },
                       {
@@ -967,7 +967,7 @@
                         "type": "TOKEN",
                         "content": {
                           "type": "PATTERN",
-                          "value": "[ \\t\\v\\f\\r]+|\\\\\\r?\\n"
+                          "value": "([ \\t\\v\\f\\r]|\\\\\\r?\\n)+"
                         }
                       },
                       {
@@ -978,7 +978,7 @@
                         "type": "TOKEN",
                         "content": {
                           "type": "PATTERN",
-                          "value": "[ \\t\\v\\f\\r]+|\\\\\\r?\\n"
+                          "value": "([ \\t\\v\\f\\r]|\\\\\\r?\\n)+"
                         }
                       },
                       {
@@ -998,7 +998,7 @@
                         "type": "TOKEN",
                         "content": {
                           "type": "PATTERN",
-                          "value": "[ \\t\\v\\f\\r]+|\\\\\\r?\\n"
+                          "value": "([ \\t\\v\\f\\r]|\\\\\\r?\\n)+"
                         }
                       },
                       {
@@ -1022,7 +1022,7 @@
                   "type": "TOKEN",
                   "content": {
                     "type": "PATTERN",
-                    "value": "[ \\t\\v\\f\\r]+|\\\\\\r?\\n"
+                    "value": "([ \\t\\v\\f\\r]|\\\\\\r?\\n)+"
                   }
                 },
                 {
@@ -1049,7 +1049,7 @@
           "type": "TOKEN",
           "content": {
             "type": "PATTERN",
-            "value": "[ \\t\\v\\f\\r]+|\\\\\\r?\\n"
+            "value": "([ \\t\\v\\f\\r]|\\\\\\r?\\n)+"
           }
         },
         {
@@ -1096,7 +1096,7 @@
                   "type": "TOKEN",
                   "content": {
                     "type": "PATTERN",
-                    "value": "[ \\t\\v\\f\\r]+|\\\\\\r?\\n"
+                    "value": "([ \\t\\v\\f\\r]|\\\\\\r?\\n)+"
                   }
                 },
                 {
@@ -1136,7 +1136,7 @@
                 "type": "TOKEN",
                 "content": {
                   "type": "PATTERN",
-                  "value": "[ \\t\\v\\f\\r]+|\\\\\\r?\\n"
+                  "value": "([ \\t\\v\\f\\r]|\\\\\\r?\\n)+"
                 }
               },
               {
@@ -1185,7 +1185,7 @@
                 "type": "TOKEN",
                 "content": {
                   "type": "PATTERN",
-                  "value": "[ \\t\\v\\f\\r]+|\\\\\\r?\\n"
+                  "value": "([ \\t\\v\\f\\r]|\\\\\\r?\\n)+"
                 }
               },
               {
@@ -1523,7 +1523,7 @@
           "type": "TOKEN",
           "content": {
             "type": "PATTERN",
-            "value": "[ \\t\\v\\f\\r]+|\\\\\\r?\\n"
+            "value": "([ \\t\\v\\f\\r]|\\\\\\r?\\n)+"
           }
         },
         {
@@ -1540,7 +1540,7 @@
                   "type": "TOKEN",
                   "content": {
                     "type": "PATTERN",
-                    "value": "[ \\t\\v\\f\\r]+|\\\\\\r?\\n"
+                    "value": "([ \\t\\v\\f\\r]|\\\\\\r?\\n)+"
                   }
                 },
                 {
@@ -1567,7 +1567,7 @@
           "type": "TOKEN",
           "content": {
             "type": "PATTERN",
-            "value": "[ \\t\\v\\f\\r]+|\\\\\\r?\\n"
+            "value": "([ \\t\\v\\f\\r]|\\\\\\r?\\n)+"
           }
         },
         {
@@ -1582,7 +1582,7 @@
           "type": "TOKEN",
           "content": {
             "type": "PATTERN",
-            "value": "[ \\t\\v\\f\\r]+|\\\\\\r?\\n"
+            "value": "([ \\t\\v\\f\\r]|\\\\\\r?\\n)+"
           }
         },
         {
@@ -1597,7 +1597,7 @@
           "type": "TOKEN",
           "content": {
             "type": "PATTERN",
-            "value": "[ \\t\\v\\f\\r]+|\\\\\\r?\\n"
+            "value": "([ \\t\\v\\f\\r]|\\\\\\r?\\n)+"
           }
         },
         {
@@ -1633,7 +1633,7 @@
                     "type": "TOKEN",
                     "content": {
                       "type": "PATTERN",
-                      "value": "[ \\t\\v\\f\\r]+|\\\\\\r?\\n"
+                      "value": "([ \\t\\v\\f\\r]|\\\\\\r?\\n)+"
                     }
                   }
                 ]
@@ -1658,7 +1658,7 @@
                             "type": "TOKEN",
                             "content": {
                               "type": "PATTERN",
-                              "value": "[ \\t\\v\\f\\r]+|\\\\\\r?\\n"
+                              "value": "([ \\t\\v\\f\\r]|\\\\\\r?\\n)+"
                             }
                           },
                           {
@@ -1688,7 +1688,7 @@
                     "type": "TOKEN",
                     "content": {
                       "type": "PATTERN",
-                      "value": "[ \\t\\v\\f\\r]+|\\\\\\r?\\n"
+                      "value": "([ \\t\\v\\f\\r]|\\\\\\r?\\n)+"
                     }
                   }
                 ]
@@ -1737,7 +1737,7 @@
                     "type": "TOKEN",
                     "content": {
                       "type": "PATTERN",
-                      "value": "[ \\t\\v\\f\\r]+|\\\\\\r?\\n"
+                      "value": "([ \\t\\v\\f\\r]|\\\\\\r?\\n)+"
                     }
                   }
                 ]
@@ -1760,7 +1760,7 @@
                     "type": "TOKEN",
                     "content": {
                       "type": "PATTERN",
-                      "value": "[ \\t\\v\\f\\r]+|\\\\\\r?\\n"
+                      "value": "([ \\t\\v\\f\\r]|\\\\\\r?\\n)+"
                     }
                   }
                 ]
@@ -1804,7 +1804,7 @@
                         "type": "TOKEN",
                         "content": {
                           "type": "PATTERN",
-                          "value": "[ \\t\\v\\f\\r]+|\\\\\\r?\\n"
+                          "value": "([ \\t\\v\\f\\r]|\\\\\\r?\\n)+"
                         }
                       }
                     ]
@@ -1857,7 +1857,7 @@
                     "type": "TOKEN",
                     "content": {
                       "type": "PATTERN",
-                      "value": "[ \\t\\v\\f\\r]+|\\\\\\r?\\n"
+                      "value": "([ \\t\\v\\f\\r]|\\\\\\r?\\n)+"
                     }
                   }
                 ]
@@ -1880,7 +1880,7 @@
                     "type": "TOKEN",
                     "content": {
                       "type": "PATTERN",
-                      "value": "[ \\t\\v\\f\\r]+|\\\\\\r?\\n"
+                      "value": "([ \\t\\v\\f\\r]|\\\\\\r?\\n)+"
                     }
                   }
                 ]
@@ -1921,7 +1921,7 @@
                     "type": "TOKEN",
                     "content": {
                       "type": "PATTERN",
-                      "value": "[ \\t\\v\\f\\r]+|\\\\\\r?\\n"
+                      "value": "([ \\t\\v\\f\\r]|\\\\\\r?\\n)+"
                     }
                   }
                 ]
@@ -1944,7 +1944,7 @@
                     "type": "TOKEN",
                     "content": {
                       "type": "PATTERN",
-                      "value": "[ \\t\\v\\f\\r]+|\\\\\\r?\\n"
+                      "value": "([ \\t\\v\\f\\r]|\\\\\\r?\\n)+"
                     }
                   }
                 ]
@@ -2047,7 +2047,7 @@
                 "type": "TOKEN",
                 "content": {
                   "type": "PATTERN",
-                  "value": "[ \\t\\v\\f\\r]+|\\\\\\r?\\n"
+                  "value": "([ \\t\\v\\f\\r]|\\\\\\r?\\n)+"
                 }
               }
             ]
@@ -2070,7 +2070,7 @@
                 "type": "TOKEN",
                 "content": {
                   "type": "PATTERN",
-                  "value": "[ \\t\\v\\f\\r]+|\\\\\\r?\\n"
+                  "value": "([ \\t\\v\\f\\r]|\\\\\\r?\\n)+"
                 }
               }
             ]
@@ -2110,7 +2110,7 @@
                 "type": "TOKEN",
                 "content": {
                   "type": "PATTERN",
-                  "value": "[ \\t\\v\\f\\r]+|\\\\\\r?\\n"
+                  "value": "([ \\t\\v\\f\\r]|\\\\\\r?\\n)+"
                 }
               }
             ]
@@ -2145,7 +2145,7 @@
                   "type": "TOKEN",
                   "content": {
                     "type": "PATTERN",
-                    "value": "[ \\t\\v\\f\\r]+|\\\\\\r?\\n"
+                    "value": "([ \\t\\v\\f\\r]|\\\\\\r?\\n)+"
                   }
                 }
               ]
@@ -2173,7 +2173,7 @@
                         "type": "TOKEN",
                         "content": {
                           "type": "PATTERN",
-                          "value": "[ \\t\\v\\f\\r]+|\\\\\\r?\\n"
+                          "value": "([ \\t\\v\\f\\r]|\\\\\\r?\\n)+"
                         }
                       }
                     ]
@@ -2229,7 +2229,7 @@
                   "type": "TOKEN",
                   "content": {
                     "type": "PATTERN",
-                    "value": "[ \\t\\v\\f\\r]+|\\\\\\r?\\n"
+                    "value": "([ \\t\\v\\f\\r]|\\\\\\r?\\n)+"
                   }
                 }
               ]
@@ -2268,7 +2268,7 @@
                       "type": "TOKEN",
                       "content": {
                         "type": "PATTERN",
-                        "value": "[ \\t\\v\\f\\r]+|\\\\\\r?\\n"
+                        "value": "([ \\t\\v\\f\\r]|\\\\\\r?\\n)+"
                       }
                     }
                   ]
@@ -2291,7 +2291,7 @@
                       "type": "TOKEN",
                       "content": {
                         "type": "PATTERN",
-                        "value": "[ \\t\\v\\f\\r]+|\\\\\\r?\\n"
+                        "value": "([ \\t\\v\\f\\r]|\\\\\\r?\\n)+"
                       }
                     }
                   ]
@@ -2327,7 +2327,7 @@
                       "type": "TOKEN",
                       "content": {
                         "type": "PATTERN",
-                        "value": "[ \\t\\v\\f\\r]+|\\\\\\r?\\n"
+                        "value": "([ \\t\\v\\f\\r]|\\\\\\r?\\n)+"
                       }
                     }
                   ]
@@ -2350,7 +2350,7 @@
                       "type": "TOKEN",
                       "content": {
                         "type": "PATTERN",
-                        "value": "[ \\t\\v\\f\\r]+|\\\\\\r?\\n"
+                        "value": "([ \\t\\v\\f\\r]|\\\\\\r?\\n)+"
                       }
                     }
                   ]
@@ -2386,7 +2386,7 @@
                       "type": "TOKEN",
                       "content": {
                         "type": "PATTERN",
-                        "value": "[ \\t\\v\\f\\r]+|\\\\\\r?\\n"
+                        "value": "([ \\t\\v\\f\\r]|\\\\\\r?\\n)+"
                       }
                     }
                   ]
@@ -2409,7 +2409,7 @@
                       "type": "TOKEN",
                       "content": {
                         "type": "PATTERN",
-                        "value": "[ \\t\\v\\f\\r]+|\\\\\\r?\\n"
+                        "value": "([ \\t\\v\\f\\r]|\\\\\\r?\\n)+"
                       }
                     }
                   ]
@@ -2445,7 +2445,7 @@
                       "type": "TOKEN",
                       "content": {
                         "type": "PATTERN",
-                        "value": "[ \\t\\v\\f\\r]+|\\\\\\r?\\n"
+                        "value": "([ \\t\\v\\f\\r]|\\\\\\r?\\n)+"
                       }
                     }
                   ]
@@ -2468,7 +2468,7 @@
                       "type": "TOKEN",
                       "content": {
                         "type": "PATTERN",
-                        "value": "[ \\t\\v\\f\\r]+|\\\\\\r?\\n"
+                        "value": "([ \\t\\v\\f\\r]|\\\\\\r?\\n)+"
                       }
                     }
                   ]
@@ -2504,7 +2504,7 @@
                       "type": "TOKEN",
                       "content": {
                         "type": "PATTERN",
-                        "value": "[ \\t\\v\\f\\r]+|\\\\\\r?\\n"
+                        "value": "([ \\t\\v\\f\\r]|\\\\\\r?\\n)+"
                       }
                     }
                   ]
@@ -2527,7 +2527,7 @@
                       "type": "TOKEN",
                       "content": {
                         "type": "PATTERN",
-                        "value": "[ \\t\\v\\f\\r]+|\\\\\\r?\\n"
+                        "value": "([ \\t\\v\\f\\r]|\\\\\\r?\\n)+"
                       }
                     }
                   ]
@@ -2563,7 +2563,7 @@
                       "type": "TOKEN",
                       "content": {
                         "type": "PATTERN",
-                        "value": "[ \\t\\v\\f\\r]+|\\\\\\r?\\n"
+                        "value": "([ \\t\\v\\f\\r]|\\\\\\r?\\n)+"
                       }
                     }
                   ]
@@ -2586,7 +2586,7 @@
                       "type": "TOKEN",
                       "content": {
                         "type": "PATTERN",
-                        "value": "[ \\t\\v\\f\\r]+|\\\\\\r?\\n"
+                        "value": "([ \\t\\v\\f\\r]|\\\\\\r?\\n)+"
                       }
                     }
                   ]
@@ -2622,7 +2622,7 @@
                       "type": "TOKEN",
                       "content": {
                         "type": "PATTERN",
-                        "value": "[ \\t\\v\\f\\r]+|\\\\\\r?\\n"
+                        "value": "([ \\t\\v\\f\\r]|\\\\\\r?\\n)+"
                       }
                     }
                   ]
@@ -2645,7 +2645,7 @@
                       "type": "TOKEN",
                       "content": {
                         "type": "PATTERN",
-                        "value": "[ \\t\\v\\f\\r]+|\\\\\\r?\\n"
+                        "value": "([ \\t\\v\\f\\r]|\\\\\\r?\\n)+"
                       }
                     }
                   ]
@@ -2681,7 +2681,7 @@
                       "type": "TOKEN",
                       "content": {
                         "type": "PATTERN",
-                        "value": "[ \\t\\v\\f\\r]+|\\\\\\r?\\n"
+                        "value": "([ \\t\\v\\f\\r]|\\\\\\r?\\n)+"
                       }
                     }
                   ]
@@ -2704,7 +2704,7 @@
                       "type": "TOKEN",
                       "content": {
                         "type": "PATTERN",
-                        "value": "[ \\t\\v\\f\\r]+|\\\\\\r?\\n"
+                        "value": "([ \\t\\v\\f\\r]|\\\\\\r?\\n)+"
                       }
                     }
                   ]
@@ -2740,7 +2740,7 @@
                       "type": "TOKEN",
                       "content": {
                         "type": "PATTERN",
-                        "value": "[ \\t\\v\\f\\r]+|\\\\\\r?\\n"
+                        "value": "([ \\t\\v\\f\\r]|\\\\\\r?\\n)+"
                       }
                     }
                   ]
@@ -2763,7 +2763,7 @@
                       "type": "TOKEN",
                       "content": {
                         "type": "PATTERN",
-                        "value": "[ \\t\\v\\f\\r]+|\\\\\\r?\\n"
+                        "value": "([ \\t\\v\\f\\r]|\\\\\\r?\\n)+"
                       }
                     }
                   ]
@@ -2799,7 +2799,7 @@
                       "type": "TOKEN",
                       "content": {
                         "type": "PATTERN",
-                        "value": "[ \\t\\v\\f\\r]+|\\\\\\r?\\n"
+                        "value": "([ \\t\\v\\f\\r]|\\\\\\r?\\n)+"
                       }
                     }
                   ]
@@ -2822,7 +2822,7 @@
                       "type": "TOKEN",
                       "content": {
                         "type": "PATTERN",
-                        "value": "[ \\t\\v\\f\\r]+|\\\\\\r?\\n"
+                        "value": "([ \\t\\v\\f\\r]|\\\\\\r?\\n)+"
                       }
                     }
                   ]
@@ -2858,7 +2858,7 @@
                       "type": "TOKEN",
                       "content": {
                         "type": "PATTERN",
-                        "value": "[ \\t\\v\\f\\r]+|\\\\\\r?\\n"
+                        "value": "([ \\t\\v\\f\\r]|\\\\\\r?\\n)+"
                       }
                     }
                   ]
@@ -2881,7 +2881,7 @@
                       "type": "TOKEN",
                       "content": {
                         "type": "PATTERN",
-                        "value": "[ \\t\\v\\f\\r]+|\\\\\\r?\\n"
+                        "value": "([ \\t\\v\\f\\r]|\\\\\\r?\\n)+"
                       }
                     }
                   ]
@@ -2917,7 +2917,7 @@
                       "type": "TOKEN",
                       "content": {
                         "type": "PATTERN",
-                        "value": "[ \\t\\v\\f\\r]+|\\\\\\r?\\n"
+                        "value": "([ \\t\\v\\f\\r]|\\\\\\r?\\n)+"
                       }
                     }
                   ]
@@ -2940,7 +2940,7 @@
                       "type": "TOKEN",
                       "content": {
                         "type": "PATTERN",
-                        "value": "[ \\t\\v\\f\\r]+|\\\\\\r?\\n"
+                        "value": "([ \\t\\v\\f\\r]|\\\\\\r?\\n)+"
                       }
                     }
                   ]
@@ -2976,7 +2976,7 @@
                       "type": "TOKEN",
                       "content": {
                         "type": "PATTERN",
-                        "value": "[ \\t\\v\\f\\r]+|\\\\\\r?\\n"
+                        "value": "([ \\t\\v\\f\\r]|\\\\\\r?\\n)+"
                       }
                     }
                   ]
@@ -2999,7 +2999,7 @@
                       "type": "TOKEN",
                       "content": {
                         "type": "PATTERN",
-                        "value": "[ \\t\\v\\f\\r]+|\\\\\\r?\\n"
+                        "value": "([ \\t\\v\\f\\r]|\\\\\\r?\\n)+"
                       }
                     }
                   ]
@@ -3035,7 +3035,7 @@
                       "type": "TOKEN",
                       "content": {
                         "type": "PATTERN",
-                        "value": "[ \\t\\v\\f\\r]+|\\\\\\r?\\n"
+                        "value": "([ \\t\\v\\f\\r]|\\\\\\r?\\n)+"
                       }
                     }
                   ]
@@ -3058,7 +3058,7 @@
                       "type": "TOKEN",
                       "content": {
                         "type": "PATTERN",
-                        "value": "[ \\t\\v\\f\\r]+|\\\\\\r?\\n"
+                        "value": "([ \\t\\v\\f\\r]|\\\\\\r?\\n)+"
                       }
                     }
                   ]
@@ -3094,7 +3094,7 @@
                       "type": "TOKEN",
                       "content": {
                         "type": "PATTERN",
-                        "value": "[ \\t\\v\\f\\r]+|\\\\\\r?\\n"
+                        "value": "([ \\t\\v\\f\\r]|\\\\\\r?\\n)+"
                       }
                     }
                   ]
@@ -3117,7 +3117,7 @@
                       "type": "TOKEN",
                       "content": {
                         "type": "PATTERN",
-                        "value": "[ \\t\\v\\f\\r]+|\\\\\\r?\\n"
+                        "value": "([ \\t\\v\\f\\r]|\\\\\\r?\\n)+"
                       }
                     }
                   ]
@@ -3153,7 +3153,7 @@
                       "type": "TOKEN",
                       "content": {
                         "type": "PATTERN",
-                        "value": "[ \\t\\v\\f\\r]+|\\\\\\r?\\n"
+                        "value": "([ \\t\\v\\f\\r]|\\\\\\r?\\n)+"
                       }
                     }
                   ]
@@ -3176,7 +3176,7 @@
                       "type": "TOKEN",
                       "content": {
                         "type": "PATTERN",
-                        "value": "[ \\t\\v\\f\\r]+|\\\\\\r?\\n"
+                        "value": "([ \\t\\v\\f\\r]|\\\\\\r?\\n)+"
                       }
                     }
                   ]
@@ -3212,7 +3212,7 @@
                       "type": "TOKEN",
                       "content": {
                         "type": "PATTERN",
-                        "value": "[ \\t\\v\\f\\r]+|\\\\\\r?\\n"
+                        "value": "([ \\t\\v\\f\\r]|\\\\\\r?\\n)+"
                       }
                     }
                   ]
@@ -3235,7 +3235,7 @@
                       "type": "TOKEN",
                       "content": {
                         "type": "PATTERN",
-                        "value": "[ \\t\\v\\f\\r]+|\\\\\\r?\\n"
+                        "value": "([ \\t\\v\\f\\r]|\\\\\\r?\\n)+"
                       }
                     }
                   ]
@@ -3271,7 +3271,7 @@
                       "type": "TOKEN",
                       "content": {
                         "type": "PATTERN",
-                        "value": "[ \\t\\v\\f\\r]+|\\\\\\r?\\n"
+                        "value": "([ \\t\\v\\f\\r]|\\\\\\r?\\n)+"
                       }
                     }
                   ]
@@ -3294,7 +3294,7 @@
                       "type": "TOKEN",
                       "content": {
                         "type": "PATTERN",
-                        "value": "[ \\t\\v\\f\\r]+|\\\\\\r?\\n"
+                        "value": "([ \\t\\v\\f\\r]|\\\\\\r?\\n)+"
                       }
                     }
                   ]
@@ -3330,7 +3330,7 @@
                       "type": "TOKEN",
                       "content": {
                         "type": "PATTERN",
-                        "value": "[ \\t\\v\\f\\r]+|\\\\\\r?\\n"
+                        "value": "([ \\t\\v\\f\\r]|\\\\\\r?\\n)+"
                       }
                     }
                   ]
@@ -3353,7 +3353,7 @@
                       "type": "TOKEN",
                       "content": {
                         "type": "PATTERN",
-                        "value": "[ \\t\\v\\f\\r]+|\\\\\\r?\\n"
+                        "value": "([ \\t\\v\\f\\r]|\\\\\\r?\\n)+"
                       }
                     }
                   ]
@@ -3389,7 +3389,7 @@
                       "type": "TOKEN",
                       "content": {
                         "type": "PATTERN",
-                        "value": "[ \\t\\v\\f\\r]+|\\\\\\r?\\n"
+                        "value": "([ \\t\\v\\f\\r]|\\\\\\r?\\n)+"
                       }
                     }
                   ]
@@ -3412,7 +3412,7 @@
                       "type": "TOKEN",
                       "content": {
                         "type": "PATTERN",
-                        "value": "[ \\t\\v\\f\\r]+|\\\\\\r?\\n"
+                        "value": "([ \\t\\v\\f\\r]|\\\\\\r?\\n)+"
                       }
                     }
                   ]
@@ -3448,7 +3448,7 @@
                       "type": "TOKEN",
                       "content": {
                         "type": "PATTERN",
-                        "value": "[ \\t\\v\\f\\r]+|\\\\\\r?\\n"
+                        "value": "([ \\t\\v\\f\\r]|\\\\\\r?\\n)+"
                       }
                     }
                   ]
@@ -3471,7 +3471,7 @@
                       "type": "TOKEN",
                       "content": {
                         "type": "PATTERN",
-                        "value": "[ \\t\\v\\f\\r]+|\\\\\\r?\\n"
+                        "value": "([ \\t\\v\\f\\r]|\\\\\\r?\\n)+"
                       }
                     }
                   ]
@@ -3507,7 +3507,7 @@
                       "type": "TOKEN",
                       "content": {
                         "type": "PATTERN",
-                        "value": "[ \\t\\v\\f\\r]+|\\\\\\r?\\n"
+                        "value": "([ \\t\\v\\f\\r]|\\\\\\r?\\n)+"
                       }
                     }
                   ]
@@ -3530,7 +3530,7 @@
                       "type": "TOKEN",
                       "content": {
                         "type": "PATTERN",
-                        "value": "[ \\t\\v\\f\\r]+|\\\\\\r?\\n"
+                        "value": "([ \\t\\v\\f\\r]|\\\\\\r?\\n)+"
                       }
                     }
                   ]
@@ -3566,7 +3566,7 @@
                       "type": "TOKEN",
                       "content": {
                         "type": "PATTERN",
-                        "value": "[ \\t\\v\\f\\r]+|\\\\\\r?\\n"
+                        "value": "([ \\t\\v\\f\\r]|\\\\\\r?\\n)+"
                       }
                     }
                   ]
@@ -3589,7 +3589,7 @@
                       "type": "TOKEN",
                       "content": {
                         "type": "PATTERN",
-                        "value": "[ \\t\\v\\f\\r]+|\\\\\\r?\\n"
+                        "value": "([ \\t\\v\\f\\r]|\\\\\\r?\\n)+"
                       }
                     }
                   ]
@@ -3627,7 +3627,7 @@
                   "type": "TOKEN",
                   "content": {
                     "type": "PATTERN",
-                    "value": "[ \\t\\v\\f\\r]+|\\\\\\r?\\n"
+                    "value": "([ \\t\\v\\f\\r]|\\\\\\r?\\n)+"
                   }
                 }
               ]
@@ -3650,7 +3650,7 @@
                   "type": "TOKEN",
                   "content": {
                     "type": "PATTERN",
-                    "value": "[ \\t\\v\\f\\r]+|\\\\\\r?\\n"
+                    "value": "([ \\t\\v\\f\\r]|\\\\\\r?\\n)+"
                   }
                 }
               ]
@@ -3673,7 +3673,7 @@
                   "type": "TOKEN",
                   "content": {
                     "type": "PATTERN",
-                    "value": "[ \\t\\v\\f\\r]+|\\\\\\r?\\n"
+                    "value": "([ \\t\\v\\f\\r]|\\\\\\r?\\n)+"
                   }
                 }
               ]
@@ -3696,7 +3696,7 @@
                   "type": "TOKEN",
                   "content": {
                     "type": "PATTERN",
-                    "value": "[ \\t\\v\\f\\r]+|\\\\\\r?\\n"
+                    "value": "([ \\t\\v\\f\\r]|\\\\\\r?\\n)+"
                   }
                 }
               ]
@@ -4408,7 +4408,7 @@
           "type": "TOKEN",
           "content": {
             "type": "PATTERN",
-            "value": "[ \\t\\v\\f\\r]+|\\\\\\r?\\n"
+            "value": "([ \\t\\v\\f\\r]|\\\\\\r?\\n)+"
           }
         },
         {
@@ -4429,7 +4429,7 @@
                   "type": "TOKEN",
                   "content": {
                     "type": "PATTERN",
-                    "value": "[ \\t\\v\\f\\r]+|\\\\\\r?\\n"
+                    "value": "([ \\t\\v\\f\\r]|\\\\\\r?\\n)+"
                   }
                 },
                 {
@@ -4447,7 +4447,7 @@
           "type": "TOKEN",
           "content": {
             "type": "PATTERN",
-            "value": "[ \\t\\v\\f\\r]+|\\\\\\r?\\n"
+            "value": "([ \\t\\v\\f\\r]|\\\\\\r?\\n)+"
           }
         },
         {
@@ -4464,7 +4464,7 @@
                   "type": "TOKEN",
                   "content": {
                     "type": "PATTERN",
-                    "value": "[ \\t\\v\\f\\r]+|\\\\\\r?\\n"
+                    "value": "([ \\t\\v\\f\\r]|\\\\\\r?\\n)+"
                   }
                 },
                 {
@@ -4483,7 +4483,7 @@
                             "type": "TOKEN",
                             "content": {
                               "type": "PATTERN",
-                              "value": "[ \\t\\v\\f\\r]+|\\\\\\r?\\n"
+                              "value": "([ \\t\\v\\f\\r]|\\\\\\r?\\n)+"
                             }
                           },
                           {
@@ -4512,7 +4512,7 @@
                   "type": "TOKEN",
                   "content": {
                     "type": "PATTERN",
-                    "value": "[ \\t\\v\\f\\r]+|\\\\\\r?\\n"
+                    "value": "([ \\t\\v\\f\\r]|\\\\\\r?\\n)+"
                   }
                 },
                 {
@@ -4539,7 +4539,7 @@
           "type": "TOKEN",
           "content": {
             "type": "PATTERN",
-            "value": "[ \\t\\v\\f\\r]+|\\\\\\r?\\n"
+            "value": "([ \\t\\v\\f\\r]|\\\\\\r?\\n)+"
           }
         },
         {
@@ -4560,7 +4560,7 @@
                   "type": "TOKEN",
                   "content": {
                     "type": "PATTERN",
-                    "value": "[ \\t\\v\\f\\r]+|\\\\\\r?\\n"
+                    "value": "([ \\t\\v\\f\\r]|\\\\\\r?\\n)+"
                   }
                 },
                 {
@@ -4578,7 +4578,7 @@
           "type": "TOKEN",
           "content": {
             "type": "PATTERN",
-            "value": "[ \\t\\v\\f\\r]+|\\\\\\r?\\n"
+            "value": "([ \\t\\v\\f\\r]|\\\\\\r?\\n)+"
           }
         },
         {
@@ -4598,7 +4598,7 @@
           "type": "TOKEN",
           "content": {
             "type": "PATTERN",
-            "value": "[ \\t\\v\\f\\r]+|\\\\\\r?\\n"
+            "value": "([ \\t\\v\\f\\r]|\\\\\\r?\\n)+"
           }
         },
         {
@@ -4618,7 +4618,7 @@
           "type": "TOKEN",
           "content": {
             "type": "PATTERN",
-            "value": "[ \\t\\v\\f\\r]+|\\\\\\r?\\n"
+            "value": "([ \\t\\v\\f\\r]|\\\\\\r?\\n)+"
           }
         },
         {
@@ -4635,7 +4635,7 @@
                   "type": "TOKEN",
                   "content": {
                     "type": "PATTERN",
-                    "value": "[ \\t\\v\\f\\r]+|\\\\\\r?\\n"
+                    "value": "([ \\t\\v\\f\\r]|\\\\\\r?\\n)+"
                   }
                 },
                 {
@@ -4655,7 +4655,7 @@
                               "type": "TOKEN",
                               "content": {
                                 "type": "PATTERN",
-                                "value": "[ \\t\\v\\f\\r]+|\\\\\\r?\\n"
+                                "value": "([ \\t\\v\\f\\r]|\\\\\\r?\\n)+"
                               }
                             },
                             {
@@ -4806,7 +4806,7 @@
                 "type": "TOKEN",
                 "content": {
                   "type": "PATTERN",
-                  "value": "[ \\t\\v\\f\\r]+|\\\\\\r?\\n"
+                  "value": "([ \\t\\v\\f\\r]|\\\\\\r?\\n)+"
                 }
               }
             ]
@@ -4849,7 +4849,7 @@
                 "type": "TOKEN",
                 "content": {
                   "type": "PATTERN",
-                  "value": "[ \\t\\v\\f\\r]+|\\\\\\r?\\n"
+                  "value": "([ \\t\\v\\f\\r]|\\\\\\r?\\n)+"
                 }
               }
             ]
@@ -4904,7 +4904,7 @@
                 "type": "TOKEN",
                 "content": {
                   "type": "PATTERN",
-                  "value": "[ \\t\\v\\f\\r]+|\\\\\\r?\\n"
+                  "value": "([ \\t\\v\\f\\r]|\\\\\\r?\\n)+"
                 }
               }
             ]
@@ -4947,7 +4947,7 @@
                 "type": "TOKEN",
                 "content": {
                   "type": "PATTERN",
-                  "value": "[ \\t\\v\\f\\r]+|\\\\\\r?\\n"
+                  "value": "([ \\t\\v\\f\\r]|\\\\\\r?\\n)+"
                 }
               }
             ]
@@ -5003,7 +5003,7 @@
         "value": -1,
         "content": {
           "type": "PATTERN",
-          "value": "[^$\\\\\\[\\]\"]+"
+          "value": "([^$\\\\\\[\\]\"]||\\\\\\r?\\n)+"
         }
       }
     },
@@ -5450,12 +5450,7 @@
       }
     }
   },
-  "extras": [
-    {
-      "type": "PATTERN",
-      "value": "\\\\\\r?\\n"
-    }
-  ],
+  "extras": [],
   "conflicts": [
     [
       "switch_body"

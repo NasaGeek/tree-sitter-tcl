@@ -949,6 +949,10 @@ args
 cmd \
 with \
 args
+cmd \
+ with ws
+cmd\
+ with ws
 # comment\
 with cont
 # comment \
@@ -971,6 +975,14 @@ with cont
   (command
     name: (simple_word)
     arguments: (braced_word))
+  (command
+    name: (simple_word)
+    arguments: (simple_word)
+    arguments: (simple_word))
+  (command
+    name: (simple_word)
+    arguments: (simple_word)
+    arguments: (simple_word))
   (command
     name: (simple_word)
     arguments: (simple_word)
