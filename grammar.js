@@ -242,7 +242,10 @@ module.exports = grammar({
     [$.arguments],
     [$._argument_content],
     [$._nested_raw_braces],
-    [$.literal_list],
+    [$._nested_raw_quotes],
+    [$._nested_braced_list],
+    [$._nested_quoted_list],
+    [$._tl_nested_quoted_list],
   ],
 
   rules: {
@@ -329,11 +332,7 @@ module.exports = grammar({
 
     foreach_clauses: $ => intergapped1($.foreach_clause),
 
-    // Should come up with an alternative to _word that better handle
-    // braced_words that will be interpreted as lists (so shouldn't be
-    // represented opaquely)
-    foreach_clause: $ => seqgap(choice($.literal_list, $.list_item), $._word),
-
+    foreach_clause: $ => seqgap($.literal_list, $._word),
 
     // https://www.tcl.tk/man/tcl/TclCmd/switch.htm
     switch: $ => seqgap("switch",
@@ -406,13 +405,13 @@ module.exports = grammar({
           choice(
             "ok", "error", "return", "break", "continue", /[0-4]/
           ),
-          choice($.literal_list, $.list_item),
+          $.literal_list,
           $.script,
         ),
         seqgap(
           "trap",
-          $.raw_word,
-          choice($.literal_list, $.list_item),
+          $._word,
+          $.literal_list,
           $.script,
         )
       )),
@@ -570,7 +569,6 @@ module.exports = grammar({
     ),
 
     _argument_content: $ => seqgapnl(
-        // More strict than Tcl, a convenience
         field('name', $.raw_word),
         optional(field('default', $.raw_word)),
     ),
@@ -643,19 +641,70 @@ module.exports = grammar({
     braced_word: $ => seq('{', repeat(choice($._nested_braces, $._braced_word_contents)), '}'),
 
 
-    _raw_word_contents: _ => token(/[^{}\s]+/),
+    _raw_word_contents: _ => token(/[^{}"\s]+/),
 
-    _nested_raw_braces: $ => seqnl('{', repeat(choice('\n', $.gap, $._nested_raw_braces, $._raw_word_contents)), '}'),
+    _nested_raw_braces: $ => seqnl('{', repeat(choice('\n', $.gap, $._nested_raw_braces, $._nested_raw_quotes, $._raw_word_contents)), '}'),
+    _nested_raw_quotes: $ => seqnl('"', repeat(choice('\n', $.gap, $._nested_raw_braces, $._raw_word_contents)), '"'),
 
-    // Covers mostly literal lists like proc args, foreach vars, etc
-    raw_word: $ => repeat1(choice($._raw_word_contents, $._nested_raw_braces)),
+    // This should only be used when we're already inside of braces, since none
+    // of the contents are going to be substitutable. This is basically just
+    // braced_word but we're already inside the braces and restricted in how
+    // spaces can be placed (like switch cases and arguments).
+    // FIXME: doesn't allow stuff like a" (just like everywhere else)
+    raw_word: $ => choice(
+      // Don't expect this to be bulletproof. It's just an interim solution until
+      // I figure out proper literal parsing throughout the grammar.
+      $._nested_raw_braces,
+      $._nested_raw_quotes,
+      seq($._raw_word_contents, repeat(choice($._nested_raw_braces, $._raw_word_contents))),
+    ),
 
-    list_item: _ => token(/[^{}\s]+/),
+    list_item: _ => token(prec(-1, /[^{}"\s]+/)),
 
-    // Covers the kind of list you'd find in foreach var defs or trap variable
-    // list, essentially a list literal.
+    _tl_nested_quoted_list: $ => seqnl('"',
+      repeat(
+        choice(
+          '\n',
+          $.gap,
+          // Substitution is permitted only at top level
+          $._concat_word,
+          alias($._nested_braced_list, $.literal_list),
+          $.list_item
+        )
+      ),
+      '"'),
+
+    _nested_quoted_list: $ => seqnl('"',
+      repeat(
+        choice(
+          '\n',
+          $.gap,
+          alias($._nested_braced_list, $.literal_list),
+          $.list_item
+        )
+      ),
+      '"'),
+
+    _nested_braced_list: $ => seqnl('{',
+      repeat(
+        choice(
+          '\n',
+          $.gap,
+          alias($._nested_braced_list, $.literal_list),
+          alias($._nested_quoted_list, $.literal_list),
+          $.list_item
+        )
+      ),
+      '}'),
+
+    // Covers cases where a literal can be specified and is interpreted as a list,
+    // like foreach vars or trap/on vars.
     // Feels very similar to raw_word, but is not opaque within.
-    literal_list: $ => seqnl('{', repeat(choice('\n', $.gap, $.literal_list, $.list_item)), '}'),
+    // Nests infinitely, when realistically we probably only ever care about
+    // the first level.
+    literal_list: $ => choice(
+      $._tl_nested_quoted_list, $._nested_braced_list, $.list_item
+    ),
 
     escape_sequence: _ => token(seq(
       '\\',
