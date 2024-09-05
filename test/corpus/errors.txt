@@ -1,4 +1,18 @@
 ===
+Parser deficiency: variable sub empty name
+:error
+===
+puts $::
+---
+
+===
+Parser deficiency: namespace trailing ::
+:error
+===
+puts $::a::
+---
+
+===
 Parser deficiency: trailing space in multi-arg function call breaks
 :error
 ===

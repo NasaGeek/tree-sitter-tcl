@@ -205,6 +205,9 @@ module.exports = grammar({
     // looks for :: followed by alpha
     $._ns_delim,
     $._command_separator,
+    // Checks whether a $ should indicate variable substitution or if it's just
+    // a literal
+    $._varsub_prefix,
     // Not used in the grammar, but used in the external scanner to check for error state.
     // This relies on the tree-sitter behavior that when an error is encountered the external
     // scanner is called with all symobls marked as valid.
@@ -507,9 +510,17 @@ module.exports = grammar({
 
     // Specifically (only?) useful for variable substitution due to
     // token.immediate
-    _ident: _ => token.immediate(/[a-zA-Z0-9_]+/),
+    _ident: _ => token.immediate(prec(2, /[a-zA-Z0-9_]+/)),
 
-    id: $ => seq(optional($._ns_delim), interleaved1($._ident, $._ns_delim)),
+    id: $ => choice(
+      // FIXME: support $:: and $::a::. As written this causes variable subs
+      // to split between variable sub and simple_word.
+      seq(optional($._ns_delim), interleaved1($._ident, $._ns_delim)), //, optional($._ns_delim)),
+      // Yes you can have a variable named {} (accessed with $:: or $(index) if
+      // it's an array). This breaks recognition of other namespaced variables,
+      // though
+      // $._ns_delim,
+    ),
 
     // token.immediate breaks usage of () in bare words (maybe that's okay?)
     // e.g. `puts (string)` should work fine, treat (string) as a string.
@@ -522,9 +533,9 @@ module.exports = grammar({
     // Just another thing for the scanner to handle :)
     // Also arr(...$) is treated as a literal $ by Tcl whereas we throw an error
     _array_index: $ => seq(
-      token.immediate('('),
+      '(',
       optional($._concat_word_array_index),
-      token.immediate(')'),
+      ')',
     ),
 
     // cheating here a bit by restricting what an array name can be. If we want
@@ -536,15 +547,17 @@ module.exports = grammar({
 
     // Improving this with optional($.id) means we lose the node altogether which
     // I don't like (can't we have an empty node instead?)
-    array_ref: $ => seq('$', $.id, field('index', $._array_index)),
+    array_ref: $ => seq($.id, field('index', $._array_index)),
 
     variable_substitution: $ => seq(
+      $._varsub_prefix,
+      token(prec(2, '$')),
       choice(
-        seq('$', $.id),
+        $.id,
         // FIXME: Missing parsing of array ref in here
-        seq('$', '{', /[^}]+/, '}'),
+        seq('{', /[^}]+/, '}'),
         $.array_ref,
-      ),
+      )
     ),
 
     set: $ => seqgap("set",
@@ -718,7 +731,7 @@ module.exports = grammar({
     )),
 
     // https://github.com/tree-sitter/tree-sitter/issues/1087#issuecomment-833198651
-    _quoted_word_content: _ => token(prec(-1, /([^$\\\[\]"]|\\\r?\n)+/)),
+    _quoted_word_content: _ => token(prec(-1, /([^$\\\[\]"]|\\\r?\n)+|\$/)),
 
     command_substitution: $ => seq('[', optional($._script_body), ']'),
 
@@ -730,7 +743,7 @@ module.exports = grammar({
 
     // I'd kind of like to remove () from the exclusion for matching array names,
     // but there are knock-on effects like degraded recognition of function calls in exprs
-    simple_word: _ => token(prec.dynamic(-1, /[^\s\\\[\]${}();"]+/)),
+    simple_word: _ => token(prec.dynamic(-1, /[^\s\\\[\]{}()$;"]+|\$/)),
 
     // Functions in exprs are actually slightly more restricted bare words (no
     // leading _ for arbitrary reasons: https://github.com/tcltk/tcl/blob/core-8-6-14/generic/tclCompExpr.c#L2063-L2065, sigh...)

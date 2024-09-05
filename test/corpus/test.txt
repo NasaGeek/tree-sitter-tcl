@@ -446,7 +446,7 @@ set $arr($arr(a))
 Namespaced vars
 ================================================================================
 
-puts $::ns::var
+puts $::ns::var $::a $:
 puts $ns::var
 set ::var 1
 set var::v 1
@@ -458,7 +458,12 @@ lassign [list 1] ::ns::var(key)
   (command
     (simple_word)
     (variable_substitution
-      (id)))
+      (id))
+    (variable_substitution
+      (id))
+    (simple_word)
+    (concat)
+    (simple_word))
   (command
     (simple_word)
     (variable_substitution
@@ -810,6 +815,8 @@ Variable substitution characters
 puts $::2::1
 puts $_::_
 puts [func]1
+puts a$ a$a a$$ a$_ a$1 a$/ $$ $\$a \$$a []$ []$a []$[] $:a
+puts "a$" "$" "$$" "$ $" "a$a"
 ---
 
 (source_file
@@ -827,7 +834,70 @@ puts [func]1
       (command
         (simple_word)))
     (concat)
-    (simple_word)))
+    (simple_word))
+  (command
+    (simple_word)
+    (simple_word)
+    (concat)
+    (simple_word)
+    (simple_word)
+    (concat)
+    (variable_substitution
+      (id))
+    (simple_word)
+    (concat)
+    (simple_word)
+    (concat)
+    (simple_word)
+    (simple_word)
+    (concat)
+    (variable_substitution
+      (id))
+    (simple_word)
+    (concat)
+    (variable_substitution
+      (id))
+    (simple_word)
+    (concat)
+    (simple_word)
+    (concat)
+    (simple_word)
+    (simple_word)
+    (concat)
+    (simple_word)
+    (simple_word)
+    (concat)
+    (escape_sequence)
+    (concat)
+    (simple_word)
+    (escape_sequence)
+    (concat)
+    (variable_substitution
+      (id))
+    (command_substitution)
+    (concat)
+    (simple_word)
+    (command_substitution)
+    (concat)
+    (variable_substitution
+      (id))
+    (command_substitution)
+    (concat)
+    (simple_word)
+    (concat)
+    (command_substitution)
+    (simple_word)
+    (concat)
+    (simple_word))
+  (command
+    (simple_word)
+    (quoted_word)
+    (quoted_word)
+    (quoted_word)
+    (quoted_word)
+    (quoted_word
+      (variable_substitution
+        (id)))))
 
 ================================================================================
 Exprs with newlines

@@ -9,6 +9,7 @@ enum TokenType {
   CONCAT,
   NS_DELIM,
   COMMAND_SEPARATOR,
+  VARSUB_PREFIX,
   // Not used in the grammar, but used in the external scanner to check for error state.
   // This relies on the tree-sitter behavior that when an error is encountered the external
   // scanner is called with all symbols marked as valid.
@@ -89,12 +90,40 @@ static bool scan_ns_delim(TSLexer *lexer) {
     if (lexer->lookahead == ':') {
       lexer->advance(lexer, false);
       if (is_bare_word(lexer->lookahead)) {
-        lexer->result_symbol = NS_DELIM;
         return true;
       }
     }
   }
   return false;
+}
+
+static bool is_ns_separator(TSLexer *lexer) {
+  if (lexer->lookahead == ':') {
+    lexer->advance(lexer, false);
+    if (lexer->lookahead == ':') {
+        lexer->advance(lexer, false);
+        while (lexer->lookahead == ':') {
+            // https://www.tcl-lang.org/man/tcl8.6/TclCmd/namespace.htm#:~:text=two%20or%20more%20colons%20are%20treated%20as%20a%20namespace%20separator
+            lexer->advance(lexer, false);
+        }
+        return true;
+    }
+  }
+  return false;
+}
+
+static bool is_variable_substitution(TSLexer *lexer) {
+    if (lexer->lookahead == '$') {
+        lexer->mark_end(lexer);
+        lexer->advance(lexer, false);
+        return lexer->lookahead == '{' ||
+            // Empty array name
+            lexer->lookahead == '(' ||
+            is_bare_word(lexer->lookahead) ||
+            // Advances lexer, must go last
+            is_ns_separator(lexer);
+    }
+    return false;
 }
 
 void *tree_sitter_tcl_external_scanner_create() {
@@ -103,12 +132,13 @@ void *tree_sitter_tcl_external_scanner_create() {
 
 bool tree_sitter_tcl_external_scanner_scan(void *payload, TSLexer *lexer,
                                           const bool *valid_symbols) {
-  myprintf("Column: %d, lookahead: '%c', symbols: %d %d %d %d\n", lexer->get_column(lexer), lexer->lookahead, valid_symbols[CONCAT], valid_symbols[NS_DELIM], valid_symbols[COMMAND_SEPARATOR], valid_symbols[ERROR]);
+  myprintf("Column: %d, lookahead: '%c', symbols: %d %d %d %d %d\n", lexer->get_column(lexer), lexer->lookahead, valid_symbols[CONCAT], valid_symbols[NS_DELIM], valid_symbols[COMMAND_SEPARATOR], valid_symbols[VARSUB_PREFIX], valid_symbols[ERROR]);
   if (valid_symbols[ERROR]) {
       return false;
   }
-  if (valid_symbols[NS_DELIM] && scan_ns_delim(lexer)) {
+  if (valid_symbols[NS_DELIM] && is_ns_separator(lexer)) {
     myprintf("We picked ns\n");
+    lexer->result_symbol = NS_DELIM;
     return true;
   }
 
@@ -130,9 +160,16 @@ bool tree_sitter_tcl_external_scanner_scan(void *payload, TSLexer *lexer,
       if (saw_separator && has_followup_command(lexer)) {
           myprintf("We picked separator\n");
           lexer->result_symbol = COMMAND_SEPARATOR;
+          return true;
       }
       myprintf("Seemed like separator but picked nothing\n");
-      return saw_separator && has_followup_command(lexer);
+      return false;
+  }
+
+  if (valid_symbols[VARSUB_PREFIX] && is_variable_substitution(lexer)) {
+      myprintf("We picked varsub\n");
+      lexer->result_symbol = VARSUB_PREFIX;
+      return true;
   }
 
   if (is_concat_valid(lexer, valid_symbols)) {
@@ -141,7 +178,7 @@ bool tree_sitter_tcl_external_scanner_scan(void *payload, TSLexer *lexer,
     return true;
   }
 
-  myprintf("We picked neither\n");
+  myprintf("We picked nothing\n");
   return false;
 }
 
