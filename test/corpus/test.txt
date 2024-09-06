@@ -748,6 +748,14 @@ switch $justthepattern {
   $a  { do the thing }
 }
 
+# This is one big parse error if I try to use $._word_list in the switch rule
+switch j {
+    k {
+         l j l l l l l l l ;
+    }
+}
+
+
 --------------------------------------------------------------------------------
 
 (source_file
@@ -782,6 +790,22 @@ switch $justthepattern {
       (raw_word)
       (script
         (command
+          (simple_word)
+          (simple_word)
+          (simple_word)))))
+  (comment)
+  (switch
+    (simple_word)
+    (switch_body
+      (raw_word)
+      (script
+        (command
+          (simple_word)
+          (simple_word)
+          (simple_word)
+          (simple_word)
+          (simple_word)
+          (simple_word)
           (simple_word)
           (simple_word)
           (simple_word))))))

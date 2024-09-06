@@ -753,32 +753,8 @@
                   }
                 },
                 {
-                  "type": "SEQ",
-                  "members": [
-                    {
-                      "type": "SYMBOL",
-                      "name": "_word"
-                    },
-                    {
-                      "type": "REPEAT",
-                      "content": {
-                        "type": "SEQ",
-                        "members": [
-                          {
-                            "type": "TOKEN",
-                            "content": {
-                              "type": "PATTERN",
-                              "value": "([ \\t\\v\\f\\r]|\\\\\\r?\\n)+"
-                            }
-                          },
-                          {
-                            "type": "SYMBOL",
-                            "name": "_word"
-                          }
-                        ]
-                      }
-                    }
-                  ]
+                  "type": "SYMBOL",
+                  "name": "_word_list"
                 }
               ]
             },
@@ -1972,15 +1948,6 @@
         },
         {
           "type": "SYMBOL",
-          "name": "_non_seq_expr"
-        }
-      ]
-    },
-    "_non_seq_expr": {
-      "type": "CHOICE",
-      "members": [
-        {
-          "type": "SYMBOL",
           "name": "int_literal"
         },
         {
@@ -2220,7 +2187,7 @@
       "type": "CHOICE",
       "members": [
         {
-          "type": "PREC_LEFT",
+          "type": "PREC_RIGHT",
           "value": 140,
           "content": {
             "type": "SEQ",
@@ -3579,7 +3546,7 @@
       ]
     },
     "ternary_expr_nl": {
-      "type": "PREC_LEFT",
+      "type": "PREC_RIGHT",
       "value": 10,
       "content": {
         "type": "SEQ",
@@ -3745,7 +3712,19 @@
         },
         {
           "type": "SYMBOL",
-          "name": "_non_seq_expr"
+          "name": "int_literal"
+        },
+        {
+          "type": "SYMBOL",
+          "name": "float_literal"
+        },
+        {
+          "type": "SYMBOL",
+          "name": "bool_literal"
+        },
+        {
+          "type": "SYMBOL",
+          "name": "_concat_word_expr"
         }
       ]
     },
@@ -3858,7 +3837,7 @@
       "type": "CHOICE",
       "members": [
         {
-          "type": "PREC_LEFT",
+          "type": "PREC_RIGHT",
           "value": 140,
           "content": {
             "type": "SEQ",
@@ -4343,7 +4322,7 @@
       ]
     },
     "ternary_expr": {
-      "type": "PREC_LEFT",
+      "type": "PREC_RIGHT",
       "value": 10,
       "content": {
         "type": "SEQ",

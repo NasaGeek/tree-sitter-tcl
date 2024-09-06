@@ -51,12 +51,6 @@ const expr_seq = (seqfn, suffix) => {
       alias($[ternary_expr], $.ternary_expr),
       alias($[func_call], $.func_call),
       $.braced_word,
-      $._non_seq_expr,
-    ),
-
-    // Splitting out expr elements that don't use seq so I can reuse this
-    // for both expr-based and non-expr-based expressions.
-    _non_seq_expr: $ => choice(
       $.int_literal,
       $.float_literal,
       $.bool_literal,
@@ -75,7 +69,7 @@ const expr_seq = (seqfn, suffix) => {
     [unary_expr]: $ => prec.left(PREC.unary, seqfn(choice("-", "+", "~", "!"), $[_expr])),
 
     [binop_expr]: $ => choice(
-      prec.left(PREC.exp,          seqfn($[_expr], "**",  $[_expr])),
+      prec.right(PREC.exp,          seqfn($[_expr], "**",  $[_expr])),
 
       prec.left(PREC.muldiv,       seqfn($[_expr], "/",  $[_expr])),
       prec.left(PREC.muldiv,       seqfn($[_expr], "*",  $[_expr])),
@@ -108,7 +102,7 @@ const expr_seq = (seqfn, suffix) => {
       prec.left(PREC.or_logical,   seqfn($[_expr], "||", $[_expr])),
     ),
 
-    [ternary_expr]: $ => prec.left(PREC.ternary, seqfn($[_expr], '?', $[_expr], ':', $[_expr])),
+    [ternary_expr]: $ => prec.right(PREC.ternary, seqfn($[_expr], '?', $[_expr], ':', $[_expr])),
   }
 }
 
@@ -339,6 +333,8 @@ module.exports = grammar({
 
     // https://www.tcl.tk/man/tcl/TclCmd/switch.htm
     switch: $ => seqgap("switch",
+      // This can result in switches totally breaking in certain cases, very strange
+      // field("arguments", $._word_list),
       field("arguments", intergapped1($._word)),
       // Maybe this is too complicated for poor tree-sitter. It used to work
       // alright, but I broke it at some point.
@@ -390,7 +386,7 @@ module.exports = grammar({
 
     _script_body: $ => choice($._commands, $.termgap),
 
-    global: $ => seqgap("global", intergapped($._word)),
+    global: $ => seqgap("global", optional($._word_list)),
 
     namespace: $ => seqgap('namespace', $._namespace_subcommand),
 
@@ -577,6 +573,7 @@ module.exports = grammar({
     ),
 
     argument: $ => choice(
+      // TODO: should be raw_word
       field('name', $.simple_word),
       seqnl('{', $._argument_content, '}')
     ),

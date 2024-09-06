@@ -1,0 +1,13 @@
+===
+Stuff we parse wrong currently
+===
+# Should be int_literal
+expr "1"
+
+---
+
+(source_file
+  (comment)
+  (expr_cmd
+    (expr
+      (quoted_word))))
