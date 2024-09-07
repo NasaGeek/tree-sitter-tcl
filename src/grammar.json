@@ -100,9 +100,33 @@
     "gap": {
       "type": "TOKEN",
       "content": {
-        "type": "PATTERN",
-        "value": "([ \\t\\v\\f\\r]|\\\\\\r?\\n)+"
+        "type": "PREC",
+        "value": -1,
+        "content": {
+          "type": "PATTERN",
+          "value": "([ \\t\\v\\f\\r]|\\\\\\r?\\n)+"
+        }
       }
+    },
+    "gapnl": {
+      "type": "CHOICE",
+      "members": [
+        {
+          "type": "TOKEN",
+          "content": {
+            "type": "PREC",
+            "value": -1,
+            "content": {
+              "type": "PATTERN",
+              "value": "([ \\t\\v\\f\\r]|\\\\\\r?\\n)+"
+            }
+          }
+        },
+        {
+          "type": "STRING",
+          "value": "\n"
+        }
+      ]
     },
     "termgap": {
       "type": "REPEAT1",
@@ -203,11 +227,8 @@
           }
         },
         {
-          "type": "TOKEN",
-          "content": {
-            "type": "PATTERN",
-            "value": "([ \\t\\v\\f\\r]|\\\\\\r?\\n)+"
-          }
+          "type": "SYMBOL",
+          "name": "gap"
         },
         {
           "type": "FIELD",
@@ -234,11 +255,8 @@
                         "type": "SEQ",
                         "members": [
                           {
-                            "type": "TOKEN",
-                            "content": {
-                              "type": "PATTERN",
-                              "value": "([ \\t\\v\\f\\r]|\\\\\\r?\\n)+"
-                            }
+                            "type": "SYMBOL",
+                            "name": "gap"
                           },
                           {
                             "type": "SYMBOL",
@@ -270,22 +288,16 @@
           "value": "while"
         },
         {
-          "type": "TOKEN",
-          "content": {
-            "type": "PATTERN",
-            "value": "([ \\t\\v\\f\\r]|\\\\\\r?\\n)+"
-          }
+          "type": "SYMBOL",
+          "name": "gap"
         },
         {
           "type": "SYMBOL",
           "name": "expr"
         },
         {
-          "type": "TOKEN",
-          "content": {
-            "type": "PATTERN",
-            "value": "([ \\t\\v\\f\\r]|\\\\\\r?\\n)+"
-          }
+          "type": "SYMBOL",
+          "name": "gap"
         },
         {
           "type": "SYMBOL",
@@ -301,11 +313,8 @@
           "value": "expr"
         },
         {
-          "type": "TOKEN",
-          "content": {
-            "type": "PATTERN",
-            "value": "([ \\t\\v\\f\\r]|\\\\\\r?\\n)+"
-          }
+          "type": "SYMBOL",
+          "name": "gap"
         },
         {
           "type": "SYMBOL",
@@ -318,11 +327,8 @@
               "type": "SEQ",
               "members": [
                 {
-                  "type": "TOKEN",
-                  "content": {
-                    "type": "PATTERN",
-                    "value": "([ \\t\\v\\f\\r]|\\\\\\r?\\n)+"
-                  }
+                  "type": "SYMBOL",
+                  "name": "gap"
                 },
                 {
                   "type": "SYMBOL",
@@ -345,44 +351,32 @@
           "value": "for"
         },
         {
-          "type": "TOKEN",
-          "content": {
-            "type": "PATTERN",
-            "value": "([ \\t\\v\\f\\r]|\\\\\\r?\\n)+"
-          }
+          "type": "SYMBOL",
+          "name": "gap"
         },
         {
           "type": "SYMBOL",
           "name": "script"
         },
         {
-          "type": "TOKEN",
-          "content": {
-            "type": "PATTERN",
-            "value": "([ \\t\\v\\f\\r]|\\\\\\r?\\n)+"
-          }
+          "type": "SYMBOL",
+          "name": "gap"
         },
         {
           "type": "SYMBOL",
           "name": "expr"
         },
         {
-          "type": "TOKEN",
-          "content": {
-            "type": "PATTERN",
-            "value": "([ \\t\\v\\f\\r]|\\\\\\r?\\n)+"
-          }
+          "type": "SYMBOL",
+          "name": "gap"
         },
         {
           "type": "SYMBOL",
           "name": "script"
         },
         {
-          "type": "TOKEN",
-          "content": {
-            "type": "PATTERN",
-            "value": "([ \\t\\v\\f\\r]|\\\\\\r?\\n)+"
-          }
+          "type": "SYMBOL",
+          "name": "gap"
         },
         {
           "type": "SYMBOL",
@@ -398,22 +392,16 @@
           "value": "foreach"
         },
         {
-          "type": "TOKEN",
-          "content": {
-            "type": "PATTERN",
-            "value": "([ \\t\\v\\f\\r]|\\\\\\r?\\n)+"
-          }
+          "type": "SYMBOL",
+          "name": "gap"
         },
         {
           "type": "SYMBOL",
           "name": "foreach_clauses"
         },
         {
-          "type": "TOKEN",
-          "content": {
-            "type": "PATTERN",
-            "value": "([ \\t\\v\\f\\r]|\\\\\\r?\\n)+"
-          }
+          "type": "SYMBOL",
+          "name": "gap"
         },
         {
           "type": "SYMBOL",
@@ -434,11 +422,8 @@
             "type": "SEQ",
             "members": [
               {
-                "type": "TOKEN",
-                "content": {
-                  "type": "PATTERN",
-                  "value": "([ \\t\\v\\f\\r]|\\\\\\r?\\n)+"
-                }
+                "type": "SYMBOL",
+                "name": "gap"
               },
               {
                 "type": "SYMBOL",
@@ -457,11 +442,8 @@
           "name": "literal_list"
         },
         {
-          "type": "TOKEN",
-          "content": {
-            "type": "PATTERN",
-            "value": "([ \\t\\v\\f\\r]|\\\\\\r?\\n)+"
-          }
+          "type": "SYMBOL",
+          "name": "gap"
         },
         {
           "type": "SYMBOL",
@@ -477,11 +459,8 @@
           "value": "switch"
         },
         {
-          "type": "TOKEN",
-          "content": {
-            "type": "PATTERN",
-            "value": "([ \\t\\v\\f\\r]|\\\\\\r?\\n)+"
-          }
+          "type": "SYMBOL",
+          "name": "gap"
         },
         {
           "type": "FIELD",
@@ -499,11 +478,8 @@
                   "type": "SEQ",
                   "members": [
                     {
-                      "type": "TOKEN",
-                      "content": {
-                        "type": "PATTERN",
-                        "value": "([ \\t\\v\\f\\r]|\\\\\\r?\\n)+"
-                      }
+                      "type": "SYMBOL",
+                      "name": "gap"
                     },
                     {
                       "type": "SYMBOL",
@@ -516,11 +492,8 @@
           }
         },
         {
-          "type": "TOKEN",
-          "content": {
-            "type": "PATTERN",
-            "value": "([ \\t\\v\\f\\r]|\\\\\\r?\\n)+"
-          }
+          "type": "SYMBOL",
+          "name": "gap"
         },
         {
           "type": "SYMBOL",
@@ -548,20 +521,8 @@
             {
               "type": "REPEAT",
               "content": {
-                "type": "CHOICE",
-                "members": [
-                  {
-                    "type": "STRING",
-                    "value": "\n"
-                  },
-                  {
-                    "type": "TOKEN",
-                    "content": {
-                      "type": "PATTERN",
-                      "value": "([ \\t\\v\\f\\r]|\\\\\\r?\\n)+"
-                    }
-                  }
-                ]
+                "type": "SYMBOL",
+                "name": "gapnl"
               }
             },
             {
@@ -582,20 +543,8 @@
                           {
                             "type": "REPEAT1",
                             "content": {
-                              "type": "CHOICE",
-                              "members": [
-                                {
-                                  "type": "TOKEN",
-                                  "content": {
-                                    "type": "PATTERN",
-                                    "value": "([ \\t\\v\\f\\r]|\\\\\\r?\\n)+"
-                                  }
-                                },
-                                {
-                                  "type": "STRING",
-                                  "value": "\n"
-                                }
-                              ]
+                              "type": "SYMBOL",
+                              "name": "gapnl"
                             }
                           },
                           {
@@ -615,20 +564,8 @@
             {
               "type": "REPEAT",
               "content": {
-                "type": "CHOICE",
-                "members": [
-                  {
-                    "type": "STRING",
-                    "value": "\n"
-                  },
-                  {
-                    "type": "TOKEN",
-                    "content": {
-                      "type": "PATTERN",
-                      "value": "([ \\t\\v\\f\\r]|\\\\\\r?\\n)+"
-                    }
-                  }
-                ]
+                "type": "SYMBOL",
+                "name": "gapnl"
               }
             },
             {
@@ -649,20 +586,8 @@
         {
           "type": "REPEAT1",
           "content": {
-            "type": "CHOICE",
-            "members": [
-              {
-                "type": "STRING",
-                "value": "\n"
-              },
-              {
-                "type": "TOKEN",
-                "content": {
-                  "type": "PATTERN",
-                  "value": "([ \\t\\v\\f\\r]|\\\\\\r?\\n)+"
-                }
-              }
-            ]
+            "type": "SYMBOL",
+            "name": "gapnl"
           }
         },
         {
@@ -746,11 +671,8 @@
               "type": "SEQ",
               "members": [
                 {
-                  "type": "TOKEN",
-                  "content": {
-                    "type": "PATTERN",
-                    "value": "([ \\t\\v\\f\\r]|\\\\\\r?\\n)+"
-                  }
+                  "type": "SYMBOL",
+                  "name": "gap"
                 },
                 {
                   "type": "SYMBOL",
@@ -773,11 +695,8 @@
           "value": "namespace"
         },
         {
-          "type": "TOKEN",
-          "content": {
-            "type": "PATTERN",
-            "value": "([ \\t\\v\\f\\r]|\\\\\\r?\\n)+"
-          }
+          "type": "SYMBOL",
+          "name": "gap"
         },
         {
           "type": "SYMBOL",
@@ -796,22 +715,16 @@
               "value": "eval"
             },
             {
-              "type": "TOKEN",
-              "content": {
-                "type": "PATTERN",
-                "value": "([ \\t\\v\\f\\r]|\\\\\\r?\\n)+"
-              }
+              "type": "SYMBOL",
+              "name": "gap"
             },
             {
               "type": "SYMBOL",
               "name": "_word"
             },
             {
-              "type": "TOKEN",
-              "content": {
-                "type": "PATTERN",
-                "value": "([ \\t\\v\\f\\r]|\\\\\\r?\\n)+"
-              }
+              "type": "SYMBOL",
+              "name": "gap"
             },
             {
               "type": "SYMBOL",
@@ -833,11 +746,8 @@
           "value": "try"
         },
         {
-          "type": "TOKEN",
-          "content": {
-            "type": "PATTERN",
-            "value": "([ \\t\\v\\f\\r]|\\\\\\r?\\n)+"
-          }
+          "type": "SYMBOL",
+          "name": "gap"
         },
         {
           "type": "SYMBOL",
@@ -849,11 +759,8 @@
             "type": "SEQ",
             "members": [
               {
-                "type": "TOKEN",
-                "content": {
-                  "type": "PATTERN",
-                  "value": "([ \\t\\v\\f\\r]|\\\\\\r?\\n)+"
-                }
+                "type": "SYMBOL",
+                "name": "gap"
               },
               {
                 "type": "CHOICE",
@@ -866,11 +773,8 @@
                         "value": "on"
                       },
                       {
-                        "type": "TOKEN",
-                        "content": {
-                          "type": "PATTERN",
-                          "value": "([ \\t\\v\\f\\r]|\\\\\\r?\\n)+"
-                        }
+                        "type": "SYMBOL",
+                        "name": "gap"
                       },
                       {
                         "type": "CHOICE",
@@ -902,22 +806,16 @@
                         ]
                       },
                       {
-                        "type": "TOKEN",
-                        "content": {
-                          "type": "PATTERN",
-                          "value": "([ \\t\\v\\f\\r]|\\\\\\r?\\n)+"
-                        }
+                        "type": "SYMBOL",
+                        "name": "gap"
                       },
                       {
                         "type": "SYMBOL",
                         "name": "literal_list"
                       },
                       {
-                        "type": "TOKEN",
-                        "content": {
-                          "type": "PATTERN",
-                          "value": "([ \\t\\v\\f\\r]|\\\\\\r?\\n)+"
-                        }
+                        "type": "SYMBOL",
+                        "name": "gap"
                       },
                       {
                         "type": "SYMBOL",
@@ -933,33 +831,24 @@
                         "value": "trap"
                       },
                       {
-                        "type": "TOKEN",
-                        "content": {
-                          "type": "PATTERN",
-                          "value": "([ \\t\\v\\f\\r]|\\\\\\r?\\n)+"
-                        }
+                        "type": "SYMBOL",
+                        "name": "gap"
                       },
                       {
                         "type": "SYMBOL",
                         "name": "_word"
                       },
                       {
-                        "type": "TOKEN",
-                        "content": {
-                          "type": "PATTERN",
-                          "value": "([ \\t\\v\\f\\r]|\\\\\\r?\\n)+"
-                        }
+                        "type": "SYMBOL",
+                        "name": "gap"
                       },
                       {
                         "type": "SYMBOL",
                         "name": "literal_list"
                       },
                       {
-                        "type": "TOKEN",
-                        "content": {
-                          "type": "PATTERN",
-                          "value": "([ \\t\\v\\f\\r]|\\\\\\r?\\n)+"
-                        }
+                        "type": "SYMBOL",
+                        "name": "gap"
                       },
                       {
                         "type": "SYMBOL",
@@ -979,11 +868,8 @@
               "type": "SEQ",
               "members": [
                 {
-                  "type": "TOKEN",
-                  "content": {
-                    "type": "PATTERN",
-                    "value": "([ \\t\\v\\f\\r]|\\\\\\r?\\n)+"
-                  }
+                  "type": "SYMBOL",
+                  "name": "gap"
                 },
                 {
                   "type": "SYMBOL",
@@ -1006,11 +892,8 @@
           "value": "finally"
         },
         {
-          "type": "TOKEN",
-          "content": {
-            "type": "PATTERN",
-            "value": "([ \\t\\v\\f\\r]|\\\\\\r?\\n)+"
-          }
+          "type": "SYMBOL",
+          "name": "gap"
         },
         {
           "type": "SYMBOL",
@@ -1053,11 +936,8 @@
               "type": "SEQ",
               "members": [
                 {
-                  "type": "TOKEN",
-                  "content": {
-                    "type": "PATTERN",
-                    "value": "([ \\t\\v\\f\\r]|\\\\\\r?\\n)+"
-                  }
+                  "type": "SYMBOL",
+                  "name": "gap"
                 },
                 {
                   "type": "FIELD",
@@ -1093,11 +973,8 @@
             "type": "SEQ",
             "members": [
               {
-                "type": "TOKEN",
-                "content": {
-                  "type": "PATTERN",
-                  "value": "([ \\t\\v\\f\\r]|\\\\\\r?\\n)+"
-                }
+                "type": "SYMBOL",
+                "name": "gap"
               },
               {
                 "type": "SYMBOL",
@@ -1142,11 +1019,8 @@
             "type": "SEQ",
             "members": [
               {
-                "type": "TOKEN",
-                "content": {
-                  "type": "PATTERN",
-                  "value": "([ \\t\\v\\f\\r]|\\\\\\r?\\n)+"
-                }
+                "type": "SYMBOL",
+                "name": "gap"
               },
               {
                 "type": "SYMBOL",
@@ -1481,11 +1355,8 @@
           "value": "set"
         },
         {
-          "type": "TOKEN",
-          "content": {
-            "type": "PATTERN",
-            "value": "([ \\t\\v\\f\\r]|\\\\\\r?\\n)+"
-          }
+          "type": "SYMBOL",
+          "name": "gap"
         },
         {
           "type": "SYMBOL",
@@ -1498,11 +1369,8 @@
               "type": "SEQ",
               "members": [
                 {
-                  "type": "TOKEN",
-                  "content": {
-                    "type": "PATTERN",
-                    "value": "([ \\t\\v\\f\\r]|\\\\\\r?\\n)+"
-                  }
+                  "type": "SYMBOL",
+                  "name": "gap"
                 },
                 {
                   "type": "SYMBOL",
@@ -1525,11 +1393,8 @@
           "value": "proc"
         },
         {
-          "type": "TOKEN",
-          "content": {
-            "type": "PATTERN",
-            "value": "([ \\t\\v\\f\\r]|\\\\\\r?\\n)+"
-          }
+          "type": "SYMBOL",
+          "name": "gap"
         },
         {
           "type": "FIELD",
@@ -1540,11 +1405,8 @@
           }
         },
         {
-          "type": "TOKEN",
-          "content": {
-            "type": "PATTERN",
-            "value": "([ \\t\\v\\f\\r]|\\\\\\r?\\n)+"
-          }
+          "type": "SYMBOL",
+          "name": "gap"
         },
         {
           "type": "FIELD",
@@ -1555,11 +1417,8 @@
           }
         },
         {
-          "type": "TOKEN",
-          "content": {
-            "type": "PATTERN",
-            "value": "([ \\t\\v\\f\\r]|\\\\\\r?\\n)+"
-          }
+          "type": "SYMBOL",
+          "name": "gap"
         },
         {
           "type": "FIELD",
@@ -1584,20 +1443,8 @@
             {
               "type": "REPEAT",
               "content": {
-                "type": "CHOICE",
-                "members": [
-                  {
-                    "type": "STRING",
-                    "value": "\n"
-                  },
-                  {
-                    "type": "TOKEN",
-                    "content": {
-                      "type": "PATTERN",
-                      "value": "([ \\t\\v\\f\\r]|\\\\\\r?\\n)+"
-                    }
-                  }
-                ]
+                "type": "SYMBOL",
+                "name": "gapnl"
               }
             },
             {
@@ -1616,11 +1463,8 @@
                         "type": "SEQ",
                         "members": [
                           {
-                            "type": "TOKEN",
-                            "content": {
-                              "type": "PATTERN",
-                              "value": "([ \\t\\v\\f\\r]|\\\\\\r?\\n)+"
-                            }
+                            "type": "SYMBOL",
+                            "name": "gap"
                           },
                           {
                             "type": "SYMBOL",
@@ -1639,20 +1483,8 @@
             {
               "type": "REPEAT",
               "content": {
-                "type": "CHOICE",
-                "members": [
-                  {
-                    "type": "STRING",
-                    "value": "\n"
-                  },
-                  {
-                    "type": "TOKEN",
-                    "content": {
-                      "type": "PATTERN",
-                      "value": "([ \\t\\v\\f\\r]|\\\\\\r?\\n)+"
-                    }
-                  }
-                ]
+                "type": "SYMBOL",
+                "name": "gapnl"
               }
             },
             {
@@ -1688,20 +1520,8 @@
             {
               "type": "REPEAT",
               "content": {
-                "type": "CHOICE",
-                "members": [
-                  {
-                    "type": "STRING",
-                    "value": "\n"
-                  },
-                  {
-                    "type": "TOKEN",
-                    "content": {
-                      "type": "PATTERN",
-                      "value": "([ \\t\\v\\f\\r]|\\\\\\r?\\n)+"
-                    }
-                  }
-                ]
+                "type": "SYMBOL",
+                "name": "gapnl"
               }
             },
             {
@@ -1711,20 +1531,8 @@
             {
               "type": "REPEAT",
               "content": {
-                "type": "CHOICE",
-                "members": [
-                  {
-                    "type": "STRING",
-                    "value": "\n"
-                  },
-                  {
-                    "type": "TOKEN",
-                    "content": {
-                      "type": "PATTERN",
-                      "value": "([ \\t\\v\\f\\r]|\\\\\\r?\\n)+"
-                    }
-                  }
-                ]
+                "type": "SYMBOL",
+                "name": "gapnl"
               }
             },
             {
@@ -1755,20 +1563,8 @@
                 {
                   "type": "REPEAT1",
                   "content": {
-                    "type": "CHOICE",
-                    "members": [
-                      {
-                        "type": "STRING",
-                        "value": "\n"
-                      },
-                      {
-                        "type": "TOKEN",
-                        "content": {
-                          "type": "PATTERN",
-                          "value": "([ \\t\\v\\f\\r]|\\\\\\r?\\n)+"
-                        }
-                      }
-                    ]
+                    "type": "SYMBOL",
+                    "name": "gapnl"
                   }
                 },
                 {
@@ -1808,20 +1604,8 @@
             {
               "type": "REPEAT",
               "content": {
-                "type": "CHOICE",
-                "members": [
-                  {
-                    "type": "STRING",
-                    "value": "\n"
-                  },
-                  {
-                    "type": "TOKEN",
-                    "content": {
-                      "type": "PATTERN",
-                      "value": "([ \\t\\v\\f\\r]|\\\\\\r?\\n)+"
-                    }
-                  }
-                ]
+                "type": "SYMBOL",
+                "name": "gapnl"
               }
             },
             {
@@ -1831,20 +1615,8 @@
             {
               "type": "REPEAT",
               "content": {
-                "type": "CHOICE",
-                "members": [
-                  {
-                    "type": "STRING",
-                    "value": "\n"
-                  },
-                  {
-                    "type": "TOKEN",
-                    "content": {
-                      "type": "PATTERN",
-                      "value": "([ \\t\\v\\f\\r]|\\\\\\r?\\n)+"
-                    }
-                  }
-                ]
+                "type": "SYMBOL",
+                "name": "gapnl"
               }
             },
             {
@@ -1852,10 +1624,6 @@
               "value": "}"
             }
           ]
-        },
-        {
-          "type": "SYMBOL",
-          "name": "_expr"
         }
       ]
     },
@@ -1872,20 +1640,8 @@
             {
               "type": "REPEAT",
               "content": {
-                "type": "CHOICE",
-                "members": [
-                  {
-                    "type": "STRING",
-                    "value": "\n"
-                  },
-                  {
-                    "type": "TOKEN",
-                    "content": {
-                      "type": "PATTERN",
-                      "value": "([ \\t\\v\\f\\r]|\\\\\\r?\\n)+"
-                    }
-                  }
-                ]
+                "type": "SYMBOL",
+                "name": "gapnl"
               }
             },
             {
@@ -1895,20 +1651,8 @@
             {
               "type": "REPEAT",
               "content": {
-                "type": "CHOICE",
-                "members": [
-                  {
-                    "type": "STRING",
-                    "value": "\n"
-                  },
-                  {
-                    "type": "TOKEN",
-                    "content": {
-                      "type": "PATTERN",
-                      "value": "([ \\t\\v\\f\\r]|\\\\\\r?\\n)+"
-                    }
-                  }
-                ]
+                "type": "SYMBOL",
+                "name": "gapnl"
               }
             },
             {
@@ -1989,20 +1733,8 @@
         {
           "type": "REPEAT",
           "content": {
-            "type": "CHOICE",
-            "members": [
-              {
-                "type": "STRING",
-                "value": "\n"
-              },
-              {
-                "type": "TOKEN",
-                "content": {
-                  "type": "PATTERN",
-                  "value": "([ \\t\\v\\f\\r]|\\\\\\r?\\n)+"
-                }
-              }
-            ]
+            "type": "SYMBOL",
+            "name": "gapnl"
           }
         },
         {
@@ -2012,20 +1744,8 @@
         {
           "type": "REPEAT",
           "content": {
-            "type": "CHOICE",
-            "members": [
-              {
-                "type": "STRING",
-                "value": "\n"
-              },
-              {
-                "type": "TOKEN",
-                "content": {
-                  "type": "PATTERN",
-                  "value": "([ \\t\\v\\f\\r]|\\\\\\r?\\n)+"
-                }
-              }
-            ]
+            "type": "SYMBOL",
+            "name": "gapnl"
           }
         },
         {
@@ -2052,20 +1772,8 @@
         {
           "type": "REPEAT",
           "content": {
-            "type": "CHOICE",
-            "members": [
-              {
-                "type": "STRING",
-                "value": "\n"
-              },
-              {
-                "type": "TOKEN",
-                "content": {
-                  "type": "PATTERN",
-                  "value": "([ \\t\\v\\f\\r]|\\\\\\r?\\n)+"
-                }
-              }
-            ]
+            "type": "SYMBOL",
+            "name": "gapnl"
           }
         },
         {
@@ -2087,20 +1795,8 @@
           {
             "type": "REPEAT",
             "content": {
-              "type": "CHOICE",
-              "members": [
-                {
-                  "type": "STRING",
-                  "value": "\n"
-                },
-                {
-                  "type": "TOKEN",
-                  "content": {
-                    "type": "PATTERN",
-                    "value": "([ \\t\\v\\f\\r]|\\\\\\r?\\n)+"
-                  }
-                }
-              ]
+              "type": "SYMBOL",
+              "name": "gapnl"
             }
           },
           {
@@ -2115,20 +1811,8 @@
                 {
                   "type": "REPEAT",
                   "content": {
-                    "type": "CHOICE",
-                    "members": [
-                      {
-                        "type": "STRING",
-                        "value": "\n"
-                      },
-                      {
-                        "type": "TOKEN",
-                        "content": {
-                          "type": "PATTERN",
-                          "value": "([ \\t\\v\\f\\r]|\\\\\\r?\\n)+"
-                        }
-                      }
-                    ]
+                    "type": "SYMBOL",
+                    "name": "gapnl"
                   }
                 },
                 {
@@ -2171,20 +1855,8 @@
           {
             "type": "REPEAT",
             "content": {
-              "type": "CHOICE",
-              "members": [
-                {
-                  "type": "STRING",
-                  "value": "\n"
-                },
-                {
-                  "type": "TOKEN",
-                  "content": {
-                    "type": "PATTERN",
-                    "value": "([ \\t\\v\\f\\r]|\\\\\\r?\\n)+"
-                  }
-                }
-              ]
+              "type": "SYMBOL",
+              "name": "gapnl"
             }
           },
           {
@@ -2210,20 +1882,8 @@
               {
                 "type": "REPEAT",
                 "content": {
-                  "type": "CHOICE",
-                  "members": [
-                    {
-                      "type": "STRING",
-                      "value": "\n"
-                    },
-                    {
-                      "type": "TOKEN",
-                      "content": {
-                        "type": "PATTERN",
-                        "value": "([ \\t\\v\\f\\r]|\\\\\\r?\\n)+"
-                      }
-                    }
-                  ]
+                  "type": "SYMBOL",
+                  "name": "gapnl"
                 }
               },
               {
@@ -2233,20 +1893,8 @@
               {
                 "type": "REPEAT",
                 "content": {
-                  "type": "CHOICE",
-                  "members": [
-                    {
-                      "type": "STRING",
-                      "value": "\n"
-                    },
-                    {
-                      "type": "TOKEN",
-                      "content": {
-                        "type": "PATTERN",
-                        "value": "([ \\t\\v\\f\\r]|\\\\\\r?\\n)+"
-                      }
-                    }
-                  ]
+                  "type": "SYMBOL",
+                  "name": "gapnl"
                 }
               },
               {
@@ -2269,20 +1917,8 @@
               {
                 "type": "REPEAT",
                 "content": {
-                  "type": "CHOICE",
-                  "members": [
-                    {
-                      "type": "STRING",
-                      "value": "\n"
-                    },
-                    {
-                      "type": "TOKEN",
-                      "content": {
-                        "type": "PATTERN",
-                        "value": "([ \\t\\v\\f\\r]|\\\\\\r?\\n)+"
-                      }
-                    }
-                  ]
+                  "type": "SYMBOL",
+                  "name": "gapnl"
                 }
               },
               {
@@ -2292,20 +1928,8 @@
               {
                 "type": "REPEAT",
                 "content": {
-                  "type": "CHOICE",
-                  "members": [
-                    {
-                      "type": "STRING",
-                      "value": "\n"
-                    },
-                    {
-                      "type": "TOKEN",
-                      "content": {
-                        "type": "PATTERN",
-                        "value": "([ \\t\\v\\f\\r]|\\\\\\r?\\n)+"
-                      }
-                    }
-                  ]
+                  "type": "SYMBOL",
+                  "name": "gapnl"
                 }
               },
               {
@@ -2328,20 +1952,8 @@
               {
                 "type": "REPEAT",
                 "content": {
-                  "type": "CHOICE",
-                  "members": [
-                    {
-                      "type": "STRING",
-                      "value": "\n"
-                    },
-                    {
-                      "type": "TOKEN",
-                      "content": {
-                        "type": "PATTERN",
-                        "value": "([ \\t\\v\\f\\r]|\\\\\\r?\\n)+"
-                      }
-                    }
-                  ]
+                  "type": "SYMBOL",
+                  "name": "gapnl"
                 }
               },
               {
@@ -2351,20 +1963,8 @@
               {
                 "type": "REPEAT",
                 "content": {
-                  "type": "CHOICE",
-                  "members": [
-                    {
-                      "type": "STRING",
-                      "value": "\n"
-                    },
-                    {
-                      "type": "TOKEN",
-                      "content": {
-                        "type": "PATTERN",
-                        "value": "([ \\t\\v\\f\\r]|\\\\\\r?\\n)+"
-                      }
-                    }
-                  ]
+                  "type": "SYMBOL",
+                  "name": "gapnl"
                 }
               },
               {
@@ -2387,20 +1987,8 @@
               {
                 "type": "REPEAT",
                 "content": {
-                  "type": "CHOICE",
-                  "members": [
-                    {
-                      "type": "STRING",
-                      "value": "\n"
-                    },
-                    {
-                      "type": "TOKEN",
-                      "content": {
-                        "type": "PATTERN",
-                        "value": "([ \\t\\v\\f\\r]|\\\\\\r?\\n)+"
-                      }
-                    }
-                  ]
+                  "type": "SYMBOL",
+                  "name": "gapnl"
                 }
               },
               {
@@ -2410,20 +1998,8 @@
               {
                 "type": "REPEAT",
                 "content": {
-                  "type": "CHOICE",
-                  "members": [
-                    {
-                      "type": "STRING",
-                      "value": "\n"
-                    },
-                    {
-                      "type": "TOKEN",
-                      "content": {
-                        "type": "PATTERN",
-                        "value": "([ \\t\\v\\f\\r]|\\\\\\r?\\n)+"
-                      }
-                    }
-                  ]
+                  "type": "SYMBOL",
+                  "name": "gapnl"
                 }
               },
               {
@@ -2446,20 +2022,8 @@
               {
                 "type": "REPEAT",
                 "content": {
-                  "type": "CHOICE",
-                  "members": [
-                    {
-                      "type": "STRING",
-                      "value": "\n"
-                    },
-                    {
-                      "type": "TOKEN",
-                      "content": {
-                        "type": "PATTERN",
-                        "value": "([ \\t\\v\\f\\r]|\\\\\\r?\\n)+"
-                      }
-                    }
-                  ]
+                  "type": "SYMBOL",
+                  "name": "gapnl"
                 }
               },
               {
@@ -2469,20 +2033,8 @@
               {
                 "type": "REPEAT",
                 "content": {
-                  "type": "CHOICE",
-                  "members": [
-                    {
-                      "type": "STRING",
-                      "value": "\n"
-                    },
-                    {
-                      "type": "TOKEN",
-                      "content": {
-                        "type": "PATTERN",
-                        "value": "([ \\t\\v\\f\\r]|\\\\\\r?\\n)+"
-                      }
-                    }
-                  ]
+                  "type": "SYMBOL",
+                  "name": "gapnl"
                 }
               },
               {
@@ -2505,20 +2057,8 @@
               {
                 "type": "REPEAT",
                 "content": {
-                  "type": "CHOICE",
-                  "members": [
-                    {
-                      "type": "STRING",
-                      "value": "\n"
-                    },
-                    {
-                      "type": "TOKEN",
-                      "content": {
-                        "type": "PATTERN",
-                        "value": "([ \\t\\v\\f\\r]|\\\\\\r?\\n)+"
-                      }
-                    }
-                  ]
+                  "type": "SYMBOL",
+                  "name": "gapnl"
                 }
               },
               {
@@ -2528,20 +2068,8 @@
               {
                 "type": "REPEAT",
                 "content": {
-                  "type": "CHOICE",
-                  "members": [
-                    {
-                      "type": "STRING",
-                      "value": "\n"
-                    },
-                    {
-                      "type": "TOKEN",
-                      "content": {
-                        "type": "PATTERN",
-                        "value": "([ \\t\\v\\f\\r]|\\\\\\r?\\n)+"
-                      }
-                    }
-                  ]
+                  "type": "SYMBOL",
+                  "name": "gapnl"
                 }
               },
               {
@@ -2564,20 +2092,8 @@
               {
                 "type": "REPEAT",
                 "content": {
-                  "type": "CHOICE",
-                  "members": [
-                    {
-                      "type": "STRING",
-                      "value": "\n"
-                    },
-                    {
-                      "type": "TOKEN",
-                      "content": {
-                        "type": "PATTERN",
-                        "value": "([ \\t\\v\\f\\r]|\\\\\\r?\\n)+"
-                      }
-                    }
-                  ]
+                  "type": "SYMBOL",
+                  "name": "gapnl"
                 }
               },
               {
@@ -2587,20 +2103,8 @@
               {
                 "type": "REPEAT",
                 "content": {
-                  "type": "CHOICE",
-                  "members": [
-                    {
-                      "type": "STRING",
-                      "value": "\n"
-                    },
-                    {
-                      "type": "TOKEN",
-                      "content": {
-                        "type": "PATTERN",
-                        "value": "([ \\t\\v\\f\\r]|\\\\\\r?\\n)+"
-                      }
-                    }
-                  ]
+                  "type": "SYMBOL",
+                  "name": "gapnl"
                 }
               },
               {
@@ -2623,20 +2127,8 @@
               {
                 "type": "REPEAT",
                 "content": {
-                  "type": "CHOICE",
-                  "members": [
-                    {
-                      "type": "STRING",
-                      "value": "\n"
-                    },
-                    {
-                      "type": "TOKEN",
-                      "content": {
-                        "type": "PATTERN",
-                        "value": "([ \\t\\v\\f\\r]|\\\\\\r?\\n)+"
-                      }
-                    }
-                  ]
+                  "type": "SYMBOL",
+                  "name": "gapnl"
                 }
               },
               {
@@ -2646,20 +2138,8 @@
               {
                 "type": "REPEAT",
                 "content": {
-                  "type": "CHOICE",
-                  "members": [
-                    {
-                      "type": "STRING",
-                      "value": "\n"
-                    },
-                    {
-                      "type": "TOKEN",
-                      "content": {
-                        "type": "PATTERN",
-                        "value": "([ \\t\\v\\f\\r]|\\\\\\r?\\n)+"
-                      }
-                    }
-                  ]
+                  "type": "SYMBOL",
+                  "name": "gapnl"
                 }
               },
               {
@@ -2682,20 +2162,8 @@
               {
                 "type": "REPEAT",
                 "content": {
-                  "type": "CHOICE",
-                  "members": [
-                    {
-                      "type": "STRING",
-                      "value": "\n"
-                    },
-                    {
-                      "type": "TOKEN",
-                      "content": {
-                        "type": "PATTERN",
-                        "value": "([ \\t\\v\\f\\r]|\\\\\\r?\\n)+"
-                      }
-                    }
-                  ]
+                  "type": "SYMBOL",
+                  "name": "gapnl"
                 }
               },
               {
@@ -2705,20 +2173,8 @@
               {
                 "type": "REPEAT",
                 "content": {
-                  "type": "CHOICE",
-                  "members": [
-                    {
-                      "type": "STRING",
-                      "value": "\n"
-                    },
-                    {
-                      "type": "TOKEN",
-                      "content": {
-                        "type": "PATTERN",
-                        "value": "([ \\t\\v\\f\\r]|\\\\\\r?\\n)+"
-                      }
-                    }
-                  ]
+                  "type": "SYMBOL",
+                  "name": "gapnl"
                 }
               },
               {
@@ -2741,20 +2197,8 @@
               {
                 "type": "REPEAT",
                 "content": {
-                  "type": "CHOICE",
-                  "members": [
-                    {
-                      "type": "STRING",
-                      "value": "\n"
-                    },
-                    {
-                      "type": "TOKEN",
-                      "content": {
-                        "type": "PATTERN",
-                        "value": "([ \\t\\v\\f\\r]|\\\\\\r?\\n)+"
-                      }
-                    }
-                  ]
+                  "type": "SYMBOL",
+                  "name": "gapnl"
                 }
               },
               {
@@ -2764,20 +2208,8 @@
               {
                 "type": "REPEAT",
                 "content": {
-                  "type": "CHOICE",
-                  "members": [
-                    {
-                      "type": "STRING",
-                      "value": "\n"
-                    },
-                    {
-                      "type": "TOKEN",
-                      "content": {
-                        "type": "PATTERN",
-                        "value": "([ \\t\\v\\f\\r]|\\\\\\r?\\n)+"
-                      }
-                    }
-                  ]
+                  "type": "SYMBOL",
+                  "name": "gapnl"
                 }
               },
               {
@@ -2800,20 +2232,8 @@
               {
                 "type": "REPEAT",
                 "content": {
-                  "type": "CHOICE",
-                  "members": [
-                    {
-                      "type": "STRING",
-                      "value": "\n"
-                    },
-                    {
-                      "type": "TOKEN",
-                      "content": {
-                        "type": "PATTERN",
-                        "value": "([ \\t\\v\\f\\r]|\\\\\\r?\\n)+"
-                      }
-                    }
-                  ]
+                  "type": "SYMBOL",
+                  "name": "gapnl"
                 }
               },
               {
@@ -2823,20 +2243,8 @@
               {
                 "type": "REPEAT",
                 "content": {
-                  "type": "CHOICE",
-                  "members": [
-                    {
-                      "type": "STRING",
-                      "value": "\n"
-                    },
-                    {
-                      "type": "TOKEN",
-                      "content": {
-                        "type": "PATTERN",
-                        "value": "([ \\t\\v\\f\\r]|\\\\\\r?\\n)+"
-                      }
-                    }
-                  ]
+                  "type": "SYMBOL",
+                  "name": "gapnl"
                 }
               },
               {
@@ -2859,20 +2267,8 @@
               {
                 "type": "REPEAT",
                 "content": {
-                  "type": "CHOICE",
-                  "members": [
-                    {
-                      "type": "STRING",
-                      "value": "\n"
-                    },
-                    {
-                      "type": "TOKEN",
-                      "content": {
-                        "type": "PATTERN",
-                        "value": "([ \\t\\v\\f\\r]|\\\\\\r?\\n)+"
-                      }
-                    }
-                  ]
+                  "type": "SYMBOL",
+                  "name": "gapnl"
                 }
               },
               {
@@ -2882,20 +2278,8 @@
               {
                 "type": "REPEAT",
                 "content": {
-                  "type": "CHOICE",
-                  "members": [
-                    {
-                      "type": "STRING",
-                      "value": "\n"
-                    },
-                    {
-                      "type": "TOKEN",
-                      "content": {
-                        "type": "PATTERN",
-                        "value": "([ \\t\\v\\f\\r]|\\\\\\r?\\n)+"
-                      }
-                    }
-                  ]
+                  "type": "SYMBOL",
+                  "name": "gapnl"
                 }
               },
               {
@@ -2918,20 +2302,8 @@
               {
                 "type": "REPEAT",
                 "content": {
-                  "type": "CHOICE",
-                  "members": [
-                    {
-                      "type": "STRING",
-                      "value": "\n"
-                    },
-                    {
-                      "type": "TOKEN",
-                      "content": {
-                        "type": "PATTERN",
-                        "value": "([ \\t\\v\\f\\r]|\\\\\\r?\\n)+"
-                      }
-                    }
-                  ]
+                  "type": "SYMBOL",
+                  "name": "gapnl"
                 }
               },
               {
@@ -2941,20 +2313,8 @@
               {
                 "type": "REPEAT",
                 "content": {
-                  "type": "CHOICE",
-                  "members": [
-                    {
-                      "type": "STRING",
-                      "value": "\n"
-                    },
-                    {
-                      "type": "TOKEN",
-                      "content": {
-                        "type": "PATTERN",
-                        "value": "([ \\t\\v\\f\\r]|\\\\\\r?\\n)+"
-                      }
-                    }
-                  ]
+                  "type": "SYMBOL",
+                  "name": "gapnl"
                 }
               },
               {
@@ -2977,20 +2337,8 @@
               {
                 "type": "REPEAT",
                 "content": {
-                  "type": "CHOICE",
-                  "members": [
-                    {
-                      "type": "STRING",
-                      "value": "\n"
-                    },
-                    {
-                      "type": "TOKEN",
-                      "content": {
-                        "type": "PATTERN",
-                        "value": "([ \\t\\v\\f\\r]|\\\\\\r?\\n)+"
-                      }
-                    }
-                  ]
+                  "type": "SYMBOL",
+                  "name": "gapnl"
                 }
               },
               {
@@ -3000,20 +2348,8 @@
               {
                 "type": "REPEAT",
                 "content": {
-                  "type": "CHOICE",
-                  "members": [
-                    {
-                      "type": "STRING",
-                      "value": "\n"
-                    },
-                    {
-                      "type": "TOKEN",
-                      "content": {
-                        "type": "PATTERN",
-                        "value": "([ \\t\\v\\f\\r]|\\\\\\r?\\n)+"
-                      }
-                    }
-                  ]
+                  "type": "SYMBOL",
+                  "name": "gapnl"
                 }
               },
               {
@@ -3036,20 +2372,8 @@
               {
                 "type": "REPEAT",
                 "content": {
-                  "type": "CHOICE",
-                  "members": [
-                    {
-                      "type": "STRING",
-                      "value": "\n"
-                    },
-                    {
-                      "type": "TOKEN",
-                      "content": {
-                        "type": "PATTERN",
-                        "value": "([ \\t\\v\\f\\r]|\\\\\\r?\\n)+"
-                      }
-                    }
-                  ]
+                  "type": "SYMBOL",
+                  "name": "gapnl"
                 }
               },
               {
@@ -3059,20 +2383,8 @@
               {
                 "type": "REPEAT",
                 "content": {
-                  "type": "CHOICE",
-                  "members": [
-                    {
-                      "type": "STRING",
-                      "value": "\n"
-                    },
-                    {
-                      "type": "TOKEN",
-                      "content": {
-                        "type": "PATTERN",
-                        "value": "([ \\t\\v\\f\\r]|\\\\\\r?\\n)+"
-                      }
-                    }
-                  ]
+                  "type": "SYMBOL",
+                  "name": "gapnl"
                 }
               },
               {
@@ -3095,20 +2407,8 @@
               {
                 "type": "REPEAT",
                 "content": {
-                  "type": "CHOICE",
-                  "members": [
-                    {
-                      "type": "STRING",
-                      "value": "\n"
-                    },
-                    {
-                      "type": "TOKEN",
-                      "content": {
-                        "type": "PATTERN",
-                        "value": "([ \\t\\v\\f\\r]|\\\\\\r?\\n)+"
-                      }
-                    }
-                  ]
+                  "type": "SYMBOL",
+                  "name": "gapnl"
                 }
               },
               {
@@ -3118,20 +2418,8 @@
               {
                 "type": "REPEAT",
                 "content": {
-                  "type": "CHOICE",
-                  "members": [
-                    {
-                      "type": "STRING",
-                      "value": "\n"
-                    },
-                    {
-                      "type": "TOKEN",
-                      "content": {
-                        "type": "PATTERN",
-                        "value": "([ \\t\\v\\f\\r]|\\\\\\r?\\n)+"
-                      }
-                    }
-                  ]
+                  "type": "SYMBOL",
+                  "name": "gapnl"
                 }
               },
               {
@@ -3154,20 +2442,8 @@
               {
                 "type": "REPEAT",
                 "content": {
-                  "type": "CHOICE",
-                  "members": [
-                    {
-                      "type": "STRING",
-                      "value": "\n"
-                    },
-                    {
-                      "type": "TOKEN",
-                      "content": {
-                        "type": "PATTERN",
-                        "value": "([ \\t\\v\\f\\r]|\\\\\\r?\\n)+"
-                      }
-                    }
-                  ]
+                  "type": "SYMBOL",
+                  "name": "gapnl"
                 }
               },
               {
@@ -3177,20 +2453,8 @@
               {
                 "type": "REPEAT",
                 "content": {
-                  "type": "CHOICE",
-                  "members": [
-                    {
-                      "type": "STRING",
-                      "value": "\n"
-                    },
-                    {
-                      "type": "TOKEN",
-                      "content": {
-                        "type": "PATTERN",
-                        "value": "([ \\t\\v\\f\\r]|\\\\\\r?\\n)+"
-                      }
-                    }
-                  ]
+                  "type": "SYMBOL",
+                  "name": "gapnl"
                 }
               },
               {
@@ -3213,20 +2477,8 @@
               {
                 "type": "REPEAT",
                 "content": {
-                  "type": "CHOICE",
-                  "members": [
-                    {
-                      "type": "STRING",
-                      "value": "\n"
-                    },
-                    {
-                      "type": "TOKEN",
-                      "content": {
-                        "type": "PATTERN",
-                        "value": "([ \\t\\v\\f\\r]|\\\\\\r?\\n)+"
-                      }
-                    }
-                  ]
+                  "type": "SYMBOL",
+                  "name": "gapnl"
                 }
               },
               {
@@ -3236,20 +2488,8 @@
               {
                 "type": "REPEAT",
                 "content": {
-                  "type": "CHOICE",
-                  "members": [
-                    {
-                      "type": "STRING",
-                      "value": "\n"
-                    },
-                    {
-                      "type": "TOKEN",
-                      "content": {
-                        "type": "PATTERN",
-                        "value": "([ \\t\\v\\f\\r]|\\\\\\r?\\n)+"
-                      }
-                    }
-                  ]
+                  "type": "SYMBOL",
+                  "name": "gapnl"
                 }
               },
               {
@@ -3272,20 +2512,8 @@
               {
                 "type": "REPEAT",
                 "content": {
-                  "type": "CHOICE",
-                  "members": [
-                    {
-                      "type": "STRING",
-                      "value": "\n"
-                    },
-                    {
-                      "type": "TOKEN",
-                      "content": {
-                        "type": "PATTERN",
-                        "value": "([ \\t\\v\\f\\r]|\\\\\\r?\\n)+"
-                      }
-                    }
-                  ]
+                  "type": "SYMBOL",
+                  "name": "gapnl"
                 }
               },
               {
@@ -3295,20 +2523,8 @@
               {
                 "type": "REPEAT",
                 "content": {
-                  "type": "CHOICE",
-                  "members": [
-                    {
-                      "type": "STRING",
-                      "value": "\n"
-                    },
-                    {
-                      "type": "TOKEN",
-                      "content": {
-                        "type": "PATTERN",
-                        "value": "([ \\t\\v\\f\\r]|\\\\\\r?\\n)+"
-                      }
-                    }
-                  ]
+                  "type": "SYMBOL",
+                  "name": "gapnl"
                 }
               },
               {
@@ -3331,20 +2547,8 @@
               {
                 "type": "REPEAT",
                 "content": {
-                  "type": "CHOICE",
-                  "members": [
-                    {
-                      "type": "STRING",
-                      "value": "\n"
-                    },
-                    {
-                      "type": "TOKEN",
-                      "content": {
-                        "type": "PATTERN",
-                        "value": "([ \\t\\v\\f\\r]|\\\\\\r?\\n)+"
-                      }
-                    }
-                  ]
+                  "type": "SYMBOL",
+                  "name": "gapnl"
                 }
               },
               {
@@ -3354,20 +2558,8 @@
               {
                 "type": "REPEAT",
                 "content": {
-                  "type": "CHOICE",
-                  "members": [
-                    {
-                      "type": "STRING",
-                      "value": "\n"
-                    },
-                    {
-                      "type": "TOKEN",
-                      "content": {
-                        "type": "PATTERN",
-                        "value": "([ \\t\\v\\f\\r]|\\\\\\r?\\n)+"
-                      }
-                    }
-                  ]
+                  "type": "SYMBOL",
+                  "name": "gapnl"
                 }
               },
               {
@@ -3390,20 +2582,8 @@
               {
                 "type": "REPEAT",
                 "content": {
-                  "type": "CHOICE",
-                  "members": [
-                    {
-                      "type": "STRING",
-                      "value": "\n"
-                    },
-                    {
-                      "type": "TOKEN",
-                      "content": {
-                        "type": "PATTERN",
-                        "value": "([ \\t\\v\\f\\r]|\\\\\\r?\\n)+"
-                      }
-                    }
-                  ]
+                  "type": "SYMBOL",
+                  "name": "gapnl"
                 }
               },
               {
@@ -3413,20 +2593,8 @@
               {
                 "type": "REPEAT",
                 "content": {
-                  "type": "CHOICE",
-                  "members": [
-                    {
-                      "type": "STRING",
-                      "value": "\n"
-                    },
-                    {
-                      "type": "TOKEN",
-                      "content": {
-                        "type": "PATTERN",
-                        "value": "([ \\t\\v\\f\\r]|\\\\\\r?\\n)+"
-                      }
-                    }
-                  ]
+                  "type": "SYMBOL",
+                  "name": "gapnl"
                 }
               },
               {
@@ -3449,20 +2617,8 @@
               {
                 "type": "REPEAT",
                 "content": {
-                  "type": "CHOICE",
-                  "members": [
-                    {
-                      "type": "STRING",
-                      "value": "\n"
-                    },
-                    {
-                      "type": "TOKEN",
-                      "content": {
-                        "type": "PATTERN",
-                        "value": "([ \\t\\v\\f\\r]|\\\\\\r?\\n)+"
-                      }
-                    }
-                  ]
+                  "type": "SYMBOL",
+                  "name": "gapnl"
                 }
               },
               {
@@ -3472,20 +2628,8 @@
               {
                 "type": "REPEAT",
                 "content": {
-                  "type": "CHOICE",
-                  "members": [
-                    {
-                      "type": "STRING",
-                      "value": "\n"
-                    },
-                    {
-                      "type": "TOKEN",
-                      "content": {
-                        "type": "PATTERN",
-                        "value": "([ \\t\\v\\f\\r]|\\\\\\r?\\n)+"
-                      }
-                    }
-                  ]
+                  "type": "SYMBOL",
+                  "name": "gapnl"
                 }
               },
               {
@@ -3508,20 +2652,8 @@
               {
                 "type": "REPEAT",
                 "content": {
-                  "type": "CHOICE",
-                  "members": [
-                    {
-                      "type": "STRING",
-                      "value": "\n"
-                    },
-                    {
-                      "type": "TOKEN",
-                      "content": {
-                        "type": "PATTERN",
-                        "value": "([ \\t\\v\\f\\r]|\\\\\\r?\\n)+"
-                      }
-                    }
-                  ]
+                  "type": "SYMBOL",
+                  "name": "gapnl"
                 }
               },
               {
@@ -3531,20 +2663,8 @@
               {
                 "type": "REPEAT",
                 "content": {
-                  "type": "CHOICE",
-                  "members": [
-                    {
-                      "type": "STRING",
-                      "value": "\n"
-                    },
-                    {
-                      "type": "TOKEN",
-                      "content": {
-                        "type": "PATTERN",
-                        "value": "([ \\t\\v\\f\\r]|\\\\\\r?\\n)+"
-                      }
-                    }
-                  ]
+                  "type": "SYMBOL",
+                  "name": "gapnl"
                 }
               },
               {
@@ -3567,788 +2687,12 @@
             "name": "_expr_nl"
           },
           {
-            "type": "REPEAT",
-            "content": {
-              "type": "CHOICE",
-              "members": [
-                {
-                  "type": "STRING",
-                  "value": "\n"
-                },
-                {
-                  "type": "TOKEN",
-                  "content": {
-                    "type": "PATTERN",
-                    "value": "([ \\t\\v\\f\\r]|\\\\\\r?\\n)+"
-                  }
-                }
-              ]
-            }
-          },
-          {
-            "type": "STRING",
-            "value": "?"
-          },
-          {
-            "type": "REPEAT",
-            "content": {
-              "type": "CHOICE",
-              "members": [
-                {
-                  "type": "STRING",
-                  "value": "\n"
-                },
-                {
-                  "type": "TOKEN",
-                  "content": {
-                    "type": "PATTERN",
-                    "value": "([ \\t\\v\\f\\r]|\\\\\\r?\\n)+"
-                  }
-                }
-              ]
-            }
-          },
-          {
-            "type": "SYMBOL",
-            "name": "_expr_nl"
-          },
-          {
-            "type": "REPEAT",
-            "content": {
-              "type": "CHOICE",
-              "members": [
-                {
-                  "type": "STRING",
-                  "value": "\n"
-                },
-                {
-                  "type": "TOKEN",
-                  "content": {
-                    "type": "PATTERN",
-                    "value": "([ \\t\\v\\f\\r]|\\\\\\r?\\n)+"
-                  }
-                }
-              ]
-            }
-          },
-          {
-            "type": "STRING",
-            "value": ":"
-          },
-          {
-            "type": "REPEAT",
-            "content": {
-              "type": "CHOICE",
-              "members": [
-                {
-                  "type": "STRING",
-                  "value": "\n"
-                },
-                {
-                  "type": "TOKEN",
-                  "content": {
-                    "type": "PATTERN",
-                    "value": "([ \\t\\v\\f\\r]|\\\\\\r?\\n)+"
-                  }
-                }
-              ]
-            }
-          },
-          {
-            "type": "SYMBOL",
-            "name": "_expr_nl"
-          }
-        ]
-      }
-    },
-    "_expr": {
-      "type": "CHOICE",
-      "members": [
-        {
-          "type": "SEQ",
-          "members": [
-            {
-              "type": "STRING",
-              "value": "("
-            },
-            {
-              "type": "SYMBOL",
-              "name": "_expr"
-            },
-            {
-              "type": "STRING",
-              "value": ")"
-            }
-          ]
-        },
-        {
-          "type": "ALIAS",
-          "content": {
-            "type": "SYMBOL",
-            "name": "unary_expr"
-          },
-          "named": true,
-          "value": "unary_expr"
-        },
-        {
-          "type": "ALIAS",
-          "content": {
-            "type": "SYMBOL",
-            "name": "binop_expr"
-          },
-          "named": true,
-          "value": "binop_expr"
-        },
-        {
-          "type": "ALIAS",
-          "content": {
-            "type": "SYMBOL",
-            "name": "ternary_expr"
-          },
-          "named": true,
-          "value": "ternary_expr"
-        },
-        {
-          "type": "ALIAS",
-          "content": {
-            "type": "SYMBOL",
-            "name": "func_call"
-          },
-          "named": true,
-          "value": "func_call"
-        },
-        {
-          "type": "SYMBOL",
-          "name": "braced_word"
-        },
-        {
-          "type": "SYMBOL",
-          "name": "int_literal"
-        },
-        {
-          "type": "SYMBOL",
-          "name": "float_literal"
-        },
-        {
-          "type": "SYMBOL",
-          "name": "bool_literal"
-        },
-        {
-          "type": "SYMBOL",
-          "name": "_concat_word_expr"
-        }
-      ]
-    },
-    "func_call": {
-      "type": "SEQ",
-      "members": [
-        {
-          "type": "FIELD",
-          "name": "name",
-          "content": {
-            "type": "SYMBOL",
-            "name": "expr_function_name"
-          }
-        },
-        {
-          "type": "STRING",
-          "value": "("
-        },
-        {
-          "type": "FIELD",
-          "name": "args",
-          "content": {
-            "type": "CHOICE",
-            "members": [
-              {
-                "type": "ALIAS",
-                "content": {
-                  "type": "SYMBOL",
-                  "name": "func_args"
-                },
-                "named": true,
-                "value": "func_args"
-              },
-              {
-                "type": "BLANK"
-              }
-            ]
-          }
-        },
-        {
-          "type": "STRING",
-          "value": ")"
-        }
-      ]
-    },
-    "func_args": {
-      "type": "PREC_LEFT",
-      "value": 0,
-      "content": {
-        "type": "SEQ",
-        "members": [
-          {
-            "type": "SYMBOL",
-            "name": "_expr"
-          },
-          {
-            "type": "REPEAT",
-            "content": {
-              "type": "SEQ",
-              "members": [
-                {
-                  "type": "STRING",
-                  "value": ","
-                },
-                {
-                  "type": "SYMBOL",
-                  "name": "_expr"
-                }
-              ]
-            }
-          }
-        ]
-      }
-    },
-    "unary_expr": {
-      "type": "PREC_LEFT",
-      "value": 150,
-      "content": {
-        "type": "SEQ",
-        "members": [
-          {
-            "type": "CHOICE",
-            "members": [
-              {
-                "type": "STRING",
-                "value": "-"
-              },
-              {
-                "type": "STRING",
-                "value": "+"
-              },
-              {
-                "type": "STRING",
-                "value": "~"
-              },
-              {
-                "type": "STRING",
-                "value": "!"
-              }
-            ]
-          },
-          {
-            "type": "SYMBOL",
-            "name": "_expr"
-          }
-        ]
-      }
-    },
-    "binop_expr": {
-      "type": "CHOICE",
-      "members": [
-        {
-          "type": "PREC_RIGHT",
-          "value": 140,
-          "content": {
-            "type": "SEQ",
-            "members": [
-              {
-                "type": "SYMBOL",
-                "name": "_expr"
-              },
-              {
-                "type": "STRING",
-                "value": "**"
-              },
-              {
-                "type": "SYMBOL",
-                "name": "_expr"
-              }
-            ]
-          }
-        },
-        {
-          "type": "PREC_LEFT",
-          "value": 130,
-          "content": {
-            "type": "SEQ",
-            "members": [
-              {
-                "type": "SYMBOL",
-                "name": "_expr"
-              },
-              {
-                "type": "STRING",
-                "value": "/"
-              },
-              {
-                "type": "SYMBOL",
-                "name": "_expr"
-              }
-            ]
-          }
-        },
-        {
-          "type": "PREC_LEFT",
-          "value": 130,
-          "content": {
-            "type": "SEQ",
-            "members": [
-              {
-                "type": "SYMBOL",
-                "name": "_expr"
-              },
-              {
-                "type": "STRING",
-                "value": "*"
-              },
-              {
-                "type": "SYMBOL",
-                "name": "_expr"
-              }
-            ]
-          }
-        },
-        {
-          "type": "PREC_LEFT",
-          "value": 130,
-          "content": {
-            "type": "SEQ",
-            "members": [
-              {
-                "type": "SYMBOL",
-                "name": "_expr"
-              },
-              {
-                "type": "STRING",
-                "value": "%"
-              },
-              {
-                "type": "SYMBOL",
-                "name": "_expr"
-              }
-            ]
-          }
-        },
-        {
-          "type": "PREC_LEFT",
-          "value": 120,
-          "content": {
-            "type": "SEQ",
-            "members": [
-              {
-                "type": "SYMBOL",
-                "name": "_expr"
-              },
-              {
-                "type": "STRING",
-                "value": "+"
-              },
-              {
-                "type": "SYMBOL",
-                "name": "_expr"
-              }
-            ]
-          }
-        },
-        {
-          "type": "PREC_LEFT",
-          "value": 120,
-          "content": {
-            "type": "SEQ",
-            "members": [
-              {
-                "type": "SYMBOL",
-                "name": "_expr"
-              },
-              {
-                "type": "STRING",
-                "value": "-"
-              },
-              {
-                "type": "SYMBOL",
-                "name": "_expr"
-              }
-            ]
-          }
-        },
-        {
-          "type": "PREC_LEFT",
-          "value": 110,
-          "content": {
-            "type": "SEQ",
-            "members": [
-              {
-                "type": "SYMBOL",
-                "name": "_expr"
-              },
-              {
-                "type": "STRING",
-                "value": "<<"
-              },
-              {
-                "type": "SYMBOL",
-                "name": "_expr"
-              }
-            ]
-          }
-        },
-        {
-          "type": "PREC_LEFT",
-          "value": 110,
-          "content": {
-            "type": "SEQ",
-            "members": [
-              {
-                "type": "SYMBOL",
-                "name": "_expr"
-              },
-              {
-                "type": "STRING",
-                "value": ">>"
-              },
-              {
-                "type": "SYMBOL",
-                "name": "_expr"
-              }
-            ]
-          }
-        },
-        {
-          "type": "PREC_LEFT",
-          "value": 100,
-          "content": {
-            "type": "SEQ",
-            "members": [
-              {
-                "type": "SYMBOL",
-                "name": "_expr"
-              },
-              {
-                "type": "STRING",
-                "value": ">"
-              },
-              {
-                "type": "SYMBOL",
-                "name": "_expr"
-              }
-            ]
-          }
-        },
-        {
-          "type": "PREC_LEFT",
-          "value": 100,
-          "content": {
-            "type": "SEQ",
-            "members": [
-              {
-                "type": "SYMBOL",
-                "name": "_expr"
-              },
-              {
-                "type": "STRING",
-                "value": "<"
-              },
-              {
-                "type": "SYMBOL",
-                "name": "_expr"
-              }
-            ]
-          }
-        },
-        {
-          "type": "PREC_LEFT",
-          "value": 100,
-          "content": {
-            "type": "SEQ",
-            "members": [
-              {
-                "type": "SYMBOL",
-                "name": "_expr"
-              },
-              {
-                "type": "STRING",
-                "value": ">="
-              },
-              {
-                "type": "SYMBOL",
-                "name": "_expr"
-              }
-            ]
-          }
-        },
-        {
-          "type": "PREC_LEFT",
-          "value": 100,
-          "content": {
-            "type": "SEQ",
-            "members": [
-              {
-                "type": "SYMBOL",
-                "name": "_expr"
-              },
-              {
-                "type": "STRING",
-                "value": "<="
-              },
-              {
-                "type": "SYMBOL",
-                "name": "_expr"
-              }
-            ]
-          }
-        },
-        {
-          "type": "PREC_LEFT",
-          "value": 90,
-          "content": {
-            "type": "SEQ",
-            "members": [
-              {
-                "type": "SYMBOL",
-                "name": "_expr"
-              },
-              {
-                "type": "STRING",
-                "value": "=="
-              },
-              {
-                "type": "SYMBOL",
-                "name": "_expr"
-              }
-            ]
-          }
-        },
-        {
-          "type": "PREC_LEFT",
-          "value": 90,
-          "content": {
-            "type": "SEQ",
-            "members": [
-              {
-                "type": "SYMBOL",
-                "name": "_expr"
-              },
-              {
-                "type": "STRING",
-                "value": "!="
-              },
-              {
-                "type": "SYMBOL",
-                "name": "_expr"
-              }
-            ]
-          }
-        },
-        {
-          "type": "PREC_LEFT",
-          "value": 80,
-          "content": {
-            "type": "SEQ",
-            "members": [
-              {
-                "type": "SYMBOL",
-                "name": "_expr"
-              },
-              {
-                "type": "STRING",
-                "value": "eq"
-              },
-              {
-                "type": "SYMBOL",
-                "name": "_expr"
-              }
-            ]
-          }
-        },
-        {
-          "type": "PREC_LEFT",
-          "value": 80,
-          "content": {
-            "type": "SEQ",
-            "members": [
-              {
-                "type": "SYMBOL",
-                "name": "_expr"
-              },
-              {
-                "type": "STRING",
-                "value": "ne"
-              },
-              {
-                "type": "SYMBOL",
-                "name": "_expr"
-              }
-            ]
-          }
-        },
-        {
-          "type": "PREC_LEFT",
-          "value": 70,
-          "content": {
-            "type": "SEQ",
-            "members": [
-              {
-                "type": "SYMBOL",
-                "name": "_expr"
-              },
-              {
-                "type": "STRING",
-                "value": "in"
-              },
-              {
-                "type": "SYMBOL",
-                "name": "_word"
-              }
-            ]
-          }
-        },
-        {
-          "type": "PREC_LEFT",
-          "value": 70,
-          "content": {
-            "type": "SEQ",
-            "members": [
-              {
-                "type": "SYMBOL",
-                "name": "_expr"
-              },
-              {
-                "type": "STRING",
-                "value": "ni"
-              },
-              {
-                "type": "SYMBOL",
-                "name": "_word"
-              }
-            ]
-          }
-        },
-        {
-          "type": "PREC_LEFT",
-          "value": 60,
-          "content": {
-            "type": "SEQ",
-            "members": [
-              {
-                "type": "SYMBOL",
-                "name": "_expr"
-              },
-              {
-                "type": "STRING",
-                "value": "&"
-              },
-              {
-                "type": "SYMBOL",
-                "name": "_expr"
-              }
-            ]
-          }
-        },
-        {
-          "type": "PREC_LEFT",
-          "value": 50,
-          "content": {
-            "type": "SEQ",
-            "members": [
-              {
-                "type": "SYMBOL",
-                "name": "_expr"
-              },
-              {
-                "type": "STRING",
-                "value": "^"
-              },
-              {
-                "type": "SYMBOL",
-                "name": "_expr"
-              }
-            ]
-          }
-        },
-        {
-          "type": "PREC_LEFT",
-          "value": 40,
-          "content": {
-            "type": "SEQ",
-            "members": [
-              {
-                "type": "SYMBOL",
-                "name": "_expr"
-              },
-              {
-                "type": "STRING",
-                "value": "|"
-              },
-              {
-                "type": "SYMBOL",
-                "name": "_expr"
-              }
-            ]
-          }
-        },
-        {
-          "type": "PREC_LEFT",
-          "value": 30,
-          "content": {
-            "type": "SEQ",
-            "members": [
-              {
-                "type": "SYMBOL",
-                "name": "_expr"
-              },
-              {
-                "type": "STRING",
-                "value": "&&"
-              },
-              {
-                "type": "SYMBOL",
-                "name": "_expr"
-              }
-            ]
-          }
-        },
-        {
-          "type": "PREC_LEFT",
-          "value": 20,
-          "content": {
-            "type": "SEQ",
-            "members": [
-              {
-                "type": "SYMBOL",
-                "name": "_expr"
-              },
-              {
-                "type": "STRING",
-                "value": "||"
-              },
-              {
-                "type": "SYMBOL",
-                "name": "_expr"
-              }
-            ]
-          }
-        }
-      ]
-    },
-    "ternary_expr": {
-      "type": "PREC_RIGHT",
-      "value": 10,
-      "content": {
-        "type": "SEQ",
-        "members": [
-          {
-            "type": "SYMBOL",
-            "name": "_expr"
-          },
-          {
             "type": "STRING",
             "value": "?"
           },
           {
             "type": "SYMBOL",
-            "name": "_expr"
+            "name": "_expr_nl"
           },
           {
             "type": "STRING",
@@ -4356,7 +2700,7 @@
           },
           {
             "type": "SYMBOL",
-            "name": "_expr"
+            "name": "_expr_nl"
           }
         ]
       }
@@ -4369,11 +2713,8 @@
           "value": "if"
         },
         {
-          "type": "TOKEN",
-          "content": {
-            "type": "PATTERN",
-            "value": "([ \\t\\v\\f\\r]|\\\\\\r?\\n)+"
-          }
+          "type": "SYMBOL",
+          "name": "gap"
         },
         {
           "type": "FIELD",
@@ -4390,11 +2731,8 @@
               "type": "SEQ",
               "members": [
                 {
-                  "type": "TOKEN",
-                  "content": {
-                    "type": "PATTERN",
-                    "value": "([ \\t\\v\\f\\r]|\\\\\\r?\\n)+"
-                  }
+                  "type": "SYMBOL",
+                  "name": "gap"
                 },
                 {
                   "type": "STRING",
@@ -4408,11 +2746,8 @@
           ]
         },
         {
-          "type": "TOKEN",
-          "content": {
-            "type": "PATTERN",
-            "value": "([ \\t\\v\\f\\r]|\\\\\\r?\\n)+"
-          }
+          "type": "SYMBOL",
+          "name": "gap"
         },
         {
           "type": "SYMBOL",
@@ -4425,11 +2760,8 @@
               "type": "SEQ",
               "members": [
                 {
-                  "type": "TOKEN",
-                  "content": {
-                    "type": "PATTERN",
-                    "value": "([ \\t\\v\\f\\r]|\\\\\\r?\\n)+"
-                  }
+                  "type": "SYMBOL",
+                  "name": "gap"
                 },
                 {
                   "type": "SEQ",
@@ -4444,11 +2776,8 @@
                         "type": "SEQ",
                         "members": [
                           {
-                            "type": "TOKEN",
-                            "content": {
-                              "type": "PATTERN",
-                              "value": "([ \\t\\v\\f\\r]|\\\\\\r?\\n)+"
-                            }
+                            "type": "SYMBOL",
+                            "name": "gap"
                           },
                           {
                             "type": "SYMBOL",
@@ -4473,11 +2802,8 @@
               "type": "SEQ",
               "members": [
                 {
-                  "type": "TOKEN",
-                  "content": {
-                    "type": "PATTERN",
-                    "value": "([ \\t\\v\\f\\r]|\\\\\\r?\\n)+"
-                  }
+                  "type": "SYMBOL",
+                  "name": "gap"
                 },
                 {
                   "type": "SYMBOL",
@@ -4500,11 +2826,8 @@
           "value": "elseif"
         },
         {
-          "type": "TOKEN",
-          "content": {
-            "type": "PATTERN",
-            "value": "([ \\t\\v\\f\\r]|\\\\\\r?\\n)+"
-          }
+          "type": "SYMBOL",
+          "name": "gap"
         },
         {
           "type": "FIELD",
@@ -4521,11 +2844,8 @@
               "type": "SEQ",
               "members": [
                 {
-                  "type": "TOKEN",
-                  "content": {
-                    "type": "PATTERN",
-                    "value": "([ \\t\\v\\f\\r]|\\\\\\r?\\n)+"
-                  }
+                  "type": "SYMBOL",
+                  "name": "gap"
                 },
                 {
                   "type": "STRING",
@@ -4539,11 +2859,8 @@
           ]
         },
         {
-          "type": "TOKEN",
-          "content": {
-            "type": "PATTERN",
-            "value": "([ \\t\\v\\f\\r]|\\\\\\r?\\n)+"
-          }
+          "type": "SYMBOL",
+          "name": "gap"
         },
         {
           "type": "SYMBOL",
@@ -4559,11 +2876,8 @@
           "value": "else"
         },
         {
-          "type": "TOKEN",
-          "content": {
-            "type": "PATTERN",
-            "value": "([ \\t\\v\\f\\r]|\\\\\\r?\\n)+"
-          }
+          "type": "SYMBOL",
+          "name": "gap"
         },
         {
           "type": "SYMBOL",
@@ -4579,11 +2893,8 @@
           "value": "catch"
         },
         {
-          "type": "TOKEN",
-          "content": {
-            "type": "PATTERN",
-            "value": "([ \\t\\v\\f\\r]|\\\\\\r?\\n)+"
-          }
+          "type": "SYMBOL",
+          "name": "gap"
         },
         {
           "type": "SYMBOL",
@@ -4596,11 +2907,8 @@
               "type": "SEQ",
               "members": [
                 {
-                  "type": "TOKEN",
-                  "content": {
-                    "type": "PATTERN",
-                    "value": "([ \\t\\v\\f\\r]|\\\\\\r?\\n)+"
-                  }
+                  "type": "SYMBOL",
+                  "name": "gap"
                 },
                 {
                   "type": "SEQ",
@@ -4616,11 +2924,8 @@
                           "type": "SEQ",
                           "members": [
                             {
-                              "type": "TOKEN",
-                              "content": {
-                                "type": "PATTERN",
-                                "value": "([ \\t\\v\\f\\r]|\\\\\\r?\\n)+"
-                              }
+                              "type": "SYMBOL",
+                              "name": "gap"
                             },
                             {
                               "type": "SYMBOL",
@@ -4769,20 +3074,8 @@
         {
           "type": "REPEAT",
           "content": {
-            "type": "CHOICE",
-            "members": [
-              {
-                "type": "STRING",
-                "value": "\n"
-              },
-              {
-                "type": "TOKEN",
-                "content": {
-                  "type": "PATTERN",
-                  "value": "([ \\t\\v\\f\\r]|\\\\\\r?\\n)+"
-                }
-              }
-            ]
+            "type": "SYMBOL",
+            "name": "gapnl"
           }
         },
         {
@@ -4791,12 +3084,8 @@
             "type": "CHOICE",
             "members": [
               {
-                "type": "STRING",
-                "value": "\n"
-              },
-              {
                 "type": "SYMBOL",
-                "name": "gap"
+                "name": "gapnl"
               },
               {
                 "type": "SYMBOL",
@@ -4816,20 +3105,8 @@
         {
           "type": "REPEAT",
           "content": {
-            "type": "CHOICE",
-            "members": [
-              {
-                "type": "STRING",
-                "value": "\n"
-              },
-              {
-                "type": "TOKEN",
-                "content": {
-                  "type": "PATTERN",
-                  "value": "([ \\t\\v\\f\\r]|\\\\\\r?\\n)+"
-                }
-              }
-            ]
+            "type": "SYMBOL",
+            "name": "gapnl"
           }
         },
         {
@@ -4848,20 +3125,8 @@
         {
           "type": "REPEAT",
           "content": {
-            "type": "CHOICE",
-            "members": [
-              {
-                "type": "STRING",
-                "value": "\n"
-              },
-              {
-                "type": "TOKEN",
-                "content": {
-                  "type": "PATTERN",
-                  "value": "([ \\t\\v\\f\\r]|\\\\\\r?\\n)+"
-                }
-              }
-            ]
+            "type": "SYMBOL",
+            "name": "gapnl"
           }
         },
         {
@@ -4870,12 +3135,8 @@
             "type": "CHOICE",
             "members": [
               {
-                "type": "STRING",
-                "value": "\n"
-              },
-              {
                 "type": "SYMBOL",
-                "name": "gap"
+                "name": "gapnl"
               },
               {
                 "type": "SYMBOL",
@@ -4891,20 +3152,8 @@
         {
           "type": "REPEAT",
           "content": {
-            "type": "CHOICE",
-            "members": [
-              {
-                "type": "STRING",
-                "value": "\n"
-              },
-              {
-                "type": "TOKEN",
-                "content": {
-                  "type": "PATTERN",
-                  "value": "([ \\t\\v\\f\\r]|\\\\\\r?\\n)+"
-                }
-              }
-            ]
+            "type": "SYMBOL",
+            "name": "gapnl"
           }
         },
         {
@@ -4972,20 +3221,8 @@
         {
           "type": "REPEAT",
           "content": {
-            "type": "CHOICE",
-            "members": [
-              {
-                "type": "STRING",
-                "value": "\n"
-              },
-              {
-                "type": "TOKEN",
-                "content": {
-                  "type": "PATTERN",
-                  "value": "([ \\t\\v\\f\\r]|\\\\\\r?\\n)+"
-                }
-              }
-            ]
+            "type": "SYMBOL",
+            "name": "gapnl"
           }
         },
         {
@@ -5024,20 +3261,8 @@
         {
           "type": "REPEAT",
           "content": {
-            "type": "CHOICE",
-            "members": [
-              {
-                "type": "STRING",
-                "value": "\n"
-              },
-              {
-                "type": "TOKEN",
-                "content": {
-                  "type": "PATTERN",
-                  "value": "([ \\t\\v\\f\\r]|\\\\\\r?\\n)+"
-                }
-              }
-            ]
+            "type": "SYMBOL",
+            "name": "gapnl"
           }
         },
         {
@@ -5056,20 +3281,8 @@
         {
           "type": "REPEAT",
           "content": {
-            "type": "CHOICE",
-            "members": [
-              {
-                "type": "STRING",
-                "value": "\n"
-              },
-              {
-                "type": "TOKEN",
-                "content": {
-                  "type": "PATTERN",
-                  "value": "([ \\t\\v\\f\\r]|\\\\\\r?\\n)+"
-                }
-              }
-            ]
+            "type": "SYMBOL",
+            "name": "gapnl"
           }
         },
         {
@@ -5104,20 +3317,8 @@
         {
           "type": "REPEAT",
           "content": {
-            "type": "CHOICE",
-            "members": [
-              {
-                "type": "STRING",
-                "value": "\n"
-              },
-              {
-                "type": "TOKEN",
-                "content": {
-                  "type": "PATTERN",
-                  "value": "([ \\t\\v\\f\\r]|\\\\\\r?\\n)+"
-                }
-              }
-            ]
+            "type": "SYMBOL",
+            "name": "gapnl"
           }
         },
         {
@@ -5136,20 +3337,8 @@
         {
           "type": "REPEAT",
           "content": {
-            "type": "CHOICE",
-            "members": [
-              {
-                "type": "STRING",
-                "value": "\n"
-              },
-              {
-                "type": "TOKEN",
-                "content": {
-                  "type": "PATTERN",
-                  "value": "([ \\t\\v\\f\\r]|\\\\\\r?\\n)+"
-                }
-              }
-            ]
+            "type": "SYMBOL",
+            "name": "gapnl"
           }
         },
         {
@@ -5193,20 +3382,8 @@
         {
           "type": "REPEAT",
           "content": {
-            "type": "CHOICE",
-            "members": [
-              {
-                "type": "STRING",
-                "value": "\n"
-              },
-              {
-                "type": "TOKEN",
-                "content": {
-                  "type": "PATTERN",
-                  "value": "([ \\t\\v\\f\\r]|\\\\\\r?\\n)+"
-                }
-              }
-            ]
+            "type": "SYMBOL",
+            "name": "gapnl"
           }
         },
         {
@@ -5732,14 +3909,25 @@
       "foreach_clauses"
     ],
     [
-      "binop_expr_nl",
-      "ternary_expr_nl"
-    ],
-    [
       "func_call_nl"
     ],
     [
       "expr_cmd"
+    ],
+    [
+      "gapnl",
+      "_nested_braced_list"
+    ],
+    [
+      "gapnl",
+      "_nested_quoted_list"
+    ],
+    [
+      "gapnl",
+      "_tl_nested_quoted_list"
+    ],
+    [
+      "gapnl"
     ],
     [
       "command"
@@ -5819,6 +4007,7 @@
     "terminator",
     "termgap",
     "gap",
+    "gapnl",
     "_word"
   ],
   "supertypes": []

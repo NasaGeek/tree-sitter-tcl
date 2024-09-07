@@ -27,6 +27,16 @@
           }
         ]
       }
+    },
+    "children": {
+      "multiple": true,
+      "required": false,
+      "types": [
+        {
+          "type": "gapnl",
+          "named": true
+        }
+      ]
     }
   },
   {
@@ -55,6 +65,10 @@
         },
         {
           "type": "escape_sequence",
+          "named": true
+        },
+        {
+          "type": "gapnl",
           "named": true
         },
         {
@@ -202,6 +216,10 @@
         },
         {
           "type": "func_call",
+          "named": true
+        },
+        {
+          "type": "gapnl",
           "named": true
         },
         {
@@ -564,6 +582,10 @@
           "named": true
         },
         {
+          "type": "gapnl",
+          "named": true
+        },
+        {
           "type": "int_literal",
           "named": true
         },
@@ -793,6 +815,10 @@
           "named": true
         },
         {
+          "type": "gapnl",
+          "named": true
+        },
+        {
           "type": "int_literal",
           "named": true
         },
@@ -839,7 +865,22 @@
           }
         ]
       }
+    },
+    "children": {
+      "multiple": true,
+      "required": false,
+      "types": [
+        {
+          "type": "gapnl",
+          "named": true
+        }
+      ]
     }
+  },
+  {
+    "type": "gapnl",
+    "named": true,
+    "fields": {}
   },
   {
     "type": "global",
@@ -915,6 +956,10 @@
         },
         {
           "type": "escape_sequence",
+          "named": true
+        },
+        {
+          "type": "gapnl",
           "named": true
         },
         {
@@ -1088,6 +1133,10 @@
       "types": [
         {
           "type": "escape_sequence",
+          "named": true
+        },
+        {
+          "type": "gapnl",
           "named": true
         }
       ]
@@ -1365,6 +1414,10 @@
       "required": false,
       "types": [
         {
+          "type": "gapnl",
+          "named": true
+        },
+        {
           "type": "raw_word",
           "named": true
         },
@@ -1409,6 +1462,10 @@
         },
         {
           "type": "func_call",
+          "named": true
+        },
+        {
+          "type": "gapnl",
           "named": true
         },
         {
@@ -1527,6 +1584,10 @@
         },
         {
           "type": "func_call",
+          "named": true
+        },
+        {
+          "type": "gapnl",
           "named": true
         },
         {

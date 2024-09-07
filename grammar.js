@@ -8,6 +8,27 @@
 // exprs generally need whitespace between operators/operands
 //  In reality this doesn't come up much because it only affects expression with
 //  a bunch of literals
+//
+//  issues (again)
+//    random ] strewn about also ()
+//    random unbraced exprs
+//    ternary misparsed
+//      whitespace-sensitive?
+//      expr {1>-1?1:0} this is correct
+//      expr {1>-1 ?1:0} this is busted
+//    trailing space in expr breaks it
+//      somehow an optional(gap) after ternary fixes us?
+//      this feels related to the function arg trailing space issue
+//    random stuff wrapped in quotes that doesn't really need to be
+//      like catch scripts
+//    $namespace::$pattern
+//      don't think this is valid (wasn't called), needs ${}
+//
+//  don't forget to try with stuff set up for pg_select, sqlbird::select, flightaware_endcap, CACHE_PROC*, stashcache_exec, etc (just search for evals, lol use t-s to find them)
+//    unfortunately some stuff like sqlite dbs or cassandra are probably undoable unless we use heuristics like "last arg is braced with an immediate newline"
+//  also get better at dumping out bugged code for quick triage
+//    parse-parse.py wew
+//  also implement itcl method detection
 
 const PREC = {
   unary        : 150,
@@ -45,10 +66,11 @@ const expr_seq = (seqfn, suffix) => {
     // expr in general is such a spin on Tcl's usual syntax that it's quite
     // difficult to support well alongside many of Tcl's other idiosyncracies.
     [_expr]: $ => choice(
-      seqfn("(", $[_expr], ")"),
+      seqfn($, "(", $[_expr], ")"),
       alias($[unary_expr], $.unary_expr),
       alias($[binop_expr], $.binop_expr),
       alias($[ternary_expr], $.ternary_expr),
+      // $.ternary_expr,
       alias($[func_call], $.func_call),
       $.braced_word,
       $.int_literal,
@@ -57,72 +79,77 @@ const expr_seq = (seqfn, suffix) => {
       $._concat_word_expr,
     ),
 
-    [func_call]: $ => seqfn(
+    [func_call]: $ => seqfn($,
         field("name", $.expr_function_name),
         "(",
         field("args", optional(alias($[func_args], $.func_args))),
         ")"
       ),
 
-    [func_args]: $ => prec.left(interleaved_seq1($[_expr], ",", seqfn)),
+    [func_args]: $ => prec.left(interleaved_seq1($, $[_expr], ",", seqfn)),
 
-    [unary_expr]: $ => prec.left(PREC.unary, seqfn(choice("-", "+", "~", "!"), $[_expr])),
+    [unary_expr]: $ => prec.left(PREC.unary, seqfn($, choice("-", "+", "~", "!"), $[_expr])),
 
     [binop_expr]: $ => choice(
-      prec.right(PREC.exp,          seqfn($[_expr], "**",  $[_expr])),
+      prec.right(PREC.exp,         seqfn($, $[_expr], "**",  $[_expr])),
 
-      prec.left(PREC.muldiv,       seqfn($[_expr], "/",  $[_expr])),
-      prec.left(PREC.muldiv,       seqfn($[_expr], "*",  $[_expr])),
-      prec.left(PREC.muldiv,       seqfn($[_expr], "%",  $[_expr])),
-      prec.left(PREC.addsub,       seqfn($[_expr], "+",  $[_expr])),
-      prec.left(PREC.addsub,       seqfn($[_expr], "-",  $[_expr])),
+      prec.left(PREC.muldiv,       seqfn($, $[_expr], "/",  $[_expr])),
+      prec.left(PREC.muldiv,       seqfn($, $[_expr], "*",  $[_expr])),
+      prec.left(PREC.muldiv,       seqfn($, $[_expr], "%",  $[_expr])),
+      prec.left(PREC.addsub,       seqfn($, $[_expr], "+",  $[_expr])),
+      prec.left(PREC.addsub,       seqfn($, $[_expr], "-",  $[_expr])),
 
-      prec.left(PREC.shift,        seqfn($[_expr], "<<", $[_expr])),
-      prec.left(PREC.shift,        seqfn($[_expr], ">>", $[_expr])),
+      prec.left(PREC.shift,        seqfn($, $[_expr], "<<", $[_expr])),
+      prec.left(PREC.shift,        seqfn($, $[_expr], ">>", $[_expr])),
 
-      prec.left(PREC.compare,      seqfn($[_expr], ">",  $[_expr])),
-      prec.left(PREC.compare,      seqfn($[_expr], "<",  $[_expr])),
-      prec.left(PREC.compare,      seqfn($[_expr], ">=", $[_expr])),
-      prec.left(PREC.compare,      seqfn($[_expr], "<=", $[_expr])),
+      prec.left(PREC.compare,      seqfn($, $[_expr], ">",  $[_expr])),
+      prec.left(PREC.compare,      seqfn($, $[_expr], "<",  $[_expr])),
+      prec.left(PREC.compare,      seqfn($, $[_expr], ">=", $[_expr])),
+      prec.left(PREC.compare,      seqfn($, $[_expr], "<=", $[_expr])),
 
-      prec.left(PREC.equal_bool,   seqfn($[_expr], "==", $[_expr])),
-      prec.left(PREC.equal_bool,   seqfn($[_expr], "!=", $[_expr])),
+      prec.left(PREC.equal_bool,   seqfn($, $[_expr], "==", $[_expr])),
+      prec.left(PREC.equal_bool,   seqfn($, $[_expr], "!=", $[_expr])),
 
-      prec.left(PREC.equal_string, seqfn($[_expr], "eq", $[_expr])),
-      prec.left(PREC.equal_string, seqfn($[_expr], "ne", $[_expr])),
+      prec.left(PREC.equal_string, seqfn($, $[_expr], "eq", $[_expr])),
+      prec.left(PREC.equal_string, seqfn($, $[_expr], "ne", $[_expr])),
 
-      prec.left(PREC.contain,      seqfn($[_expr], "in", $._word)),
-      prec.left(PREC.contain,      seqfn($[_expr], "ni", $._word)),
+      prec.left(PREC.contain,      seqfn($, $[_expr], "in", $._word)),
+      prec.left(PREC.contain,      seqfn($, $[_expr], "ni", $._word)),
 
-      prec.left(PREC.and_bit,      seqfn($[_expr], "&", $[_expr])),
-      prec.left(PREC.xor_bit,      seqfn($[_expr], "^", $[_expr])),
-      prec.left(PREC.or_bit,       seqfn($[_expr], "|", $[_expr])),
+      prec.left(PREC.and_bit,      seqfn($, $[_expr], "&", $[_expr])),
+      prec.left(PREC.xor_bit,      seqfn($, $[_expr], "^", $[_expr])),
+      prec.left(PREC.or_bit,       seqfn($, $[_expr], "|", $[_expr])),
 
-      prec.left(PREC.and_logical,  seqfn($[_expr], "&&", $[_expr])),
-      prec.left(PREC.or_logical,   seqfn($[_expr], "||", $[_expr])),
+      prec.left(PREC.and_logical,  seqfn($, $[_expr], "&&", $[_expr])),
+      prec.left(PREC.or_logical,   seqfn($, $[_expr], "||", $[_expr])),
     ),
 
-    [ternary_expr]: $ => prec.right(PREC.ternary, seqfn($[_expr], '?', $[_expr], ':', $[_expr])),
+    [ternary_expr]: $ => prec.right(PREC.ternary, seq($[_expr], '?', $[_expr], ':', $[_expr])),
   }
 }
 
 // https://www.tcl-lang.org/cgi-bin/tct/tip/407.html#:~:text=Tcl%27s%20source%20code.-,String%20Representation%20of%20Lists,-The%20routines%20%5Bin
-const gap = token(/([ \t\v\f\r]|\\\r?\n)+/)
+const gap = token(prec(-1, /([ \t\v\f\r]|\\\r?\n)+/))
+const gapnl = choice(gap, '\n')
 
-const intergappednl1 = (rule) => interleaved1(rule, repeat1(choice(gap, '\n')))
-const intergappednl = (rule) => optional(intergappednl1(rule))
-const intergapped1 = (rule) => interleaved1(rule, gap)
-const intergapped = (rule) => optional(intergapped1(rule))
-const interleaved1 = (rule, delim) => seq(rule, repeat(seq(delim, rule)))
-const interleaved = (rule, delim) => optional(interleaved1(rule, delim))
+// This class of helpers only differs from seqgap in that they accept
+// a single repeating rule while seq accepts a static set of rules
+const intergappednl1 = ($, rule) => interleaved1($, rule, repeat1($.gapnl))
+const intergappednl = ($, rule) => optional(intergappednl1($, rule))
+const intergapped1 = ($, rule) => interleaved1($, rule, $.gap)
+const intergapped = ($, rule) => optional(intergapped1($, rule))
+// This is seq() not seqgap() because you're expected to manually inject gaps
+// as the delimiters.
+const interleaved1 = ($, rule, delim) => seq(rule, repeat(seq(delim, rule)))
+const interleaved = ($, rule, delim) => optional(interleaved1($, rule, delim))
 // interleaved1 but accepting a custom seq function
-const interleaved_seq1 = (rule, delim, seqfn) => seqfn(rule, repeat(seqfn(delim, rule)))
+const interleaved_seq1 = ($, rule, delim, seqfn) => seqfn($, rule, repeat(seqfn($, delim, rule)))
 
 // Helper for rules within which whitespace/newlines are irrelevant
 // (essentially adding them as faux-extras). Note that this allows for _no_
 // whitespace (making it primarily useful for expr). No need to implement this
 // in term of seqdelim since the delims can collapse to blank.
-const seqnl = (...rules) => seq(...rules.flatMap(e => [repeat(choice("\n", gap)), e]).slice(1))
+const seqnl = ($, ...rules) => seq(...rules.flatMap(e => [repeat($.gapnl), e]).slice(1))
 
 
 // Helper for sequences that require some delimiter between their elements.
@@ -149,10 +176,10 @@ const seqdelim = (delim, ...rules) => {
   return seq(...result)
 }
 
-const seqgap = (...rules) => seqdelim(gap, ...rules)
+const seqgap = ($, ...rules) => seqdelim($.gap, ...rules)
 // Similar to seqnl, but at least some whitespace/newline is required vs being
 // completely irrelevant, useful for various constructs in {}
-const seqgapnl = (...rules) => seqdelim(repeat1(choice('\n', gap)), ...rules)
+const seqgapnl = ($, ...rules) => seqdelim(repeat1($.gapnl), ...rules)
 
 // A lot of stealing from tree-sitter-go and then simplifying for Tcl
 const hexDigit = /[0-9a-fA-F]/;
@@ -214,6 +241,7 @@ module.exports = grammar({
     $.terminator,
     $.termgap,
     $.gap,
+    $.gapnl,
     $._word,
   ],
 
@@ -223,10 +251,15 @@ module.exports = grammar({
     [$.switch_body],
     [$.foreach_clauses],
 
-    [$.binop_expr_nl, $.ternary_expr_nl],
+    // [$.binop_expr_nl, $.ternary_expr_nl],
+    // [$.binop_expr_nl],
     [$.func_call_nl],
     [$.expr_cmd],
 
+    [$.gapnl, $._nested_braced_list],
+    [$.gapnl, $._nested_quoted_list],
+    [$.gapnl, $._tl_nested_quoted_list],
+    [$.gapnl],
     [$.command],
     [$.set],
     [$.try],
@@ -243,6 +276,8 @@ module.exports = grammar({
     [$._nested_braced_list],
     [$._nested_quoted_list],
     [$._tl_nested_quoted_list],
+    // [$._expr, $._expr_nl],
+    // [$.func_call, $.func_call_nl],
   ],
 
   rules: {
@@ -266,6 +301,7 @@ module.exports = grammar({
     terminator: _ => choice('\n', ';'),
 
     gap: _ => gap,
+    gapnl: _ => gapnl,
 
     termgap: $ => repeat1(
         choice(
@@ -292,26 +328,26 @@ module.exports = grammar({
       alias($.string_cmd, $.command),
     ),
 
-    string_cmd: $ => seqgap(
+    string_cmd: $ => seqgap($,
         field("name", alias("string", $.simple_word)),
         field("arguments",
           choice(
             // This acts as an identity function. We can use it in code to force
             // interpretation of an arg as a $.script. I know, clunky. Not my
             // favorite solution to all this but it's all I've got.
-            seqgap(alias("cat", $.simple_word), optional($._word_eval_list)),
+            seqgap($, alias("cat", $.simple_word), optional($._word_eval_list)),
             $._word_list,
           ),
         ),
       ),
 
-    while: $ => seqgap('while', $.expr, $.script),
+    while: $ => seqgap($, 'while', $.expr, $.script),
 
     // We technically support multi-arg expr's, but make no attempt to parse
     // them as such (except for the first argument)
-    expr_cmd: $ => seqgap('expr', $.expr, optional($._word_list)),
+    expr_cmd: $ => seqgap($, 'expr', $.expr, optional($._word_list)),
 
-    for: $ => seqgap("for",
+    for: $ => seqgap($, "for",
       $.script,
       $.expr,
       $.script,
@@ -322,23 +358,23 @@ module.exports = grammar({
     // This unfortunately can be quite sensitive to parse errors in the body
     // causing the foreach to just start stuffing things into foreach_clauses
     // as braced_word instead of trying to recover somehow.
-    foreach: $ => seqgap("foreach",
+    foreach: $ => seqgap($, "foreach",
       $.foreach_clauses,
       $.script,
     ),
 
-    foreach_clauses: $ => intergapped1($.foreach_clause),
+    foreach_clauses: $ => intergapped1($, $.foreach_clause),
 
-    foreach_clause: $ => seqgap($.literal_list, $._word),
+    foreach_clause: $ => seqgap($, $.literal_list, $._word),
 
     // https://www.tcl.tk/man/tcl/TclCmd/switch.htm
-    switch: $ => seqgap("switch",
+    switch: $ => seqgap($, "switch",
       // This can result in switches totally breaking in certain cases, very strange
       // field("arguments", $._word_list),
-      field("arguments", intergapped1($._word)),
+      field("arguments", intergapped1($, $._word)),
       // Maybe this is too complicated for poor tree-sitter. It used to work
       // alright, but I broke it at some point.
-      // field("flags", intergapped($._word)),
+      // field("flags", intergapped($, $._word)),
       // field("pattern", $._word),
       $.switch_body,
     ),
@@ -356,14 +392,14 @@ module.exports = grammar({
       // behavior) by disallowing empty or whitespace-filled {}. Unfortunately
       // parsing of later sibling constructs then ended up broken by an empty
       // {}. Making it more permissive seems like the better call.
-      seqnl(
+      seqnl($,
         token(prec(1, "{")),
-        intergappednl($._inner_switch),
+        intergappednl($, $._inner_switch),
         "}"
       ),
     ),
 
-    _inner_switch: $ => seqgapnl(
+    _inner_switch: $ => seqgapnl($,
       $.raw_word,
       // Ehh not totally sold on the aliasing
       choice($.script, alias('-', $.script)),
@@ -381,25 +417,25 @@ module.exports = grammar({
       // Broadly applicable quotes are really tough, need to ban them in
       // certain constructs or otherwise figure out how to deal with them
       // (custom lexing?)
-      // seqnl('"', choice($._commands, repeat($.terminator)), '"'),
+      // seqnl($, '"', choice($._commands, repeat($.terminator)), '"'),
     ),
 
     _script_body: $ => choice($._commands, $.termgap),
 
-    global: $ => seqgap("global", optional($._word_list)),
+    global: $ => seqgap($, "global", optional($._word_list)),
 
-    namespace: $ => seqgap('namespace', $._namespace_subcommand),
+    namespace: $ => seqgap($, 'namespace', $._namespace_subcommand),
 
     _namespace_subcommand: $ => choice(
-      seqgap("eval", $._word, $._word_eval_list),
+      seqgap($, "eval", $._word, $._word_eval_list),
       $._word_list,
     ),
 
-    try: $ => seqgap(
+    try: $ => seqgap($,
       "try",
       $.script,
       repeat(choice(
-        seqgap(
+        seqgap($,
           "on",
           choice(
             "ok", "error", "return", "break", "continue", /[0-4]/
@@ -407,7 +443,7 @@ module.exports = grammar({
           $.literal_list,
           $.script,
         ),
-        seqgap(
+        seqgap($,
           "trap",
           $._word,
           $.literal_list,
@@ -417,7 +453,7 @@ module.exports = grammar({
       optional($.finally),
     ),
 
-    finally: $=> seqgap('finally', $.script),
+    finally: $=> seqgap($, 'finally', $.script),
 
     _command: $ => choice(
       $._builtin,
@@ -426,7 +462,7 @@ module.exports = grammar({
     ),
 
     // commands are just _word's, okay
-    command: $ => seqgap(
+    command: $ => seqgap($,
       field('name', $._word),
       optional(field('arguments', $._word_list)),
     ),
@@ -434,7 +470,7 @@ module.exports = grammar({
     // https://www.tcl-lang.org/man/tcl8.6/TclCmd/Tcl.htm#M9
     unpack: _ => '{*}',
 
-    _word_eval_list: $ => intergapped1($._word_eval),
+    _word_eval_list: $ => intergapped1($, $._word_eval),
 
     // A word that might possibly be evaluated as code
     _word_eval: $ => seq(
@@ -442,7 +478,7 @@ module.exports = grammar({
       $.script,
     ),
 
-    _word_list: $ => intergapped1($._word),
+    _word_list: $ => intergapped1($, $._word),
 
     // A word that we don't expect to be evaluated as code. This is used by
     // default for most arguments, as the alternative is attempting to parse
@@ -455,7 +491,7 @@ module.exports = grammar({
     ),
 
     // Might end up useful for arbitrary quoted stuff...
-    // _concat_word_noquote: $ => interleaved1(
+    // _concat_word_noquote: $ => interleaved1($,
     //   choice(
     //     $.escape_sequence,
     //     $.command_substitution,
@@ -472,7 +508,7 @@ module.exports = grammar({
     // FIXME: This splits on stuff like a"a" or a{a} which should actually end
     // up as 1 token (probably needs handling in the scanner). The word just
     // can't start with " or {.
-    _concat_word: $ => interleaved1(
+    _concat_word: $ => interleaved1($,
       choice(
         $.escape_sequence,
         $.command_substitution,
@@ -511,7 +547,7 @@ module.exports = grammar({
     id: $ => choice(
       // FIXME: support $:: and $::a::. As written this causes variable subs
       // to split between variable sub and simple_word.
-      seq(optional($._ns_delim), interleaved1($._ident, $._ns_delim)), //, optional($._ns_delim)),
+      seq(optional($._ns_delim), interleaved1($, $._ident, $._ns_delim)), //, optional($._ns_delim)),
       // Yes you can have a variable named {} (accessed with $:: or $(index) if
       // it's an array). This breaks recognition of other namespaced variables,
       // though
@@ -556,11 +592,11 @@ module.exports = grammar({
       )
     ),
 
-    set: $ => seqgap("set",
+    set: $ => seqgap($, "set",
       $._word,
       optional($._word)),
 
-    procedure: $ => seqgap(
+    procedure: $ => seqgap($,
       "proc",
       field('name', $._word),
       field('arguments', $.arguments),
@@ -568,17 +604,17 @@ module.exports = grammar({
     ),
 
     arguments: $ => choice(
-      seqnl('{', intergapped($.argument), '}'),
+      seqnl($, '{', intergapped($, $.argument), '}'),
       $._concat_word,
     ),
 
     argument: $ => choice(
       // TODO: should be raw_word
       field('name', $.simple_word),
-      seqnl('{', $._argument_content, '}')
+      seqnl($, '{', $._argument_content, '}')
     ),
 
-    _argument_content: $ => seqgapnl(
+    _argument_content: $ => seqgapnl($,
         field('name', $.raw_word),
         optional(field('default', $.raw_word)),
     ),
@@ -590,38 +626,38 @@ module.exports = grammar({
     // max flexibility, just wrap in {}
     expr: $ => choice(
       // prec disambiguates from braced_word
-      seqnl(token(prec(1, '{')), $._expr_nl, '}'),
-      $._expr,
+      seqnl($, token(prec(1, '{')), $._expr_nl, '}'),
+      // $._expr,
     ),
 
     ...expr_seq(seqnl, '_nl'),
-    ...expr_seq(seq, ''),
+    // ...expr_seq(seq, ''),
 
-    conditional: $ => seqgap(
+    conditional: $ => seqgap($,
       "if",
       field('condition', $.expr),
       optional("then"),
       $.script,
-      intergapped($.elseif),
+      intergapped($, $.elseif),
       optional($.else),
     ),
 
-    elseif: $ => seqgap(
+    elseif: $ => seqgap($,
       "elseif",
       field('condition', $.expr),
       optional("then"),
       $.script,
     ),
 
-    else: $ => seqgap(
+    else: $ => seqgap($,
       "else",
       $.script,
     ),
 
-    catch: $ => seqgap(
+    catch: $ => seqgap($,
       "catch",
       $.script,
-      optional(seqgap($._word, optional($._word)))
+      optional(seqgap($, $._word, optional($._word)))
     ),
 
     quoted_word: $ => seq(
@@ -656,8 +692,8 @@ module.exports = grammar({
       $.escape_sequence,
     ),
 
-    _nested_raw_braces: $ => seqnl('{', repeat(choice('\n', $.gap, $._nested_raw_braces, $._nested_raw_quotes, $._raw_word_contents)), '}'),
-    _nested_raw_quotes: $ => seqnl('"', repeat(choice('\n', $.gap, $._nested_raw_braces, $._raw_word_contents)), '"'),
+    _nested_raw_braces: $ => seqnl($, '{', repeat(choice($.gapnl, $._nested_raw_braces, $._nested_raw_quotes, $._raw_word_contents)), '}'),
+    _nested_raw_quotes: $ => seqnl($, '"', repeat(choice($.gapnl, $._nested_raw_braces, $._raw_word_contents)), '"'),
 
     // This should only be used when we're already inside of braces, since none
     // of the contents are going to be substitutable. This is basically just
@@ -674,7 +710,7 @@ module.exports = grammar({
 
     list_item: _ => token(prec(-1, /[^{}"\s]+/)),
 
-    _tl_nested_quoted_list: $ => seqnl('"',
+    _tl_nested_quoted_list: $ => seqnl($, '"',
       repeat(
         choice(
           '\n',
@@ -687,7 +723,7 @@ module.exports = grammar({
       ),
       '"'),
 
-    _nested_quoted_list: $ => seqnl('"',
+    _nested_quoted_list: $ => seqnl($, '"',
       repeat(
         choice(
           '\n',
@@ -698,7 +734,7 @@ module.exports = grammar({
       ),
       '"'),
 
-    _nested_braced_list: $ => seqnl('{',
+    _nested_braced_list: $ => seqnl($, '{',
       repeat(
         choice(
           '\n',
