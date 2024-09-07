@@ -651,7 +651,10 @@ module.exports = grammar({
     braced_word: $ => seq('{', repeat(choice($._nested_braces, $._braced_word_contents)), '}'),
 
 
-    _raw_word_contents: _ => token(/[^{}"\s]+/),
+    _raw_word_contents: $ => choice(
+      token(/[^{}"\s\\]+/),
+      $.escape_sequence,
+    ),
 
     _nested_raw_braces: $ => seqnl('{', repeat(choice('\n', $.gap, $._nested_raw_braces, $._nested_raw_quotes, $._raw_word_contents)), '}'),
     _nested_raw_quotes: $ => seqnl('"', repeat(choice('\n', $.gap, $._nested_raw_braces, $._raw_word_contents)), '"'),

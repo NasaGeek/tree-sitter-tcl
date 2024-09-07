@@ -804,6 +804,17 @@
             },
             {
               "type": "SYMBOL",
+              "name": "_word"
+            },
+            {
+              "type": "TOKEN",
+              "content": {
+                "type": "PATTERN",
+                "value": "([ \\t\\v\\f\\r]|\\\\\\r?\\n)+"
+              }
+            },
+            {
+              "type": "SYMBOL",
               "name": "_word_eval_list"
             }
           ]
@@ -4733,11 +4744,20 @@
       ]
     },
     "_raw_word_contents": {
-      "type": "TOKEN",
-      "content": {
-        "type": "PATTERN",
-        "value": "[^{}\"\\s]+"
-      }
+      "type": "CHOICE",
+      "members": [
+        {
+          "type": "TOKEN",
+          "content": {
+            "type": "PATTERN",
+            "value": "[^{}\"\\s\\\\]+"
+          }
+        },
+        {
+          "type": "SYMBOL",
+          "name": "escape_sequence"
+        }
+      ]
     },
     "_nested_raw_braces": {
       "type": "SEQ",
