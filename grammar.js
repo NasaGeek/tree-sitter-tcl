@@ -391,7 +391,7 @@ module.exports = grammar({
     namespace: $ => seqgap('namespace', $._namespace_subcommand),
 
     _namespace_subcommand: $ => choice(
-      seqgap("eval", $._word_eval_list),
+      seqgap("eval", $._word, $._word_eval_list),
       $._word_list,
     ),
 
