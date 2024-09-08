@@ -124,7 +124,7 @@ const expr_seq = (seqfn, suffix) => {
       prec.left(PREC.or_logical,   seqfn($, $[_expr], "||", $[_expr])),
     ),
 
-    [ternary_expr]: $ => prec.right(PREC.ternary, seq($[_expr], '?', $[_expr], ':', $[_expr])),
+    [ternary_expr]: $ => prec.right(PREC.ternary, seqfn($, $[_expr], '?', $[_expr], ':', $[_expr])),
   }
 }
 
@@ -134,7 +134,7 @@ const gapnl = choice(gap, '\n')
 
 // This class of helpers only differs from seqgap in that they accept
 // a single repeating rule while seq accepts a static set of rules
-const intergappednl1 = ($, rule) => interleaved1($, rule, repeat1($.gapnl))
+const intergappednl1 = ($, rule) => interleaved1($, rule, $.gapnlrepeat1)
 const intergappednl = ($, rule) => optional(intergappednl1($, rule))
 const intergapped1 = ($, rule) => interleaved1($, rule, $.gap)
 const intergapped = ($, rule) => optional(intergapped1($, rule))
@@ -149,7 +149,7 @@ const interleaved_seq1 = ($, rule, delim, seqfn) => seqfn($, rule, repeat(seqfn(
 // (essentially adding them as faux-extras). Note that this allows for _no_
 // whitespace (making it primarily useful for expr). No need to implement this
 // in term of seqdelim since the delims can collapse to blank.
-const seqnl = ($, ...rules) => seq(...rules.flatMap(e => [repeat($.gapnl), e]).slice(1))
+const seqnl = ($, ...rules) => seq(...rules.flatMap(e => [optional($.gapnlrepeat1), e]).slice(1))
 
 
 // Helper for sequences that require some delimiter between their elements.
@@ -179,7 +179,7 @@ const seqdelim = (delim, ...rules) => {
 const seqgap = ($, ...rules) => seqdelim($.gap, ...rules)
 // Similar to seqnl, but at least some whitespace/newline is required vs being
 // completely irrelevant, useful for various constructs in {}
-const seqgapnl = ($, ...rules) => seqdelim(repeat1($.gapnl), ...rules)
+const seqgapnl = ($, ...rules) => seqdelim($.gapnlrepeat1, ...rules)
 
 // A lot of stealing from tree-sitter-go and then simplifying for Tcl
 const hexDigit = /[0-9a-fA-F]/;
@@ -242,6 +242,7 @@ module.exports = grammar({
     $.termgap,
     $.gap,
     $.gapnl,
+    $.gapnlrepeat1,
     $._word,
   ],
 
@@ -251,15 +252,10 @@ module.exports = grammar({
     [$.switch_body],
     [$.foreach_clauses],
 
-    // [$.binop_expr_nl, $.ternary_expr_nl],
-    // [$.binop_expr_nl],
+    [$.binop_expr_nl, $.ternary_expr_nl],
     [$.func_call_nl],
     [$.expr_cmd],
 
-    [$.gapnl, $._nested_braced_list],
-    [$.gapnl, $._nested_quoted_list],
-    [$.gapnl, $._tl_nested_quoted_list],
-    [$.gapnl],
     [$.command],
     [$.set],
     [$.try],
@@ -276,8 +272,6 @@ module.exports = grammar({
     [$._nested_braced_list],
     [$._nested_quoted_list],
     [$._tl_nested_quoted_list],
-    // [$._expr, $._expr_nl],
-    // [$.func_call, $.func_call_nl],
   ],
 
   rules: {
@@ -302,6 +296,7 @@ module.exports = grammar({
 
     gap: _ => gap,
     gapnl: _ => gapnl,
+    gapnlrepeat1: $ => repeat1($.gapnl),
 
     termgap: $ => repeat1(
         choice(
