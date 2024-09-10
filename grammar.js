@@ -767,7 +767,7 @@ module.exports = grammar({
     command_substitution: $ => seq('[', optional($._script_body), ']'),
 
     // lol Tcl you cray
-    bool_literal: _ => token(prec.dynamic(-2, /(((t)r?)u?)e?|((((f)a?)l?)s?)e?|on|(of)f?|((y)e?)s?|(n)o?/i)),
+    bool_literal: _ => token(prec.dynamic(-2, /t(r(u(e)?)?)?|f(a(l(s(e)?)?)?)?|on|(of)f?|y(e(s)?)?|(n)o?/i)),
 
     int_literal: _ => token(prec.dynamic(-2, intLiteral)),
     float_literal: _ => token(prec.dynamic(-2, floatLiteral)),
