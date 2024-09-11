@@ -673,6 +673,7 @@ module.exports = grammar({
         $._quoted_word_content,
         $.command_substitution,
         $.escape_sequence,
+        $._nl,
       )),
       '"',
     ),

@@ -1,7 +1,7 @@
 ===
 Stuff we parse wrong currently
 ===
-# Should be int_literal
+# Should be int_literal (applies to all expressions)
 expr "1"
 
 ---

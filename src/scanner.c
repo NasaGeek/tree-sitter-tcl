@@ -229,7 +229,11 @@ bool tree_sitter_tcl_external_scanner_scan(void *payload, TSLexer *lexer,
         // braced expr.
         // Placement is tricky, needs to go after any zero-length matches possibly.
         // Consider merging with the very similar handling of NEWLINE below.
+        // Specifically added this for proper rejection of unbraced exprs like
+        // expr 1+
+        // 1
         lexer->result_symbol = NEWLINE;
+        myprintf("Consuming newline so it's not extrafied\n");
         return true;
     }
 

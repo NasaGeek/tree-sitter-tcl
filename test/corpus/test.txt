@@ -1224,3 +1224,15 @@ puts %*&$vfa':[]\aa
     arguments: (escape_sequence)
     arguments: (concat)
     arguments: (simple_word)))
+
+===
+Quoted Strings
+===
+puts "
+"
+---
+
+(source_file
+  (command
+    (simple_word)
+    (quoted_word)))
