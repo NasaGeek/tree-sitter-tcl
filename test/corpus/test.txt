@@ -863,6 +863,7 @@ puts $_::_
 puts [func]1
 puts a$ a$a a$$ a$_ a$1 a$/ $$ $\$a \$$a []$ []$a []$[] $:a
 puts "a$" "$" "$$" "$ $" "a$a"
+puts "$a j"
 ---
 
 (source_file
@@ -941,6 +942,11 @@ puts "a$" "$" "$$" "$ $" "a$a"
     (quoted_word)
     (quoted_word)
     (quoted_word)
+    (quoted_word
+      (variable_substitution
+        (id))))
+  (command
+    (simple_word)
     (quoted_word
       (variable_substitution
         (id)))))

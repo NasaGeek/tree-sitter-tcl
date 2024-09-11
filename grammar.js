@@ -571,7 +571,7 @@ module.exports = grammar({
     // Just another thing for the scanner to handle :)
     // Also arr(...$) is treated as a literal $ by Tcl whereas we throw an error
     _array_index: $ => seq(
-      '(',
+      token.immediate('('),
       optional($._concat_word_array_index),
       token.immediate(')'),
     ),
