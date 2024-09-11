@@ -82,10 +82,6 @@ static bool is_concat_valid(TSLexer *lexer, const bool *valid_symbols) {
                 lexer->lookahead == '$' ||
                 lexer->lookahead == '[') {
             return true;
-        } else if (lexer->lookahead == '\\') {
-            lexer->mark_end(lexer);
-            lexer->advance(lexer, false);
-            return lexer->lookahead != '\n';
         }
     }
     return false;
@@ -95,20 +91,9 @@ static bool has_followup_command(TSLexer *lexer) {
     return !(lexer->lookahead == ']' || lexer->lookahead == '}' || lexer->eof(lexer));
 }
 
-static bool scan_ns_delim(TSLexer *lexer) {
-    if (lexer->lookahead == ':') {
-        lexer->advance(lexer, false);
-        if (lexer->lookahead == ':') {
-            lexer->advance(lexer, false);
-            if (is_bare_word(lexer->lookahead)) {
-                return true;
-            }
-        }
-    }
-    return false;
-}
+enum colon_type { NAMESPACE, PLAIN, NONE };
 
-static bool is_ns_separator(TSLexer *lexer) {
+static enum colon_type scan_ns_and_plain_colon(TSLexer *lexer) {
     if (lexer->lookahead == ':') {
         lexer->advance(lexer, false);
         if (lexer->lookahead == ':') {
@@ -117,10 +102,13 @@ static bool is_ns_separator(TSLexer *lexer) {
                 // https://www.tcl-lang.org/man/tcl8.6/TclCmd/namespace.htm#:~:text=two%20or%20more%20colons%20are%20treated%20as%20a%20namespace%20separator
                 lexer->advance(lexer, false);
             }
-            return true;
+            return NAMESPACE;
+        } else {
+            return PLAIN;
         }
+    } else {
+        return NONE;
     }
-    return false;
 }
 
 static bool scan_variable_substitution(TSLexer *lexer) {
@@ -137,7 +125,7 @@ static bool scan_variable_substitution(TSLexer *lexer) {
             lexer->lookahead == '(' ||
             is_bare_word(lexer->lookahead) ||
             // Advances lexer, must go last
-            is_ns_separator(lexer);
+            scan_ns_and_plain_colon(lexer) == NAMESPACE;
     }
     return false;
 }
@@ -152,15 +140,6 @@ static bool scan_gap(TSLexer *lexer) {
         // extras anyway and we already saw our required gap
         while (is_tcl_whitespace(lexer->lookahead)) {
             lexer->advance(lexer, false);
-        }
-    } else if (chr == '\\') {
-        lexer->mark_end(lexer);
-        lexer->advance(lexer, false);
-        // Probably need better checking that includes \r? along with several other spots...
-        saw_gap = lexer->lookahead == '\n';
-        if (saw_gap) {
-            lexer->advance(lexer, false);
-            lexer->mark_end(lexer);
         }
     }
     return saw_gap;
@@ -237,6 +216,29 @@ bool tree_sitter_tcl_external_scanner_scan(void *payload, TSLexer *lexer,
         return true;
     }
 
+    if (lexer->lookahead == '\\') {
+        // consumes input, where to put it?
+        lexer->mark_end(lexer);
+        lexer->advance(lexer, false);
+        if (valid_symbols[GAP] && lexer->lookahead == '\n') {
+            // Probably need better checking that includes \r? along with several other spots...
+            lexer->advance(lexer, false);
+            lexer->mark_end(lexer);
+            lexer->result_symbol = GAP;
+            return true;
+        } else if (valid_symbols[CONCAT]) {
+            // could we be safe making this just an `else`? Would simplify
+            // assumptions below
+            lexer->result_symbol = CONCAT;
+            return true;
+        } else {
+            // I don't think anything else should be able to parse a \, but
+            // maybe this'll have to change. As it stands, without this, we
+            // could end up treating \$a like a varsub.
+            return false;
+        }
+    }
+
     if (valid_symbols[GAP]) {
         if (scanner->cmdsub_depth >= scanner->expr_depth && scan_gap(lexer)) {
             // This might end up too fragile and it'd be better to just
@@ -249,9 +251,31 @@ bool tree_sitter_tcl_external_scanner_scan(void *payload, TSLexer *lexer,
         }
     }
 
-    if (valid_symbols[NS_DELIM] && is_ns_separator(lexer)) {
-        myprintf("We picked ns\n");
-        lexer->result_symbol = NS_DELIM;
+    if (valid_symbols[NS_DELIM]) {
+        lexer->mark_end(lexer);
+        enum colon_type c = scan_ns_and_plain_colon(lexer);
+        if (c == NAMESPACE) {
+            myprintf("We picked ns\n");
+            lexer->mark_end(lexer);
+            lexer->result_symbol = NS_DELIM;
+            return true;
+        } else if (valid_symbols[CONCAT] && c == PLAIN) {
+            // NB: CONCAT should always be set if NS_DELIM is set I think
+            myprintf("We picked concat, %c\n", lexer->lookahead);
+            lexer->result_symbol = CONCAT;
+            return true;
+        }
+    }
+
+    if (valid_symbols[VARSUB_PREFIX] && scan_variable_substitution(lexer)) {
+        myprintf("We picked varsub\n");
+        lexer->result_symbol = VARSUB_PREFIX;
+        return true;
+    }
+
+    if (is_concat_valid(lexer, valid_symbols)) {
+        myprintf("We picked concat\n");
+        lexer->result_symbol = CONCAT;
         return true;
     }
 
@@ -276,26 +300,19 @@ bool tree_sitter_tcl_external_scanner_scan(void *payload, TSLexer *lexer,
             return true;
         }
         myprintf("Seemed like separator but picked nothing\n");
+        // I'm split on whether we return false here. We generally want to give
+        // other rules a chance to match, but this has also potentially consumed
+        // input which could throw things off? I'll settle for careful ordering
+        // for now.
         return false;
     }
 
     if (valid_symbols[NEWLINE] && scanner->expr_depth == 0 && lexer->lookahead == '\n') {
+        // Ensure this is below command separator so it doesn't steal the newline from it
         // Treat it as an extra only inside exprs
         lexer->advance(lexer, false);
         lexer->result_symbol = NEWLINE;
         myprintf("newline\n");
-        return true;
-    }
-
-    if (valid_symbols[VARSUB_PREFIX] && scan_variable_substitution(lexer)) {
-        myprintf("We picked varsub\n");
-        lexer->result_symbol = VARSUB_PREFIX;
-        return true;
-    }
-
-    if (is_concat_valid(lexer, valid_symbols)) {
-        myprintf("We picked concat\n");
-        lexer->result_symbol = CONCAT;
         return true;
     }
 

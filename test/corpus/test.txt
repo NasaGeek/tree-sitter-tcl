@@ -253,6 +253,9 @@ Escaped string
 echo "word$hi \$bye word"
 puts "\1 \11 \x123a \u123a \U "
 puts \1\11\x123a\u123a\U
+puts \[\]
+puts \{$text\}
+puts \"$text\"
 
 --------------------------------------------------------------------------------
 
@@ -282,6 +285,27 @@ puts \1\11\x123a\u123a\U
     (simple_word)
     (concat)
     (escape_sequence)
+    (concat)
+    (escape_sequence))
+  (command
+    (simple_word)
+    (escape_sequence)
+    (concat)
+    (escape_sequence))
+  (command
+    (simple_word)
+    (escape_sequence)
+    (concat)
+    (variable_substitution
+      (id))
+    (concat)
+    (escape_sequence))
+  (command
+    (simple_word)
+    (escape_sequence)
+    (concat)
+    (variable_substitution
+      (id))
     (concat)
     (escape_sequence)))
 
@@ -864,6 +888,7 @@ puts [func]1
 puts a$ a$a a$$ a$_ a$1 a$/ $$ $\$a \$$a []$ []$a []$[] $:a
 puts "a$" "$" "$$" "$ $" "a$a"
 puts "$a j"
+puts $w:
 ---
 
 (source_file
@@ -949,7 +974,13 @@ puts "$a j"
     (simple_word)
     (quoted_word
       (variable_substitution
-        (id)))))
+        (id))))
+  (command
+    (simple_word)
+    (variable_substitution
+      (id))
+    (concat)
+    (simple_word)))
 
 ================================================================================
 Exprs with newlines
