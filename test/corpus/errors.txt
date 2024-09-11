@@ -12,13 +12,6 @@ Parser deficiency: namespace trailing ::
 puts $::a::
 ---
 
-===
-Parser deficiency: trailing space in multi-arg function call breaks
-:error
-===
-expr {fn(1,1 )} {}
----
-
 ================================================================================
 Parser deficiency: Poor array name parsing, inner )(
 :error
@@ -198,4 +191,11 @@ Real error: bare word with bool literal as prefix
 :error
 ===
 expr {"str" eq falsey}
+---
+
+===
+Real error: concat command substitution in braced expr
+:error
+===
+expr {[][]}
 ---

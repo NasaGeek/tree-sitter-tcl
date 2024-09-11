@@ -93,6 +93,10 @@
             "named": true
           },
           {
+            "type": "concat",
+            "named": true
+          },
+          {
             "type": "escape_sequence",
             "named": true
           },
@@ -136,6 +140,10 @@
           },
           {
             "type": "command_substitution",
+            "named": true
+          },
+          {
+            "type": "concat",
             "named": true
           },
           {

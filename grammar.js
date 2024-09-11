@@ -70,7 +70,6 @@ const expr_seq = (seqfn, suffix) => {
       alias($[unary_expr], $.unary_expr),
       alias($[binop_expr], $.binop_expr),
       alias($[ternary_expr], $.ternary_expr),
-      // $.ternary_expr,
       alias($[func_call], $.func_call),
       $.braced_word,
       $.int_literal,
@@ -128,15 +127,12 @@ const expr_seq = (seqfn, suffix) => {
   }
 }
 
-// https://www.tcl-lang.org/cgi-bin/tct/tip/407.html#:~:text=Tcl%27s%20source%20code.-,String%20Representation%20of%20Lists,-The%20routines%20%5Bin
-const gap = token(prec(-1, /([ \t\v\f\r]|\\\r?\n)+/))
-const gapnl = choice(gap, '\n')
 
 // This class of helpers only differs from seqgap in that they accept
 // a single repeating rule while seq accepts a static set of rules
-const intergappednl1 = ($, rule) => interleaved1($, rule, $.gapnlrepeat1)
+const intergappednl1 = ($, rule) => interleaved1($, rule, $._gapnlrepeat1)
 const intergappednl = ($, rule) => optional(intergappednl1($, rule))
-const intergapped1 = ($, rule) => interleaved1($, rule, $.gap)
+const intergapped1 = ($, rule) => interleaved1($, rule, $._gap)
 const intergapped = ($, rule) => optional(intergapped1($, rule))
 // This is seq() not seqgap() because you're expected to manually inject gaps
 // as the delimiters.
@@ -149,7 +145,7 @@ const interleaved_seq1 = ($, rule, delim, seqfn) => seqfn($, rule, repeat(seqfn(
 // (essentially adding them as faux-extras). Note that this allows for _no_
 // whitespace (making it primarily useful for expr). No need to implement this
 // in term of seqdelim since the delims can collapse to blank.
-const seqnl = ($, ...rules) => seq(...rules.flatMap(e => [optional($.gapnlrepeat1), e]).slice(1))
+const seqnl = ($, ...rules) => seq(...rules.flatMap(e => [optional($._gapnlrepeat1), e]).slice(1))
 
 
 // Helper for sequences that require some delimiter between their elements.
@@ -176,10 +172,10 @@ const seqdelim = (delim, ...rules) => {
   return seq(...result)
 }
 
-const seqgap = ($, ...rules) => seqdelim($.gap, ...rules)
+const seqgap = ($, ...rules) => seqdelim($._gap, ...rules)
 // Similar to seqnl, but at least some whitespace/newline is required vs being
 // completely irrelevant, useful for various constructs in {}
-const seqgapnl = ($, ...rules) => seqdelim($.gapnlrepeat1, ...rules)
+const seqgapnl = ($, ...rules) => seqdelim($._gapnlrepeat1, ...rules)
 
 // A lot of stealing from tree-sitter-go and then simplifying for Tcl
 const hexDigit = /[0-9a-fA-F]/;
@@ -229,6 +225,12 @@ module.exports = grammar({
     // Checks whether a $ should indicate variable substitution or if it's just
     // a literal
     $._varsub_prefix,
+    $._gap,
+    $._expr_start,
+    $._expr_end,
+    $._cmdsub_start,
+    $._cmdsub_end,
+    $._nl,
     // Not used in the grammar, but used in the external scanner to check for error state.
     // This relies on the tree-sitter behavior that when an error is encountered the external
     // scanner is called with all symobls marked as valid.
@@ -240,13 +242,18 @@ module.exports = grammar({
     $._builtin,
     $.terminator,
     $.termgap,
-    $.gap,
-    $.gapnl,
-    $.gapnlrepeat1,
+    $._gapnl,
+    $._gapnlrepeat1,
     $._word,
   ],
 
-  extras: _ => [],
+  extras: _ => [
+    // Beware, these extras are oft-overriden by externals as Tcl is fairly
+    // whitespace-sensitive. These are here to help with expr's relative
+    // whitespace-insensitivity
+    /[ \t\v\f\r]|\\\r?\n/,
+    '\n',
+  ],
 
   conflicts: $ => [
     [$.switch_body],
@@ -292,16 +299,15 @@ module.exports = grammar({
       optional($.termgap),
     ),
 
-    terminator: _ => choice('\n', ';'),
+    terminator: $ => choice($._nl, ';'),
 
-    gap: _ => gap,
-    gapnl: _ => gapnl,
-    gapnlrepeat1: $ => repeat1($.gapnl),
+    _gapnl: $ => choice($._gap, $._nl),
+    _gapnlrepeat1: $ => repeat1($._gapnl),
 
     termgap: $ => repeat1(
         choice(
           $.terminator,
-          $.gap,
+          $._gap,
         )
     ),
 
@@ -514,18 +520,23 @@ module.exports = grammar({
       $.concat,
     ),
 
-    _concat_word_array_index: $ => repeat1(
+    _concat_word_array_index: $ => interleaved1($,
       choice(
         $.escape_sequence,
         $.command_substitution,
         $.variable_substitution,
         $.array_index_word,
       ),
+      $.concat
     ),
 
     // bare words are a no-no inside of expr's, but quoted is okay. The rules
     // in expr's are generally much looser, too, meaning we don't need the
     // concat check.
+    // Actually, turns out expr substitution rules are their own flavor of
+    // wacky, so this will need some reworking (e.g. expr {[][]} and expr {$a$a}
+    // are not allowed). It's probably the case that they can't be repeated
+    // as such and must each be their own operand.
     _concat_word_expr: $ => repeat1(
       choice(
         $.escape_sequence,
@@ -549,7 +560,7 @@ module.exports = grammar({
       // $._ns_delim,
     ),
 
-    // token.immediate breaks usage of () in bare words (maybe that's okay?)
+    // token.immediate('(') breaks usage of () in bare words (maybe that's okay?)
     // e.g. `puts (string)` should work fine, treat (string) as a string.
     // maybe it makes sense to include () in simple_word or parse arrays in
     // scanner.c?
@@ -562,7 +573,7 @@ module.exports = grammar({
     _array_index: $ => seq(
       '(',
       optional($._concat_word_array_index),
-      ')',
+      token.immediate(')'),
     ),
 
     // cheating here a bit by restricting what an array name can be. If we want
@@ -621,12 +632,12 @@ module.exports = grammar({
     // max flexibility, just wrap in {}
     expr: $ => choice(
       // prec disambiguates from braced_word
-      seqnl($, token(prec(1, '{')), $._expr_nl, '}'),
-      // $._expr,
+      seqnl($, token(prec(1, '{')), $._expr_start, $._expr_nl, '}', $._expr_end),
+      $._expr,
     ),
 
+    ...expr_seq((_, ...rules) => seq(...rules), ''),
     ...expr_seq(seqnl, '_nl'),
-    // ...expr_seq(seq, ''),
 
     conditional: $ => seqgap($,
       "if",
@@ -687,8 +698,8 @@ module.exports = grammar({
       $.escape_sequence,
     ),
 
-    _nested_raw_braces: $ => seqnl($, '{', repeat(choice($.gapnl, $._nested_raw_braces, $._nested_raw_quotes, $._raw_word_contents)), '}'),
-    _nested_raw_quotes: $ => seqnl($, '"', repeat(choice($.gapnl, $._nested_raw_braces, $._raw_word_contents)), '"'),
+    _nested_raw_braces: $ => seqnl($, '{', repeat(choice($._gapnl, $._nested_raw_braces, $._nested_raw_quotes, $._raw_word_contents)), '}'),
+    _nested_raw_quotes: $ => seqnl($, '"', repeat(choice($._gapnl, $._nested_raw_braces, $._raw_word_contents)), '"'),
 
     // This should only be used when we're already inside of braces, since none
     // of the contents are going to be substitutable. This is basically just
@@ -709,7 +720,7 @@ module.exports = grammar({
       repeat(
         choice(
           '\n',
-          $.gap,
+          $._gap,
           // Substitution is permitted only at top level
           $._concat_word,
           alias($._nested_braced_list, $.literal_list),
@@ -722,7 +733,7 @@ module.exports = grammar({
       repeat(
         choice(
           '\n',
-          $.gap,
+          $._gap,
           alias($._nested_braced_list, $.literal_list),
           $.list_item
         )
@@ -733,7 +744,7 @@ module.exports = grammar({
       repeat(
         choice(
           '\n',
-          $.gap,
+          $._gap,
           alias($._nested_braced_list, $.literal_list),
           alias($._nested_quoted_list, $.literal_list),
           $.list_item
@@ -741,6 +752,7 @@ module.exports = grammar({
       ),
       '}'),
 
+    // https://www.tcl-lang.org/cgi-bin/tct/tip/407.html#:~:text=Tcl%27s%20source%20code.-,String%20Representation%20of%20Lists,-The%20routines%20%5Bin
     // Covers cases where a literal can be specified and is interpreted as a list,
     // like foreach vars or trap/on vars.
     // Feels very similar to raw_word, but is not opaque within.
@@ -764,7 +776,7 @@ module.exports = grammar({
     // https://github.com/tree-sitter/tree-sitter/issues/1087#issuecomment-833198651
     _quoted_word_content: _ => token(prec(-1, /([^$\\\[\]"]|\\\r?\n)+|\$/)),
 
-    command_substitution: $ => seq('[', optional($._script_body), ']'),
+    command_substitution: $ => seq('[', $._cmdsub_start, optional($._script_body), ']', $._cmdsub_end),
 
     // lol Tcl you cray
     bool_literal: _ => token(prec.dynamic(-2, /t(r(u(e)?)?)?|f(a(l(s(e)?)?)?)?|on|(of)f?|y(e(s)?)?|(n)o?/i)),

@@ -340,6 +340,7 @@ set arr($arr(a)) 0
     (array_name
       (simple_word)
       (variable_substitution)
+      (concat)
       (array_index_word))
     (simple_word))
   (set
@@ -384,6 +385,7 @@ set $arr($arr(a))
         (id)
         (variable_substitution
           (id))
+        (concat)
         (variable_substitution
           (id)))))
   (comment)
@@ -400,7 +402,9 @@ set $arr($arr(a))
         (id)
         (variable_substitution
           (id))
+        (concat)
         (array_index_word)
+        (concat)
         (variable_substitution
           (id)))))
   (set
@@ -432,6 +436,7 @@ set $arr($arr(a))
       (array_ref
         (id)
         (variable_substitution)
+        (concat)
         (array_index_word))))
   (set
     (variable_substitution
@@ -500,6 +505,9 @@ expr { func(1, 2) }
 expr {$a >0}
 expr {$a eq0}
 expr {"str"eq"str"}
+expr { $arr}
+expr { spaceyfunc   ( "yes", [this], {works} ) }
+
 
 --------------------------------------------------------------------------------
 
@@ -584,7 +592,21 @@ expr {"str"eq"str"}
     (expr
       (binop_expr
         (quoted_word)
-        (quoted_word)))))
+        (quoted_word))))
+  (expr_cmd
+    (expr
+      (variable_substitution
+        (id))))
+  (expr_cmd
+    (expr
+      (func_call
+        (expr_function_name)
+        (func_args
+          (quoted_word)
+          (command_substitution
+            (command
+              (simple_word)))
+          (braced_word))))))
 
 ================================================================================
 Exprs in other places
