@@ -1099,45 +1099,22 @@ $1}
 Braceless exprs
 ================================================================================
 
-expr 1+1
-expr 1
-expr 3./4e-4
-expr t==f
-expr func(1,2)
-expr 1+1 anything goes
+expr 1 + 1 anything goes
+expr anything goes 1 + 1
+
 ----
 
 (source_file
   (expr_cmd
-    (expr
-      (binop_expr
-        (int_literal)
-        (int_literal))))
+    (simple_word)
+    (simple_word)
+    (simple_word)
+    (simple_word)
+    (simple_word))
   (expr_cmd
-    (expr
-      (int_literal)))
-  (expr_cmd
-    (expr
-      (binop_expr
-        (float_literal)
-        (float_literal))))
-  (expr_cmd
-    (expr
-      (binop_expr
-        (bool_literal)
-        (bool_literal))))
-  (expr_cmd
-    (expr
-      (func_call
-        (expr_function_name)
-        (func_args
-          (int_literal)
-          (int_literal)))))
-  (expr_cmd
-    (expr
-      (binop_expr
-        (int_literal)
-        (int_literal)))
+    (simple_word)
+    (simple_word)
+    (simple_word)
     (simple_word)
     (simple_word)))
 

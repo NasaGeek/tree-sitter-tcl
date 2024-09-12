@@ -348,7 +348,7 @@ module.exports = grammar({
     // oddities like `expr (1 + 1)` where even trying to just parse the first
     // word will fail. Brace your stuff.
     expr_cmd: $ => seqgap($, 'expr', choice(
-      $.expr,
+      alias($._braced_expr, $.expr),
       $._word_list,
     )),
 
@@ -635,8 +635,13 @@ module.exports = grammar({
     // current $._expr approach allowing arbitrary whitespace. If people want
     // max flexibility, just wrap in {}
     expr: $ => choice(
+      $._braced_expr,
+      $._expr,
+    ),
+
+    _braced_expr: $ => seq(
       // prec disambiguates from braced_word
-      seq(token(prec(1, '{')), $._expr_start, $._expr_nl, '}', $._expr_end),
+      token(prec(1, '{')), $._expr_start, $._expr_nl, '}', $._expr_end
     ),
 
     ...expr_seq((_, ...rules) => seq(...rules), ''),
