@@ -3226,11 +3226,11 @@ static bool ts_lex(TSLexer *lexer, TSStateId state) {
       END_STATE();
     case 42:
       if (lookahead == '\n') ADVANCE(222);
-      if (lookahead == '\\') ADVANCE(214);
+      if (lookahead == '\\') ADVANCE(215);
       if (lookahead == '{') ADVANCE(97);
       if (lookahead == '}') ADVANCE(94);
       if (('\t' <= lookahead && lookahead <= '\r') ||
-          lookahead == ' ') ADVANCE(213);
+          lookahead == ' ') ADVANCE(214);
       if (lookahead != 0) ADVANCE(216);
       END_STATE();
     case 43:
@@ -4278,32 +4278,26 @@ static bool ts_lex(TSLexer *lexer, TSStateId state) {
       END_STATE();
     case 213:
       ACCEPT_TOKEN(sym__braced_word_contents);
-      if (lookahead == '\n') ADVANCE(222);
-      if (lookahead == '\\') ADVANCE(214);
-      if (('\t' <= lookahead && lookahead <= '\r') ||
-          lookahead == ' ') ADVANCE(213);
-      if (lookahead != 0 &&
-          lookahead != '{' &&
-          lookahead != '}') ADVANCE(216);
       END_STATE();
     case 214:
       ACCEPT_TOKEN(sym__braced_word_contents);
-      if (lookahead == '\n') ADVANCE(213);
-      if (lookahead == '\r') ADVANCE(215);
+      if (lookahead == '\n') ADVANCE(222);
+      if (lookahead == '\\') ADVANCE(215);
+      if (('\t' <= lookahead && lookahead <= '\r') ||
+          lookahead == ' ') ADVANCE(214);
       if (lookahead != 0 &&
           lookahead != '{' &&
           lookahead != '}') ADVANCE(216);
       END_STATE();
     case 215:
       ACCEPT_TOKEN(sym__braced_word_contents);
-      if (lookahead == '\n') ADVANCE(213);
-      if (lookahead != 0 &&
-          lookahead != '{' &&
-          lookahead != '}') ADVANCE(216);
+      if (lookahead == '{' ||
+          lookahead == '}') ADVANCE(213);
       END_STATE();
     case 216:
       ACCEPT_TOKEN(sym__braced_word_contents);
       if (lookahead != 0 &&
+          lookahead != '\\' &&
           lookahead != '{' &&
           lookahead != '}') ADVANCE(216);
       END_STATE();
@@ -4358,6 +4352,7 @@ static bool ts_lex(TSLexer *lexer, TSStateId state) {
     case 222:
       ACCEPT_TOKEN(anon_sym_LF);
       if (lookahead != 0 &&
+          lookahead != '\\' &&
           lookahead != '{' &&
           lookahead != '}') ADVANCE(216);
       END_STATE();

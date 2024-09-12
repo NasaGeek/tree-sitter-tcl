@@ -678,7 +678,7 @@ module.exports = grammar({
       '"',
     ),
 
-    _braced_word_contents: _ => /[^{}]+/,
+    _braced_word_contents: _ => /[^\\{}]+|\\\}|\\\{|\\/,
 
     _nested_braces: $ => seq('{', repeat(choice($._nested_braces, $._braced_word_contents)), '}'),
 

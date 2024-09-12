@@ -4107,7 +4107,7 @@
     },
     "_braced_word_contents": {
       "type": "PATTERN",
-      "value": "[^{}]+"
+      "value": "[^\\\\{}]+|\\\\\\}|\\\\\\{|\\\\"
     },
     "_nested_braces": {
       "type": "SEQ",

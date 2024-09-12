@@ -256,6 +256,7 @@ puts \1\11\x123a\u123a\U
 puts \[\]
 puts \{$text\}
 puts \"$text\"
+puts {\}} {a\}} {\{a} {a\{}
 
 --------------------------------------------------------------------------------
 
@@ -307,7 +308,13 @@ puts \"$text\"
     (variable_substitution
       (id))
     (concat)
-    (escape_sequence)))
+    (escape_sequence))
+  (command
+    (simple_word)
+    (braced_word)
+    (braced_word)
+    (braced_word)
+    (braced_word)))
 
 ================================================================================
 Array set
