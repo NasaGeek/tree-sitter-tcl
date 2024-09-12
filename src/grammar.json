@@ -306,27 +306,15 @@
           "name": "_gap"
         },
         {
-          "type": "SYMBOL",
-          "name": "expr"
-        },
-        {
           "type": "CHOICE",
           "members": [
             {
-              "type": "SEQ",
-              "members": [
-                {
-                  "type": "SYMBOL",
-                  "name": "_gap"
-                },
-                {
-                  "type": "SYMBOL",
-                  "name": "_word_list"
-                }
-              ]
+              "type": "SYMBOL",
+              "name": "expr"
             },
             {
-              "type": "BLANK"
+              "type": "SYMBOL",
+              "name": "_word_list"
             }
           ]
         }
@@ -1669,10 +1657,6 @@
               "name": "_expr_end"
             }
           ]
-        },
-        {
-          "type": "SYMBOL",
-          "name": "_expr"
         }
       ]
     },
@@ -4349,9 +4333,6 @@
     ],
     [
       "foreach_clauses"
-    ],
-    [
-      "expr_cmd"
     ],
     [
       "command"

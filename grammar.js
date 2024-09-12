@@ -263,8 +263,6 @@ module.exports = grammar({
     [$.switch_body],
     [$.foreach_clauses],
 
-    [$.expr_cmd],
-
     [$.command],
     [$.set],
     [$.try],
@@ -346,9 +344,13 @@ module.exports = grammar({
 
     while: $ => seqgap($, 'while', $.expr, $.script),
 
-    // We technically support multi-arg expr's, but make no attempt to parse
-    // them as such (except for the first argument)
-    expr_cmd: $ => seqgap($, 'expr', $.expr, optional($._word_list)),
+    // We make no attempt to parse unbraced exprs. There are too many unparsable
+    // oddities like `expr (1 + 1)` where even trying to just parse the first
+    // word will fail. Brace your stuff.
+    expr_cmd: $ => seqgap($, 'expr', choice(
+      $.expr,
+      $._word_list,
+    )),
 
     for: $ => seqgap($, "for",
       $.script,
@@ -635,7 +637,6 @@ module.exports = grammar({
     expr: $ => choice(
       // prec disambiguates from braced_word
       seq(token(prec(1, '{')), $._expr_start, $._expr_nl, '}', $._expr_end),
-      $._expr,
     ),
 
     ...expr_seq((_, ...rules) => seq(...rules), ''),
