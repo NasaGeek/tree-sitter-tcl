@@ -896,6 +896,8 @@ puts a$ a$a a$$ a$_ a$1 a$/ $$ $\$a \$$a []$ []$a []$[] $:a
 puts "a$" "$" "$$" "$ $" "a$a"
 puts "$a j"
 puts $w:
+$
+
 ---
 
 (source_file
@@ -987,6 +989,8 @@ puts $w:
     (variable_substitution
       (id))
     (concat)
+    (simple_word))
+  (command
     (simple_word)))
 
 ================================================================================
@@ -1010,6 +1014,18 @@ expr { arr
 ,
 456)
 }
+expr {\
+$a}
+expr { \
+$a}
+expr {1+\
+$a}
+expr {1+ \
+$a}
+expr {1 && \
+$1}
+expr {1 &&\
+$1}
 --------------------------------------------------------------------------------
 
 (source_file
@@ -1045,7 +1061,39 @@ expr { arr
           (expr_function_name)
           (func_args
             (int_literal)
-            (int_literal)))))))
+            (int_literal))))))
+  (expr_cmd
+    (expr
+      (variable_substitution
+        (id))))
+  (expr_cmd
+    (expr
+      (variable_substitution
+        (id))))
+  (expr_cmd
+    (expr
+      (binop_expr
+        (int_literal)
+        (variable_substitution
+          (id)))))
+  (expr_cmd
+    (expr
+      (binop_expr
+        (int_literal)
+        (variable_substitution
+          (id)))))
+  (expr_cmd
+    (expr
+      (binop_expr
+        (int_literal)
+        (variable_substitution
+          (id)))))
+  (expr_cmd
+    (expr
+      (binop_expr
+        (int_literal)
+        (variable_substitution
+          (id))))))
 
 ================================================================================
 Braceless exprs
@@ -1174,6 +1222,8 @@ cmd\
 with cont
 # comment \
 # with cont
+puts \
+$a
 ---
 
 (source_file
@@ -1209,7 +1259,11 @@ with cont
     arguments: (simple_word)
     arguments: (simple_word))
   (comment)
-  (comment))
+  (comment)
+  (command
+    name: (simple_word)
+    arguments: (variable_substitution
+      (id))))
 
 ===
 Command separation

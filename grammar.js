@@ -252,6 +252,10 @@ module.exports = grammar({
     // whitespace-sensitive. These are here to help with expr's relative
     // whitespace-insensitivity
     /[ \t\v\f\r]|\\\r?\n/,
+    // this breaks if turned into /\n/. I imagine it's conflicting with another
+    // token but I can't figure out what. They end up parsed as a simple_word??
+    // Docs/examples seem to indicate it's on me to consume whitespace in
+    // scanner, but then how do spaces work so well in exprs?
     '\n',
   ],
 
@@ -259,8 +263,6 @@ module.exports = grammar({
     [$.switch_body],
     [$.foreach_clauses],
 
-    [$.binop_expr_nl, $.ternary_expr_nl],
-    [$.func_call_nl],
     [$.expr_cmd],
 
     [$.command],
@@ -589,7 +591,7 @@ module.exports = grammar({
 
     variable_substitution: $ => seq(
       $._varsub_prefix,
-      token(prec(2, '$')),
+      token.immediate(prec(2, '$')),
       choice(
         $.id,
         // FIXME: Missing parsing of array ref in here
@@ -632,12 +634,13 @@ module.exports = grammar({
     // max flexibility, just wrap in {}
     expr: $ => choice(
       // prec disambiguates from braced_word
-      seqnl($, token(prec(1, '{')), $._expr_start, $._expr_nl, '}', $._expr_end),
+      seq(token(prec(1, '{')), $._expr_start, $._expr_nl, '}', $._expr_end),
       $._expr,
     ),
 
     ...expr_seq((_, ...rules) => seq(...rules), ''),
-    ...expr_seq(seqnl, '_nl'),
+    // ...expr_seq(seqnl, '_nl'),
+    ...expr_seq((_, ...rules) => seq(...rules), '_nl'),
 
     conditional: $ => seqgap($,
       "if",

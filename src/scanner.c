@@ -112,10 +112,25 @@ static enum colon_type scan_ns_and_plain_colon(TSLexer *lexer) {
 }
 
 static bool scan_variable_substitution(TSLexer *lexer) {
-    // Not totally sure if I should be eating whitespace here (why not elsewhere, too?),
-    // but it fixes expressions like `expr { $a}` and `puts " $a"`
-    while (is_tcl_whitespace(lexer->lookahead)) {
-        lexer->advance(lexer, true);
+    // Why do I have to eat whitespace for this but not other stuff? What's
+    // special about this token?
+    // Beware the \n check, might break stuff outside of exprs
+    while (true) {
+        if (is_tcl_whitespace(lexer->lookahead) || lexer->lookahead == '\n') {
+            lexer->advance(lexer, true);
+            continue;
+        }
+        lexer->mark_end(lexer);
+        if (lexer->lookahead == '\\') {
+            lexer->advance(lexer, true);
+            if (lexer->lookahead == '\n') {
+                lexer->advance(lexer, true);
+                continue;
+            } else {
+                return false;
+            }
+        }
+        break;
     }
     if (lexer->lookahead == '$') {
         lexer->mark_end(lexer);
@@ -225,16 +240,35 @@ bool tree_sitter_tcl_external_scanner_scan(void *payload, TSLexer *lexer,
             lexer->advance(lexer, false);
             lexer->mark_end(lexer);
             lexer->result_symbol = GAP;
+            myprintf("\\ gap\n");
             return true;
+        } else if (valid_symbols[VARSUB_PREFIX] && lexer->lookahead == '\n') {
+            lexer->advance(lexer, true);
+            int32_t saved_col = lexer->get_column(lexer);
+            if (scan_variable_substitution(lexer)) {
+                // So weird that I have to check for this. It seems like it's
+                // allowing extras between _varsub_prefix and the $ even though
+                // I've marked the $ as token.immediate()
+                myprintf("\\ varsub\n");
+                lexer->result_symbol = VARSUB_PREFIX;
+                return true;
+            } else {
+                if (lexer->get_column(lexer) != saved_col) {
+                    // We advanced, rest of the lex is spoiled
+                    return false;
+                }
+            }
         } else if (valid_symbols[CONCAT]) {
             // could we be safe making this just an `else`? Would simplify
             // assumptions below
+            myprintf("\\ concat\n");
             lexer->result_symbol = CONCAT;
             return true;
         } else {
             // I don't think anything else should be able to parse a \, but
             // maybe this'll have to change. As it stands, without this, we
             // could end up treating \$a like a varsub.
+            myprintf("\\ but no match, looking at '%c'\n", lexer->lookahead);
             return false;
         }
     }
@@ -267,10 +301,17 @@ bool tree_sitter_tcl_external_scanner_scan(void *payload, TSLexer *lexer,
         }
     }
 
-    if (valid_symbols[VARSUB_PREFIX] && scan_variable_substitution(lexer)) {
-        myprintf("We picked varsub\n");
-        lexer->result_symbol = VARSUB_PREFIX;
-        return true;
+    if (valid_symbols[VARSUB_PREFIX]) {
+        int32_t saved_col = lexer->get_column(lexer);
+        if (scan_variable_substitution(lexer)) {
+            myprintf("We picked varsub\n");
+            lexer->result_symbol = VARSUB_PREFIX;
+            return true;
+        } else if (lexer->get_column(lexer) != saved_col) {
+            // We advanced, rest of the lex is spoiled
+            myprintf("Never saw varsub but advanced lexer, bailing\n");
+            return false;
+        }
     }
 
     if (is_concat_valid(lexer, valid_symbols)) {
