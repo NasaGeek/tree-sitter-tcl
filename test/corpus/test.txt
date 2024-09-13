@@ -46,6 +46,7 @@ a
 c \
 d
 } {}
+proc f {a {b} {b c} a"b a""} {}
 
 --------------------------------------------------------------------------------
 
@@ -54,9 +55,9 @@ d
     name: (simple_word)
     arguments: (arguments
       (argument
-        name: (simple_word))
+        name: (raw_word))
       (argument
-        name: (simple_word))
+        name: (raw_word))
       (argument
         name: (raw_word)
         default: (raw_word))
@@ -87,9 +88,24 @@ d
         name: (raw_word)
         default: (raw_word))
       (argument
-        name: (simple_word))
+        name: (raw_word))
       (argument
-        name: (simple_word)))
+        name: (raw_word)))
+    body: (script))
+  (procedure
+    name: (simple_word)
+    arguments: (arguments
+      (argument
+        name: (raw_word))
+      (argument
+        name: (raw_word))
+      (argument
+        name: (raw_word)
+        default: (raw_word))
+      (argument
+        name: (raw_word))
+      (argument
+        name: (raw_word)))
     body: (script)))
 
 ================================================================================

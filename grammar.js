@@ -274,6 +274,7 @@ module.exports = grammar({
     [$.catch],
     [$._argument_content],
     [$._nested_raw_braces],
+    [$._nested_raw_braces, $._raw_word_unbraced],
     [$._nested_raw_quotes],
     [$._nested_braced_list],
     [$._nested_quoted_list],
@@ -618,14 +619,15 @@ module.exports = grammar({
     ),
 
     argument: $ => choice(
-      // TODO: should be raw_word
-      field('name', $.simple_word),
-      seqnl($, '{', $._argument_content, '}')
+      field('name', $.raw_word),
+      prec.dynamic(1, seqnl($, '{', $._argument_content, '}'))
     ),
 
     _argument_content: $ => seqgapnl($,
-        field('name', $.raw_word),
-        optional(field('default', $.raw_word)),
+      // Can't just be raw_word due to restrictions on number of elements in an
+      // arg
+      field('name', alias($._raw_word_unbraced, $.raw_word)),
+      optional(field('default', $.raw_word)),
     ),
 
     // This is specifically used for expressions that aren't `expr`, since
@@ -693,8 +695,7 @@ module.exports = grammar({
     // This a truly braced, no-substitution word, only appropriate in places
     // where we know no evaluation will occur (anywhere that it _might_ occur
     // should be a _word).
-    // It can have almost anything in it I think (other than unmatched {})
-    // FIXME: escaped braces
+    // It can have almost anything in it I think (other than unmatched {}).
     // This can cause problems when we get into an error state because it's so
     // flexible, resulting in large chunks of code just becoming braced_word.
     // Not sure how to get better error recovery without just removing this or
@@ -710,17 +711,18 @@ module.exports = grammar({
     _nested_raw_braces: $ => seqnl($, '{', repeat(choice($._gapnl, $._nested_raw_braces, $._nested_raw_quotes, $._raw_word_contents)), '}'),
     _nested_raw_quotes: $ => seqnl($, '"', repeat(choice($._gapnl, $._nested_raw_braces, $._raw_word_contents)), '"'),
 
+    _raw_word_unbraced: $ => seq($._raw_word_contents, repeat(choice($._nested_raw_braces, $._raw_word_contents, '"'))),
+
     // This should only be used when we're already inside of braces, since none
     // of the contents are going to be substitutable. This is basically just
     // braced_word but we're already inside the braces and restricted in how
-    // spaces can be placed (like switch cases and arguments).
-    // FIXME: doesn't allow stuff like a" (just like everywhere else)
+    // spaces can be placed (like switch cases and proc arguments).
     raw_word: $ => choice(
       // Don't expect this to be bulletproof. It's just an interim solution until
       // I figure out proper literal parsing throughout the grammar.
       $._nested_raw_braces,
       $._nested_raw_quotes,
-      seq($._raw_word_contents, repeat(choice($._nested_raw_braces, $._raw_word_contents))),
+      $._raw_word_unbraced,
     ),
 
     list_item: _ => token(prec(-1, /[^{}"\s]+/)),

@@ -1536,49 +1536,53 @@
           "name": "name",
           "content": {
             "type": "SYMBOL",
-            "name": "simple_word"
+            "name": "raw_word"
           }
         },
         {
-          "type": "SEQ",
-          "members": [
-            {
-              "type": "STRING",
-              "value": "{"
-            },
-            {
-              "type": "CHOICE",
-              "members": [
-                {
-                  "type": "SYMBOL",
-                  "name": "_gapnlrepeat1"
-                },
-                {
-                  "type": "BLANK"
-                }
-              ]
-            },
-            {
-              "type": "SYMBOL",
-              "name": "_argument_content"
-            },
-            {
-              "type": "CHOICE",
-              "members": [
-                {
-                  "type": "SYMBOL",
-                  "name": "_gapnlrepeat1"
-                },
-                {
-                  "type": "BLANK"
-                }
-              ]
-            },
-            {
-              "type": "STRING",
-              "value": "}"
-            }
-          ]
+          "type": "PREC_DYNAMIC",
+          "value": 1,
+          "content": {
+            "type": "SEQ",
+            "members": [
+              {
+                "type": "STRING",
+                "value": "{"
+              },
+              {
+                "type": "CHOICE",
+                "members": [
+                  {
+                    "type": "SYMBOL",
+                    "name": "_gapnlrepeat1"
+                  },
+                  {
+                    "type": "BLANK"
+                  }
+                ]
+              },
+              {
+                "type": "SYMBOL",
+                "name": "_argument_content"
+              },
+              {
+                "type": "CHOICE",
+                "members": [
+                  {
+                    "type": "SYMBOL",
+                    "name": "_gapnlrepeat1"
+                  },
+                  {
+                    "type": "BLANK"
+                  }
+                ]
+              },
+              {
+                "type": "STRING",
+                "value": "}"
+              }
+            ]
+          }
         }
       ]
     },
@@ -1589,8 +1593,13 @@
           "type": "FIELD",
           "name": "name",
           "content": {
-            "type": "SYMBOL",
-            "name": "raw_word"
+            "type": "ALIAS",
+            "content": {
+              "type": "SYMBOL",
+              "name": "_raw_word_unbraced"
+            },
+            "named": true,
+            "value": "raw_word"
           }
         },
         {
@@ -3546,6 +3555,35 @@
         }
       ]
     },
+    "_raw_word_unbraced": {
+      "type": "SEQ",
+      "members": [
+        {
+          "type": "SYMBOL",
+          "name": "_raw_word_contents"
+        },
+        {
+          "type": "REPEAT",
+          "content": {
+            "type": "CHOICE",
+            "members": [
+              {
+                "type": "SYMBOL",
+                "name": "_nested_raw_braces"
+              },
+              {
+                "type": "SYMBOL",
+                "name": "_raw_word_contents"
+              },
+              {
+                "type": "STRING",
+                "value": "\""
+              }
+            ]
+          }
+        }
+      ]
+    },
     "raw_word": {
       "type": "CHOICE",
       "members": [
@@ -3558,29 +3596,8 @@
           "name": "_nested_raw_quotes"
         },
         {
-          "type": "SEQ",
-          "members": [
-            {
-              "type": "SYMBOL",
-              "name": "_raw_word_contents"
-            },
-            {
-              "type": "REPEAT",
-              "content": {
-                "type": "CHOICE",
-                "members": [
-                  {
-                    "type": "SYMBOL",
-                    "name": "_nested_raw_braces"
-                  },
-                  {
-                    "type": "SYMBOL",
-                    "name": "_raw_word_contents"
-                  }
-                ]
-              }
-            }
-          ]
+          "type": "SYMBOL",
+          "name": "_raw_word_unbraced"
         }
       ]
     },
@@ -4371,6 +4388,10 @@
     ],
     [
       "_nested_raw_braces"
+    ],
+    [
+      "_nested_raw_braces",
+      "_raw_word_unbraced"
     ],
     [
       "_nested_raw_quotes"

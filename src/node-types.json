@@ -20,10 +20,6 @@
           {
             "type": "raw_word",
             "named": true
-          },
-          {
-            "type": "simple_word",
-            "named": true
           }
         ]
       }

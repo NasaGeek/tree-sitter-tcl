@@ -3,10 +3,28 @@ Stuff we parse wrong currently
 ===
 # Should be int_literal (applies to all expressions)
 expr "1"
+# "" should be treated same as {}, resulting in name+default
+proc a {"a b"} {}
+# >=3-item {} is not allowed
+proc a {{a b c}} {}
 
 ---
 
 (source_file
   (comment)
   (expr_cmd
-    (quoted_word)))
+    (quoted_word))
+  (comment)
+  (procedure
+    (simple_word)
+    (arguments
+      (argument
+        (raw_word)))
+    (script))
+  (comment)
+  (procedure
+    (simple_word)
+    (arguments
+      (argument
+        (raw_word)))
+    (script)))
