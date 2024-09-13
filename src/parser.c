@@ -3960,7 +3960,8 @@ static bool ts_lex(TSLexer *lexer, TSStateId state) {
       END_STATE();
     case 211:
       ACCEPT_TOKEN(sym__braced_word_contents);
-      if (lookahead == '{' ||
+      if (lookahead == '\\' ||
+          lookahead == '{' ||
           lookahead == '}') ADVANCE(209);
       END_STATE();
     case 212:

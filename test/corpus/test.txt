@@ -256,7 +256,7 @@ puts \1\11\x123a\u123a\U
 puts \[\]
 puts \{$text\}
 puts \"$text\"
-puts {\}} {a\}} {\{a} {a\{}
+puts {\}} {a\}} {\{a} {a\{} {\\ \\}
 
 --------------------------------------------------------------------------------
 
@@ -311,6 +311,7 @@ puts {\}} {a\}} {\{a} {a\{}
     (escape_sequence))
   (command
     (simple_word)
+    (braced_word)
     (braced_word)
     (braced_word)
     (braced_word)
