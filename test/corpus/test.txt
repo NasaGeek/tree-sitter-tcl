@@ -40,6 +40,12 @@ proc foo {arg1 arg2 {arg3 default3} { arg4 default4 } } {
     echo "word$hi \$bye word"
 }
 proc f {{a w$][[]}} {}
+proc f {{
+a
+  b } \
+c \
+d
+} {}
 
 --------------------------------------------------------------------------------
 
@@ -73,6 +79,17 @@ proc f {{a w$][[]}} {}
       (argument
         name: (raw_word)
         default: (raw_word)))
+    body: (script))
+  (procedure
+    name: (simple_word)
+    arguments: (arguments
+      (argument
+        name: (raw_word)
+        default: (raw_word))
+      (argument
+        name: (simple_word))
+      (argument
+        name: (simple_word)))
     body: (script)))
 
 ================================================================================

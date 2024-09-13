@@ -272,7 +272,6 @@ module.exports = grammar({
     [$.string_cmd],
     [$.global],
     [$.catch],
-    [$.arguments],
     [$._argument_content],
     [$._nested_raw_braces],
     [$._nested_raw_quotes],
@@ -614,7 +613,7 @@ module.exports = grammar({
     ),
 
     arguments: $ => choice(
-      seqnl($, '{', intergapped($, $.argument), '}'),
+      seqnl($, '{', intergappednl1($, $.argument), '}'),
       $._concat_word,
     ),
 
