@@ -793,7 +793,7 @@ module.exports = grammar({
     )),
 
     // https://github.com/tree-sitter/tree-sitter/issues/1087#issuecomment-833198651
-    _quoted_word_content: _ => token(prec(-1, /([^$\\\[\]"]|\\\r?\n)+|\$/)),
+    _quoted_word_content: _ => token(prec(-1, /([^$\\\[\]"]|\\\r?\n)+|\$|\]/)),
 
     command_substitution: $ => seq('[', $._cmdsub_start, optional($._script_body), ']', $._cmdsub_end),
 
