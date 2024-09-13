@@ -49,13 +49,14 @@ static bool is_bare_word(int32_t chr) {
     return iswalnum(chr) || chr == '_';
 }
 
-static bool is_simple_word(TSLexer *lexer, int32_t chr) {
-    // Matches simple_word definition in grammar.js
+static bool is_simple_word(TSLexer *lexer, Scanner *scanner) {
+    // Trying to match simple_word in grammar.js as closely as possible
+    int32_t chr = lexer->lookahead;
     return (!iswspace(chr) &&
             !lexer->eof(lexer) &&
             chr != '\\' &&
             chr != '[' &&
-            chr != ']' &&
+            (chr != ']' || scanner->cmdsub_depth == 0) && // can only concat ] outside of cmdsub
             chr != '$' &&
             chr != '{' &&
             chr != '}' &&
@@ -72,12 +73,12 @@ static bool is_tcl_separator(int32_t chr) {
     return chr == '\n' || chr == ';';
 }
 
-static bool is_concat_valid(TSLexer *lexer, const bool *valid_symbols) {
+static bool is_concat_valid(TSLexer *lexer, const bool *valid_symbols, Scanner *scanner) {
     /* Don't yet have a good answer to how we allow stuff like ]/{/}/" in strings
      * that didn't start with " or {
      */
     if (valid_symbols[CONCAT]) {
-        if (is_simple_word(lexer, lexer->lookahead) ||
+        if (is_simple_word(lexer, scanner) ||
                 lexer->lookahead == '$' ||
                 lexer->lookahead == '[') {
             return true;
@@ -159,11 +160,14 @@ static bool scan_gap(TSLexer *lexer) {
     return saw_gap;
 }
 
-static bool is_command_end(TSLexer *lexer) {
+static bool is_command_end(TSLexer *lexer, Scanner *scanner) {
     int32_t chr = lexer->lookahead;
     // TODO: quotes should go here, too, but they'll need special tracking to
     // identify closing vs opening quotes
-    return chr == ';' || chr == '\n' || chr == ']' || chr == '}';
+    return (chr == ';' ||
+            chr == '\n' ||
+            (chr == ']' && scanner->cmdsub_depth > 0) ||
+            chr == '}');
 }
 
 bool tree_sitter_tcl_external_scanner_scan(void *payload, TSLexer *lexer,
@@ -274,51 +278,20 @@ bool tree_sitter_tcl_external_scanner_scan(void *payload, TSLexer *lexer,
         }
     }
 
+    bool gap_ate_whitespace = false;
     if (valid_symbols[GAP]) {
         if (scanner->cmdsub_depth >= scanner->expr_depth && scan_gap(lexer)) {
             // This might end up too fragile and it'd be better to just
             // allow optional gap after args
-            if (!is_command_end(lexer)) {
+            if (!is_command_end(lexer, scanner)) {
                 lexer->result_symbol = GAP;
                 myprintf("we picked gap\n");
                 return true;
+            } else {
+                // Lexer was advanced, so we gotta bail
+                gap_ate_whitespace = true;
             }
         }
-    }
-
-    if (valid_symbols[NS_DELIM]) {
-        lexer->mark_end(lexer);
-        enum colon_type c = scan_ns_and_plain_colon(lexer);
-        if (c == NAMESPACE) {
-            myprintf("We picked ns\n");
-            lexer->mark_end(lexer);
-            lexer->result_symbol = NS_DELIM;
-            return true;
-        } else if (valid_symbols[CONCAT] && c == PLAIN) {
-            // NB: CONCAT should always be set if NS_DELIM is set I think
-            myprintf("We picked concat, %c\n", lexer->lookahead);
-            lexer->result_symbol = CONCAT;
-            return true;
-        }
-    }
-
-    if (valid_symbols[VARSUB_PREFIX]) {
-        int32_t saved_col = lexer->get_column(lexer);
-        if (scan_variable_substitution(lexer)) {
-            myprintf("We picked varsub\n");
-            lexer->result_symbol = VARSUB_PREFIX;
-            return true;
-        } else if (lexer->get_column(lexer) != saved_col) {
-            // We advanced, rest of the lex is spoiled
-            myprintf("Never saw varsub but advanced lexer, bailing\n");
-            return false;
-        }
-    }
-
-    if (is_concat_valid(lexer, valid_symbols)) {
-        myprintf("We picked concat\n");
-        lexer->result_symbol = CONCAT;
-        return true;
     }
 
     if (valid_symbols[COMMAND_SEPARATOR] && (is_tcl_whitespace(lexer->lookahead) || is_tcl_separator(lexer->lookahead))) {
@@ -355,6 +328,47 @@ bool tree_sitter_tcl_external_scanner_scan(void *payload, TSLexer *lexer,
         lexer->advance(lexer, false);
         lexer->result_symbol = NEWLINE;
         myprintf("newline\n");
+        return true;
+    }
+    // Trying to stop the advanced lexer from GAP from incluencing any
+    // non-whitspace rules that proceed it, but this feels hairy
+    if (gap_ate_whitespace) {
+        return false;
+    }
+
+
+    if (valid_symbols[NS_DELIM]) {
+        lexer->mark_end(lexer);
+        enum colon_type c = scan_ns_and_plain_colon(lexer);
+        if (c == NAMESPACE) {
+            myprintf("We picked ns\n");
+            lexer->mark_end(lexer);
+            lexer->result_symbol = NS_DELIM;
+            return true;
+        } else if (valid_symbols[CONCAT] && c == PLAIN) {
+            // NB: CONCAT should always be set if NS_DELIM is set I think
+            myprintf("We picked concat, %c\n", lexer->lookahead);
+            lexer->result_symbol = CONCAT;
+            return true;
+        }
+    }
+
+    if (valid_symbols[VARSUB_PREFIX]) {
+        int32_t saved_col = lexer->get_column(lexer);
+        if (scan_variable_substitution(lexer)) {
+            myprintf("We picked varsub\n");
+            lexer->result_symbol = VARSUB_PREFIX;
+            return true;
+        } else if (lexer->get_column(lexer) != saved_col) {
+            // We advanced, rest of the lex is spoiled
+            myprintf("Never saw varsub but advanced lexer, bailing\n");
+            return false;
+        }
+    }
+
+    if (is_concat_valid(lexer, valid_symbols, scanner)) {
+        myprintf("We picked concat\n");
+        lexer->result_symbol = CONCAT;
         return true;
     }
 

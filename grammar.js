@@ -372,7 +372,10 @@ module.exports = grammar({
 
     foreach_clauses: $ => intergapped1($, $.foreach_clause),
 
-    foreach_clause: $ => seqgap($, $.literal_list, $._word),
+    foreach_clause: $ => seqgap($,
+      choice($._concat_word, $.literal_list),
+      $._word
+    ),
 
     // https://www.tcl.tk/man/tcl/TclCmd/switch.htm
     switch: $ => seqgap($, "switch",
@@ -408,9 +411,12 @@ module.exports = grammar({
 
     _inner_switch: $ => seqgapnl($,
       $.raw_word,
+      $._script_fallthrough,
+    ),
+
+    _script_fallthrough: $ =>
       // Ehh not totally sold on the aliasing
       choice($.script, alias('-', $.script)),
-    ),
 
     // evaluated,
     // terminator-delimited commands,
@@ -447,14 +453,14 @@ module.exports = grammar({
           choice(
             "ok", "error", "return", "break", "continue", /[0-4]/
           ),
-          $.literal_list,
-          $.script,
+          choice($._concat_word, $.literal_list),
+          $._script_fallthrough,
         ),
         seqgap($,
           "trap",
           $._word,
-          $.literal_list,
-          $.script,
+          choice($._concat_word, $.literal_list),
+          $._script_fallthrough,
         )
       )),
       optional($.finally),
@@ -798,7 +804,7 @@ module.exports = grammar({
 
     // I'd kind of like to remove () from the exclusion for matching array names,
     // but there are knock-on effects like degraded recognition of function calls in exprs
-    simple_word: _ => token(prec(-1, /[^\s\\\[\]{}()$;"]+|\$|"/)),
+    simple_word: _ => token(prec(-1, /[^\s\\\[\]{}()$;"]+|\$|"|\]/)),
 
     // Functions in exprs are actually slightly more restricted bare words (no
     // leading _ for arbitrary reasons: https://github.com/tcltk/tcl/blob/core-8-6-14/generic/tclCompExpr.c#L2063-L2065, sigh...)

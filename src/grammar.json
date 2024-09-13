@@ -419,8 +419,17 @@
       "type": "SEQ",
       "members": [
         {
-          "type": "SYMBOL",
-          "name": "literal_list"
+          "type": "CHOICE",
+          "members": [
+            {
+              "type": "SYMBOL",
+              "name": "_concat_word"
+            },
+            {
+              "type": "SYMBOL",
+              "name": "literal_list"
+            }
+          ]
         },
         {
           "type": "SYMBOL",
@@ -576,22 +585,26 @@
           "name": "_gapnlrepeat1"
         },
         {
-          "type": "CHOICE",
-          "members": [
-            {
-              "type": "SYMBOL",
-              "name": "script"
-            },
-            {
-              "type": "ALIAS",
-              "content": {
-                "type": "STRING",
-                "value": "-"
-              },
-              "named": true,
-              "value": "script"
-            }
-          ]
+          "type": "SYMBOL",
+          "name": "_script_fallthrough"
+        }
+      ]
+    },
+    "_script_fallthrough": {
+      "type": "CHOICE",
+      "members": [
+        {
+          "type": "SYMBOL",
+          "name": "script"
+        },
+        {
+          "type": "ALIAS",
+          "content": {
+            "type": "STRING",
+            "value": "-"
+          },
+          "named": true,
+          "value": "script"
         }
       ]
     },
@@ -795,8 +808,17 @@
                         "name": "_gap"
                       },
                       {
-                        "type": "SYMBOL",
-                        "name": "literal_list"
+                        "type": "CHOICE",
+                        "members": [
+                          {
+                            "type": "SYMBOL",
+                            "name": "_concat_word"
+                          },
+                          {
+                            "type": "SYMBOL",
+                            "name": "literal_list"
+                          }
+                        ]
                       },
                       {
                         "type": "SYMBOL",
@@ -804,7 +826,7 @@
                       },
                       {
                         "type": "SYMBOL",
-                        "name": "script"
+                        "name": "_script_fallthrough"
                       }
                     ]
                   },
@@ -828,8 +850,17 @@
                         "name": "_gap"
                       },
                       {
-                        "type": "SYMBOL",
-                        "name": "literal_list"
+                        "type": "CHOICE",
+                        "members": [
+                          {
+                            "type": "SYMBOL",
+                            "name": "_concat_word"
+                          },
+                          {
+                            "type": "SYMBOL",
+                            "name": "literal_list"
+                          }
+                        ]
                       },
                       {
                         "type": "SYMBOL",
@@ -837,7 +868,7 @@
                       },
                       {
                         "type": "SYMBOL",
-                        "name": "script"
+                        "name": "_script_fallthrough"
                       }
                     ]
                   }
@@ -4315,7 +4346,7 @@
         "value": -1,
         "content": {
           "type": "PATTERN",
-          "value": "[^\\s\\\\\\[\\]{}()$;\"]+|\\$|\""
+          "value": "[^\\s\\\\\\[\\]{}()$;\"]+|\\$|\"|\\]"
         }
       }
     },
