@@ -1511,27 +1511,35 @@
               ]
             },
             {
-              "type": "SEQ",
+              "type": "CHOICE",
               "members": [
                 {
-                  "type": "SYMBOL",
-                  "name": "argument"
+                  "type": "SEQ",
+                  "members": [
+                    {
+                      "type": "SYMBOL",
+                      "name": "argument"
+                    },
+                    {
+                      "type": "REPEAT",
+                      "content": {
+                        "type": "SEQ",
+                        "members": [
+                          {
+                            "type": "SYMBOL",
+                            "name": "_gapnlrepeat1"
+                          },
+                          {
+                            "type": "SYMBOL",
+                            "name": "argument"
+                          }
+                        ]
+                      }
+                    }
+                  ]
                 },
                 {
-                  "type": "REPEAT",
-                  "content": {
-                    "type": "SEQ",
-                    "members": [
-                      {
-                        "type": "SYMBOL",
-                        "name": "_gapnlrepeat1"
-                      },
-                      {
-                        "type": "SYMBOL",
-                        "name": "argument"
-                      }
-                    ]
-                  }
+                  "type": "BLANK"
                 }
               ]
             },
@@ -4385,6 +4393,9 @@
     ],
     [
       "command"
+    ],
+    [
+      "arguments"
     ],
     [
       "set"

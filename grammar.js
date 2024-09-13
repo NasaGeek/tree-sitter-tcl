@@ -266,6 +266,7 @@ module.exports = grammar({
     [$.foreach_clauses],
 
     [$.command],
+    [$.arguments],
     [$.set],
     [$.try],
     [$._word_list],
@@ -619,7 +620,7 @@ module.exports = grammar({
     ),
 
     arguments: $ => choice(
-      seqnl($, '{', intergappednl1($, $.argument), '}'),
+      seqnl($, '{', intergappednl($, $.argument), '}'),
       $._concat_word,
     ),
 

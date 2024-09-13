@@ -110,6 +110,7 @@ c \
 d
 } {}
 proc f {a {b} {b c} a"b a""} {}
+proc a {} {}
 
 --------------------------------------------------------------------------------
 
@@ -169,6 +170,10 @@ proc f {a {b} {b c} a"b a""} {}
         name: (raw_word))
       (argument
         name: (raw_word)))
+    body: (script))
+  (procedure
+    name: (simple_word)
+    arguments: (arguments)
     body: (script)))
 
 ================================================================================
