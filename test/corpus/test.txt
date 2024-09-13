@@ -22,6 +22,7 @@ Commands with strange barewords
 
 join , - -flag
 puts a" a"a a""a a"a"
+puts []"[] $a"
 
 --------------------------------------------------------------------------------
 
@@ -34,8 +35,37 @@ puts a" a"a a""a a"a"
   (command
     (simple_word)
     (simple_word)
+    (concat)
     (simple_word)
     (simple_word)
+    (concat)
+    (simple_word)
+    (concat)
+    (simple_word)
+    (simple_word)
+    (concat)
+    (simple_word)
+    (concat)
+    (simple_word)
+    (concat)
+    (simple_word)
+    (simple_word)
+    (concat)
+    (simple_word)
+    (concat)
+    (simple_word)
+    (concat)
+    (simple_word))
+  (command
+    (simple_word)
+    (command_substitution)
+    (concat)
+    (simple_word)
+    (concat)
+    (command_substitution)
+    (variable_substitution
+      (id))
+    (concat)
     (simple_word)))
 
 ================================================================================
@@ -740,6 +770,7 @@ try { some code
 } trap $p $l {
 } trap "[p] [p]" "$l $l" {
 } finally { done }
+try {} trap a "$b" {}
 
 --------------------------------------------------------------------------------
 
@@ -779,7 +810,14 @@ try { some code
     (finally
       (script
         (command
-          (simple_word))))))
+          (simple_word)))))
+  (try
+    (script)
+    (simple_word)
+    (literal_list
+      (variable_substitution
+        (id)))
+    (script)))
 
 ================================================================================
 For

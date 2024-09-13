@@ -906,15 +906,7 @@
       "required": false,
       "types": [
         {
-          "type": "array_name",
-          "named": true
-        },
-        {
           "type": "command_substitution",
-          "named": true
-        },
-        {
-          "type": "concat",
           "named": true
         },
         {
@@ -927,10 +919,6 @@
         },
         {
           "type": "literal_list",
-          "named": true
-        },
-        {
-          "type": "simple_word",
           "named": true
         },
         {

@@ -61,8 +61,7 @@ static bool is_simple_word(TSLexer *lexer, int32_t chr) {
             chr != '}' &&
             chr != '(' &&
             chr != ')' &&
-            chr != ';' &&
-            chr != '"');
+            chr != ';');
 }
 
 static bool is_tcl_whitespace(int32_t chr) {
@@ -207,12 +206,14 @@ bool tree_sitter_tcl_external_scanner_scan(void *payload, TSLexer *lexer,
     if (valid_symbols[CMDSUB_END]) {
         scanner->cmdsub_depth--;
         lexer->result_symbol = CMDSUB_END;
+        myprintf("cmdsub_end\n");
         return true;
     }
 
     if (valid_symbols[EXPR_END]) {
         scanner->expr_depth--;
         lexer->result_symbol = EXPR_END;
+        myprintf("expr_end\n");
         return true;
     }
 

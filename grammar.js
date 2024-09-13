@@ -732,7 +732,9 @@ module.exports = grammar({
           '\n',
           $._gap,
           // Substitution is permitted only at top level
-          $._concat_word,
+          $.variable_substitution,
+          $.command_substitution,
+          $.escape_sequence,
           alias($._nested_braced_list, $.literal_list),
           $.list_item
         )
@@ -796,7 +798,7 @@ module.exports = grammar({
 
     // I'd kind of like to remove () from the exclusion for matching array names,
     // but there are knock-on effects like degraded recognition of function calls in exprs
-    simple_word: _ => token(prec(-1, /[^\s\\\[\]{}()$;]+|\$|"/)),
+    simple_word: _ => token(prec(-1, /[^\s\\\[\]{}()$;"]+|\$|"/)),
 
     // Functions in exprs are actually slightly more restricted bare words (no
     // leading _ for arbitrary reasons: https://github.com/tcltk/tcl/blob/core-8-6-14/generic/tclCompExpr.c#L2063-L2065, sigh...)
