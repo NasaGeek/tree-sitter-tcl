@@ -1,5 +1,6 @@
 {
   "name": "tcl",
+  "word": "simple_word",
   "rules": {
     "source_file": {
       "type": "CHOICE",

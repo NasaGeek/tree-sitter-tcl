@@ -211,9 +211,9 @@ const floatLiteral = choice(infLiteral, nanLiteral, decimalFloatLiteral);
 module.exports = grammar({
   name: 'tcl',
 
-  // Amusingly, this actually breaks `expr {1 eq0}` by interpreting eq0
-  // as a simple word. Disabling this doesn't break any tests, so...
-  // word: $ => $.simple_word,
+  // Enabling this breaks `expr {1 eq0}` by interpreting eq0
+  // as a simple word, but disabling it breaks stuff like `foreachbutnotreally`
+  word: $ => $.simple_word,
 
   externals: $ => [
     // looks for if next token is alphanum, _, $, [, or \(not-whitespace).

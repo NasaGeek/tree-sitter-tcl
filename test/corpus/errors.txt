@@ -104,6 +104,13 @@ Parser deficiency: Too-broad recognition of unpack token
 # This isn't an unpack, just normal string
 puts {*}
 
+===
+Parser deficiency: Need spaces in exprs sometimes
+:error
+===
+# As wild as it is, Tcl supports this
+expr {$a eq0}
+
 --------------------------------------------------------------------------------
 
 ===

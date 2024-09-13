@@ -5,6 +5,7 @@ Commands
 echo "hello"
 
 set hi "heelo"
+foreachthing
 
 --------------------------------------------------------------------------------
 
@@ -14,7 +15,9 @@ set hi "heelo"
     (quoted_word))
   (set
     (simple_word)
-    (quoted_word)))
+    (quoted_word))
+  (command
+    (simple_word)))
 
 ================================================================================
 Commands with strange barewords
@@ -327,6 +330,8 @@ Command substitution
 ================================================================================
 
 echo [echo hello]
+echo [procisprefix]
+echo [tryit]
 
 --------------------------------------------------------------------------------
 
@@ -336,6 +341,16 @@ echo [echo hello]
     (command_substitution
       (command
         (simple_word)
+        (simple_word))))
+  (command
+    (simple_word)
+    (command_substitution
+      (command
+        (simple_word))))
+  (command
+    (simple_word)
+    (command_substitution
+      (command
         (simple_word)))))
 
 ================================================================================
@@ -627,7 +642,6 @@ expr { $arr(abc) eq [a ::ar(xyz)] }
 expr { func() eq -1 }
 expr { func(1, 2) }
 expr {$a >0}
-expr {$a eq0}
 expr {"str"eq"str"}
 expr { $arr}
 expr { spaceyfunc   ( "yes", [this], {works} ) }
@@ -700,12 +714,6 @@ expr { spaceyfunc   ( "yes", [this], {works} ) }
         (func_args
           (int_literal)
           (int_literal)))))
-  (expr_cmd
-    (expr
-      (binop_expr
-        (variable_substitution
-          (id))
-        (int_literal))))
   (expr_cmd
     (expr
       (binop_expr
