@@ -95,15 +95,14 @@ Parser deficiency: Words starting with not-"/{ aren't interpreted literally
 :error
 ===
 # Should parse as a single simple_word
-puts a"a"
----
+puts a{a}
 
 ===
-Parser deficiency: Words starting with not-"/{ aren't interpreted literally
+Parser deficiency: Too-broad recognition of unpack token
 :error
 ===
-# Should parse as a single simple_word
-puts a{a}
+# This isn't an unpack, just normal string
+puts {*}
 
 --------------------------------------------------------------------------------
 

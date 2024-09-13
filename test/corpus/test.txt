@@ -21,11 +21,18 @@ Commands with strange barewords
 ================================================================================
 
 join , - -flag
+puts a" a"a a""a a"a"
 
 --------------------------------------------------------------------------------
 
 (source_file
   (command
+    (simple_word)
+    (simple_word)
+    (simple_word)
+    (simple_word))
+  (command
+    (simple_word)
     (simple_word)
     (simple_word)
     (simple_word)

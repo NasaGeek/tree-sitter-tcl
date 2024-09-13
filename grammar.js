@@ -211,7 +211,9 @@ const floatLiteral = choice(infLiteral, nanLiteral, decimalFloatLiteral);
 module.exports = grammar({
   name: 'tcl',
 
-  word: $ => $.simple_word,
+  // Amusingly, this actually breaks `expr {1 eq0}` by interpreting eq0
+  // as a simple word. Disabling this doesn't break any tests, so...
+  // word: $ => $.simple_word,
 
   externals: $ => [
     // looks for if next token is alphanum, _, $, [, or \(not-whitespace).
@@ -510,9 +512,6 @@ module.exports = grammar({
     // All the stuff that can be mashed together without needing whitespace
     // delimiters. These are generally the constructs that undergo first-pass
     // evaluation.
-    // FIXME: This splits on stuff like a"a" or a{a} which should actually end
-    // up as 1 token (probably needs handling in the scanner). The word just
-    // can't start with " or {.
     _concat_word: $ => interleaved1($,
       choice(
         $.escape_sequence,
@@ -790,14 +789,14 @@ module.exports = grammar({
     command_substitution: $ => seq('[', $._cmdsub_start, optional($._script_body), ']', $._cmdsub_end),
 
     // lol Tcl you cray
-    bool_literal: _ => token(prec.dynamic(-2, /t(r(u(e)?)?)?|f(a(l(s(e)?)?)?)?|on|(of)f?|y(e(s)?)?|(n)o?/i)),
+    bool_literal: _ => token(/t(r(u(e)?)?)?|f(a(l(s(e)?)?)?)?|on|(of)f?|y(e(s)?)?|(n)o?/i),
 
-    int_literal: _ => token(prec.dynamic(-2, intLiteral)),
-    float_literal: _ => token(prec.dynamic(-2, floatLiteral)),
+    int_literal: _ => token(intLiteral),
+    float_literal: _ => token(floatLiteral),
 
     // I'd kind of like to remove () from the exclusion for matching array names,
     // but there are knock-on effects like degraded recognition of function calls in exprs
-    simple_word: _ => token(prec.dynamic(-1, /[^\s\\\[\]{}()$;"]+|\$/)),
+    simple_word: _ => token(prec(-1, /[^\s\\\[\]{}()$;]+|\$|"/)),
 
     // Functions in exprs are actually slightly more restricted bare words (no
     // leading _ for arbitrary reasons: https://github.com/tcltk/tcl/blob/core-8-6-14/generic/tclCompExpr.c#L2063-L2065, sigh...)
