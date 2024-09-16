@@ -401,7 +401,7 @@ module.exports = grammar({
       // and then `pattern` is the first case. Unless there's some precedence
       // magic that would work, I can only think of doing smarter parsing such
       // that the specific flags are recognized.
-      // $._inner_switch,
+      // intergapped1($, seqgap($, $._word, $._script_fallthrough)),
 
       // We were previously a bit on the strict side (honoring the actual Tcl
       // behavior) by disallowing empty or whitespace-filled {}. Unfortunately
