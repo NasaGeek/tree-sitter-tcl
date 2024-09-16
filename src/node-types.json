@@ -81,7 +81,7 @@
             "named": false
           },
           {
-            "type": "array_index_word",
+            "type": "array_name",
             "named": true
           },
           {
@@ -97,6 +97,10 @@
             "named": true
           },
           {
+            "type": "simple_word",
+            "named": true
+          },
+          {
             "type": "variable_substitution",
             "named": true
           }
@@ -105,7 +109,7 @@
     },
     "children": {
       "multiple": false,
-      "required": true,
+      "required": false,
       "types": [
         {
           "type": "simple_word",
@@ -131,19 +135,15 @@
             "named": false
           },
           {
-            "type": "array_index_word",
-            "named": true
-          },
-          {
             "type": "command_substitution",
             "named": true
           },
           {
-            "type": "concat",
+            "type": "escape_sequence",
             "named": true
           },
           {
-            "type": "escape_sequence",
+            "type": "simple_word",
             "named": true
           },
           {
@@ -155,7 +155,7 @@
     },
     "children": {
       "multiple": false,
-      "required": true,
+      "required": false,
       "types": [
         {
           "type": "id",
@@ -1697,10 +1697,6 @@
   {
     "type": "^",
     "named": false
-  },
-  {
-    "type": "array_index_word",
-    "named": true
   },
   {
     "type": "bool_literal",

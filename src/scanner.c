@@ -57,9 +57,10 @@ static bool is_simple_word(TSLexer *lexer, Scanner *scanner) {
             chr != '\\' &&
             chr != '[' &&
             (chr != ']' || scanner->cmdsub_depth == 0) && // can only concat ] outside of cmdsub
-            chr != '$' &&
             chr != '{' &&
             chr != '}' &&
+            // need to continue excluding ( and ) so we recognize the starts
+            // of array indexing
             chr != '(' &&
             chr != ')' &&
             chr != ';');

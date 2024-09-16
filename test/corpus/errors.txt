@@ -36,52 +36,27 @@ set arr()) 0
 ---
 
 ===
-Parser deficiency: Poor array name parsing, trailing $
-:error
-===
-# Tcl treats $ at the end as a lteral char
-set arr($) 0
----
-
-===
-Parser deficiency: Poor array name variable expansion parsing, trailing $
-:error
-===
-# Tcl treats $ at the end as a lteral char
-set $arr($)
----
-
-===
-Parser deficiency: Poor array name parsing, empty name
-:error
-===
-# Empty array name is valid
-set (a) 0
----
-
-===
-Parser deficiency: Poor array name variable expansion parsing, empty name
-:error
-===
-# Empty array name is valid
-puts $(a)
----
-
-===
-Parser deficiency: Poor array name variable expansion parsing, leading (
-:error
-===
-# Broke this for the sake of nested array acceses
-set $arr(()
----
-
-===
 Parser deficiency: Poor array name parsing, leading (
 :error
 ===
 # Broke this for the sake of nested array acceses
 set arr(() 0
 ---
+
+===
+Parser deficiency: Can't concat )
+:error
+===
+puts $a(b))
+---
+
+===
+Parser deficiency: Can't concat (
+:error
+===
+puts $a(b)(a)
+---
+
 
 ===
 Parser deficiency: Full unbraced expressions for while/for/if
@@ -110,6 +85,18 @@ Parser deficiency: Need spaces in exprs sometimes
 ===
 # As wild as it is, Tcl supports this
 expr {$a eq0}
+
+===
+Parser deficiency: { as array index
+:error
+===
+set a({) 0
+
+===
+Parser deficiency: } as array index
+:error
+===
+set a(}) 0
 
 --------------------------------------------------------------------------------
 

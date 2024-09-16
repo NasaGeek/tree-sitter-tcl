@@ -435,13 +435,12 @@ Array set
 
 set arr(my) 0
 set arr(a,b) 0
-set arr(}) 0
-set arr({) 0
 set arr(]) 0
 set arr() 0
 set arr(") 0
 set arr(${f}_f) 0
 set arr($arr(a)) 0
+set (a) 0
 
 --------------------------------------------------------------------------------
 
@@ -449,27 +448,17 @@ set arr($arr(a)) 0
   (set
     (array_name
       (simple_word)
-      (array_index_word))
+      (simple_word))
     (simple_word))
   (set
     (array_name
       (simple_word)
-      (array_index_word))
+      (simple_word))
     (simple_word))
   (set
     (array_name
       (simple_word)
-      (array_index_word))
-    (simple_word))
-  (set
-    (array_name
-      (simple_word)
-      (array_index_word))
-    (simple_word))
-  (set
-    (array_name
-      (simple_word)
-      (array_index_word))
+      (simple_word))
     (simple_word))
   (set
     (array_name
@@ -478,14 +467,14 @@ set arr($arr(a)) 0
   (set
     (array_name
       (simple_word)
-      (array_index_word))
+      (simple_word))
     (simple_word))
   (set
     (array_name
       (simple_word)
       (variable_substitution)
       (concat)
-      (array_index_word))
+      (simple_word))
     (simple_word))
   (set
     (array_name
@@ -493,7 +482,11 @@ set arr($arr(a)) 0
       (variable_substitution
         (array_ref
           (id)
-          (array_index_word))))
+          (simple_word))))
+    (simple_word))
+  (set
+    (array_name
+      (simple_word))
     (simple_word)))
 
 ================================================================================
@@ -505,13 +498,20 @@ puts $a($a$a)
 # The comma doesn't terminate the word as it would in the $a,b case
 puts $a(a,b)
 puts $j($a,$b)
-set $arr(})
-set $arr({)
-set $arr(])
-set $arr()
-set $arr(")
-set $arr(${f}_f)
-set $arr($arr(a))
+puts $arr(})
+puts $arr({)
+puts $arr(])
+puts $arr()
+puts $arr(")
+puts $arr(${f}_f)
+puts $arr($arr(a))
+# spaces and nesting
+puts $a($a(1 2) 2)
+# bare $ interpreted literally
+puts $a($)
+# empty array name
+puts $(a)
+puts $a(a)$
 
 --------------------------------------------------------------------------------
 
@@ -521,7 +521,7 @@ set $arr($arr(a))
     (variable_substitution
       (array_ref
         (id)
-        (array_index_word))))
+        (simple_word))))
   (command
     (simple_word)
     (variable_substitution
@@ -529,7 +529,6 @@ set $arr($arr(a))
         (id)
         (variable_substitution
           (id))
-        (concat)
         (variable_substitution
           (id)))))
   (comment)
@@ -538,7 +537,7 @@ set $arr($arr(a))
     (variable_substitution
       (array_ref
         (id)
-        (array_index_word))))
+        (simple_word))))
   (command
     (simple_word)
     (variable_substitution
@@ -546,50 +545,86 @@ set $arr($arr(a))
         (id)
         (variable_substitution
           (id))
-        (concat)
-        (array_index_word)
-        (concat)
+        (simple_word)
         (variable_substitution
           (id)))))
-  (set
+  (command
+    (simple_word)
     (variable_substitution
       (array_ref
         (id)
-        (array_index_word))))
-  (set
+        (simple_word))))
+  (command
+    (simple_word)
     (variable_substitution
       (array_ref
         (id)
-        (array_index_word))))
-  (set
+        (simple_word))))
+  (command
+    (simple_word)
     (variable_substitution
       (array_ref
         (id)
-        (array_index_word))))
-  (set
+        (simple_word))))
+  (command
+    (simple_word)
     (variable_substitution
       (array_ref
         (id))))
-  (set
+  (command
+    (simple_word)
     (variable_substitution
       (array_ref
         (id)
-        (array_index_word))))
-  (set
+        (simple_word))))
+  (command
+    (simple_word)
     (variable_substitution
       (array_ref
         (id)
         (variable_substitution)
-        (concat)
-        (array_index_word))))
-  (set
+        (simple_word))))
+  (command
+    (simple_word)
     (variable_substitution
       (array_ref
         (id)
         (variable_substitution
           (array_ref
             (id)
-            (array_index_word)))))))
+            (simple_word))))))
+  (comment)
+  (command
+    (simple_word)
+    (variable_substitution
+      (array_ref
+        (id)
+        (variable_substitution
+          (array_ref
+            (id)
+            (simple_word)))
+        (simple_word))))
+  (comment)
+  (command
+    (simple_word)
+    (variable_substitution
+      (array_ref
+        (id)
+        (simple_word))))
+  (comment)
+  (command
+    (simple_word)
+    (variable_substitution
+      (array_ref
+        (simple_word))))
+  (command
+    (simple_word)
+    (variable_substitution
+      (array_ref
+        (id)
+        (simple_word)))
+    (concat)
+    (simple_word)))
 
 ================================================================================
 Namespaced vars
@@ -631,7 +666,7 @@ lassign [list 1] ::ns::var(key)
         (simple_word)))
     (array_name
       (simple_word)
-      (array_index_word))))
+      (simple_word))))
 
 ================================================================================
 Exprs
@@ -698,13 +733,13 @@ expr { spaceyfunc   ( "yes", [this], {works} ) }
         (variable_substitution
           (array_ref
             (id)
-            (array_index_word)))
+            (simple_word)))
         (command_substitution
           (command
             (simple_word)
             (array_name
               (simple_word)
-              (array_index_word)))))))
+              (simple_word)))))))
   (expr_cmd
     (expr
       (binop_expr

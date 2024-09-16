@@ -530,14 +530,13 @@ module.exports = grammar({
       $.concat,
     ),
 
-    _concat_word_array_index: $ => interleaved1($,
+    _concat_word_array_index: $ => repeat1(
       choice(
         $.escape_sequence,
         $.command_substitution,
         $.variable_substitution,
-        $.array_index_word,
+        alias($.array_reference_index_word, $.simple_word),
       ),
-      $.concat
     ),
 
     // bare words are a no-no inside of expr's, but quoted is okay. The rules
@@ -570,32 +569,22 @@ module.exports = grammar({
       // $._ns_delim,
     ),
 
-    // token.immediate('(') breaks usage of () in bare words (maybe that's okay?)
-    // e.g. `puts (string)` should work fine, treat (string) as a string.
-    // maybe it makes sense to include () in simple_word or parse arrays in
-    // scanner.c?
-    // We want token.immediate so abc (xyz) isn't treated as an array, though.
-
-    // An array index can contain almost any non-whitespace.
-    // Unfortunately since whitespace is an extra we still allow it incorrectly.
-    // Just another thing for the scanner to handle :)
-    // Also arr(...$) is treated as a literal $ by Tcl whereas we throw an error
     _array_index: $ => seq(
       token.immediate('('),
-      optional($._concat_word_array_index),
+      optional($._concat_word),
       token.immediate(')'),
     ),
 
-    // cheating here a bit by restricting what an array name can be. If we want
-    // stuff like arr(a)(b) or (a) (yes the array name can be empty) to work
-    // then will probably need to implement it in the scanner (along with
-    // removing the () exclusion from simple_word).
-    // Also might have to remove _array_index's token.immediate
-    array_name: $ => seq($.simple_word, field('index', $._array_index)),
+    _array_reference_index: $ => seq(
+      token.immediate('('),
+      optional($._concat_word_array_index),
+      token(')'),
+    ),
 
-    // Improving this with optional($.id) means we lose the node altogether which
-    // I don't like (can't we have an empty node instead?)
-    array_ref: $ => seq($.id, field('index', $._array_index)),
+    array_name: $ => seq(optional($.simple_word), field('index', $._array_index)),
+
+    // TODO: preserve empty id node (does it just need to be a field?
+    array_ref: $ => seq(optional($.id), field('index', $._array_reference_index)),
 
     variable_substitution: $ => seq(
       $._varsub_prefix,
@@ -805,17 +794,13 @@ module.exports = grammar({
 
     // I'd kind of like to remove () from the exclusion for matching array names,
     // but there are knock-on effects like degraded recognition of function calls in exprs
-    simple_word: _ => token(prec(-1, /[^\s\\\[\]{}()$;"]+|\$|"|\]/)),
+    simple_word: _ => token(prec(-1, /[^\s\\\[\]{}()$;"]+|\$|"|\]|\(|\)/)),
 
     // Functions in exprs are actually slightly more restricted bare words (no
     // leading _ for arbitrary reasons: https://github.com/tcltk/tcl/blob/core-8-6-14/generic/tclCompExpr.c#L2063-L2065, sigh...)
     expr_function_name: _ => token(/[A-Za-z0-9][A-Za-z0-9_]*/),
 
-    // True barewords matching. Doesn't match $/[ because this is expected to be
-    // used alongside _concat_word. We also exclude ) as a hack because otherwise
-    // we can't recognize the end of an array reference.
-    // And as yet another hack we have ( to allow for nested array accesses.
-    array_index_word: _ => token(/[^\s\\\[$;()]+/),
+    array_reference_index_word: _ => token(/[^\\\[$()]+|\$|\(/),
   }
 
   });

@@ -1150,63 +1150,33 @@
       ]
     },
     "_concat_word_array_index": {
-      "type": "SEQ",
-      "members": [
-        {
-          "type": "CHOICE",
-          "members": [
-            {
+      "type": "REPEAT1",
+      "content": {
+        "type": "CHOICE",
+        "members": [
+          {
+            "type": "SYMBOL",
+            "name": "escape_sequence"
+          },
+          {
+            "type": "SYMBOL",
+            "name": "command_substitution"
+          },
+          {
+            "type": "SYMBOL",
+            "name": "variable_substitution"
+          },
+          {
+            "type": "ALIAS",
+            "content": {
               "type": "SYMBOL",
-              "name": "escape_sequence"
+              "name": "array_reference_index_word"
             },
-            {
-              "type": "SYMBOL",
-              "name": "command_substitution"
-            },
-            {
-              "type": "SYMBOL",
-              "name": "variable_substitution"
-            },
-            {
-              "type": "SYMBOL",
-              "name": "array_index_word"
-            }
-          ]
-        },
-        {
-          "type": "REPEAT",
-          "content": {
-            "type": "SEQ",
-            "members": [
-              {
-                "type": "SYMBOL",
-                "name": "concat"
-              },
-              {
-                "type": "CHOICE",
-                "members": [
-                  {
-                    "type": "SYMBOL",
-                    "name": "escape_sequence"
-                  },
-                  {
-                    "type": "SYMBOL",
-                    "name": "command_substitution"
-                  },
-                  {
-                    "type": "SYMBOL",
-                    "name": "variable_substitution"
-                  },
-                  {
-                    "type": "SYMBOL",
-                    "name": "array_index_word"
-                  }
-                ]
-              }
-            ]
+            "named": true,
+            "value": "simple_word"
           }
-        }
-      ]
+        ]
+      }
     },
     "_concat_word_expr": {
       "type": "REPEAT1",
@@ -1305,7 +1275,7 @@
           "members": [
             {
               "type": "SYMBOL",
-              "name": "_concat_word_array_index"
+              "name": "_concat_word"
             },
             {
               "type": "BLANK"
@@ -1321,12 +1291,51 @@
         }
       ]
     },
+    "_array_reference_index": {
+      "type": "SEQ",
+      "members": [
+        {
+          "type": "IMMEDIATE_TOKEN",
+          "content": {
+            "type": "STRING",
+            "value": "("
+          }
+        },
+        {
+          "type": "CHOICE",
+          "members": [
+            {
+              "type": "SYMBOL",
+              "name": "_concat_word_array_index"
+            },
+            {
+              "type": "BLANK"
+            }
+          ]
+        },
+        {
+          "type": "TOKEN",
+          "content": {
+            "type": "STRING",
+            "value": ")"
+          }
+        }
+      ]
+    },
     "array_name": {
       "type": "SEQ",
       "members": [
         {
-          "type": "SYMBOL",
-          "name": "simple_word"
+          "type": "CHOICE",
+          "members": [
+            {
+              "type": "SYMBOL",
+              "name": "simple_word"
+            },
+            {
+              "type": "BLANK"
+            }
+          ]
         },
         {
           "type": "FIELD",
@@ -1342,15 +1351,23 @@
       "type": "SEQ",
       "members": [
         {
-          "type": "SYMBOL",
-          "name": "id"
+          "type": "CHOICE",
+          "members": [
+            {
+              "type": "SYMBOL",
+              "name": "id"
+            },
+            {
+              "type": "BLANK"
+            }
+          ]
         },
         {
           "type": "FIELD",
           "name": "index",
           "content": {
             "type": "SYMBOL",
-            "name": "_array_index"
+            "name": "_array_reference_index"
           }
         }
       ]
@@ -4355,7 +4372,7 @@
         "value": -1,
         "content": {
           "type": "PATTERN",
-          "value": "[^\\s\\\\\\[\\]{}()$;\"]+|\\$|\"|\\]"
+          "value": "[^\\s\\\\\\[\\]{}()$;\"]+|\\$|\"|\\]|\\(|\\)"
         }
       }
     },
@@ -4366,11 +4383,11 @@
         "value": "[A-Za-z0-9][A-Za-z0-9_]*"
       }
     },
-    "array_index_word": {
+    "array_reference_index_word": {
       "type": "TOKEN",
       "content": {
         "type": "PATTERN",
-        "value": "[^\\s\\\\\\[$;()]+"
+        "value": "[^\\\\\\[$()]+|\\$|\\("
       }
     }
   },
