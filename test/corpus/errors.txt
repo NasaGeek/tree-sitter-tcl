@@ -1,4 +1,21 @@
 ===
+Escape blowup
+:error
+===
+# This overloads tree-sitter with choices and errors out. For some reason it's
+# never able to reduce down to just one version, possibly due to all the
+# conflicts I've defined.
+c [l \
+]
+c [l \
+]
+c [l \
+]
+c [l \
+]
+---
+
+===
 Parser deficiency: variable sub empty name
 :error
 ===
