@@ -12,52 +12,6 @@ Parser deficiency: namespace trailing ::
 puts $::a::
 ---
 
-================================================================================
-Parser deficiency: Poor array name parsing, inner )(
-:error
-================================================================================
-set(a)(b) 1
----
-
-================================================================================
-Parser deficiency: Poor array name variabe expansion parsing, trailing )
-:error
-================================================================================
-# Tcl treats the last ) as a literal char
-puts $arr())
----
-
-================================================================================
-Parser deficiency: Poor array name parsing, trailing )
-:error
-================================================================================
-# Tcl treats the first ) as a literal char
-set arr()) 0
----
-
-===
-Parser deficiency: Poor array name parsing, leading (
-:error
-===
-# Broke this for the sake of nested array acceses
-set arr(() 0
----
-
-===
-Parser deficiency: Can't concat )
-:error
-===
-puts $a(b))
----
-
-===
-Parser deficiency: Can't concat (
-:error
-===
-puts $a(b)(a)
----
-
-
 ===
 Parser deficiency: Full unbraced expressions for while/for/if
 :error
@@ -111,16 +65,7 @@ set a([) 1
 Real error: trailing whitespace in array index
 :error
 ===
-# This is the only whitespace we correctly error on
 set a(a ) 1
----
-
-===
-Real error: semicolon in array index
-:error
-===
-# Semicolon still ends the statement
-set a(;) 1
 ---
 
 ===

@@ -16,6 +16,8 @@ enum TokenType {
     CMDSUB_START,
     CMDSUB_END,
     NEWLINE,
+    ARRAY_REFERENCE_INDEX_START,
+    ARRAY_REFERENCE_INDEX_END,
     // Not used in the grammar, but used in the external scanner to check for error state.
     // This relies on the tree-sitter behavior that when an error is encountered the external
     // scanner is called with all symbols marked as valid.
@@ -43,6 +45,7 @@ static bool myprintf(const char *format, ...) {
 typedef struct {
     int8_t expr_depth;
     int8_t cmdsub_depth;
+    int8_t array_ref_index_depth;
 } Scanner;
 
 static bool is_bare_word(int32_t chr) {
@@ -61,8 +64,8 @@ static bool is_simple_word(TSLexer *lexer, Scanner *scanner) {
             chr != '}' &&
             // need to continue excluding ( and ) so we recognize the starts
             // of array indexing
-            chr != '(' &&
-            chr != ')' &&
+            (chr != '(' || scanner->array_ref_index_depth == 0) &&
+            (chr != ')' || scanner->array_ref_index_depth == 0) &&
             chr != ';');
 }
 
@@ -173,7 +176,7 @@ static bool is_command_end(TSLexer *lexer, Scanner *scanner) {
 
 bool tree_sitter_tcl_external_scanner_scan(void *payload, TSLexer *lexer,
         const bool *valid_symbols) {
-    myprintf("Column: %d, lookahead: '%c', symbols: %d %d %d %d %d %d %d %d %d %d %d\n",
+    myprintf("Column: %d, lookahead: '%c', symbols: %d %d %d %d %d %d %d %d %d %d %d %d %d\n",
             lexer->get_column(lexer),
             lexer->lookahead,
             valid_symbols[CONCAT],
@@ -186,6 +189,8 @@ bool tree_sitter_tcl_external_scanner_scan(void *payload, TSLexer *lexer,
             valid_symbols[CMDSUB_START],
             valid_symbols[CMDSUB_END],
             valid_symbols[NEWLINE],
+            valid_symbols[ARRAY_REFERENCE_INDEX_START],
+            valid_symbols[ARRAY_REFERENCE_INDEX_END],
             valid_symbols[ERROR]);
 
     if (valid_symbols[ERROR]) {
@@ -193,6 +198,13 @@ bool tree_sitter_tcl_external_scanner_scan(void *payload, TSLexer *lexer,
     }
 
     Scanner *scanner = (Scanner*) payload;
+
+    if (valid_symbols[ARRAY_REFERENCE_INDEX_START] && lexer->lookahead == '(') {
+        scanner->array_ref_index_depth++;
+        lexer->result_symbol = ARRAY_REFERENCE_INDEX_START;
+        myprintf("array_ref_index_start\n");
+        return true;
+    }
 
     if (valid_symbols[EXPR_START]) {
         scanner->expr_depth++;
@@ -205,6 +217,13 @@ bool tree_sitter_tcl_external_scanner_scan(void *payload, TSLexer *lexer,
         scanner->cmdsub_depth++;
         lexer->result_symbol = CMDSUB_START;
         myprintf("cmdsub_start\n");
+        return true;
+    }
+
+    if (valid_symbols[ARRAY_REFERENCE_INDEX_END]) {
+        scanner->array_ref_index_depth--;
+        lexer->result_symbol = ARRAY_REFERENCE_INDEX_END;
+        myprintf("array_ref_index_end\n");
         return true;
     }
 
@@ -383,6 +402,7 @@ unsigned tree_sitter_tcl_external_scanner_serialize(void *payload, char *buffer)
     size_t size = 0;
     buffer[size++] = (char)scanner->expr_depth;
     buffer[size++] = (char)scanner->cmdsub_depth;
+    buffer[size++] = (char)scanner->array_ref_index_depth;
 
     return size;
 }
@@ -395,6 +415,7 @@ void tree_sitter_tcl_external_scanner_deserialize(void *payload, const char *buf
     if (length > 0) {
         scanner->expr_depth = (int8_t) buffer[size++];
         scanner->cmdsub_depth = (int8_t) buffer[size++];
+        scanner->array_ref_index_depth = (int8_t) buffer[size++];
     }
 }
 

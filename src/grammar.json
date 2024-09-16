@@ -1103,10 +1103,6 @@
             {
               "type": "SYMBOL",
               "name": "simple_word"
-            },
-            {
-              "type": "SYMBOL",
-              "name": "array_name"
             }
           ]
         },
@@ -1137,10 +1133,6 @@
                   {
                     "type": "SYMBOL",
                     "name": "simple_word"
-                  },
-                  {
-                    "type": "SYMBOL",
-                    "name": "array_name"
                   }
                 ]
               }
@@ -1295,6 +1287,10 @@
       "type": "SEQ",
       "members": [
         {
+          "type": "SYMBOL",
+          "name": "_array_reference_index_start"
+        },
+        {
           "type": "IMMEDIATE_TOKEN",
           "content": {
             "type": "STRING",
@@ -1319,6 +1315,10 @@
             "type": "STRING",
             "value": ")"
           }
+        },
+        {
+          "type": "SYMBOL",
+          "name": "_array_reference_index_end"
         }
       ]
     },
@@ -4502,6 +4502,14 @@
     {
       "type": "SYMBOL",
       "name": "_nl"
+    },
+    {
+      "type": "SYMBOL",
+      "name": "_array_reference_index_start"
+    },
+    {
+      "type": "SYMBOL",
+      "name": "_array_reference_index_end"
     },
     {
       "type": "SYMBOL",

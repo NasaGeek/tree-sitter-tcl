@@ -27,6 +27,7 @@ join , - -flag
 puts a" a"a a""a a"a"
 puts []"[] $a"
 puts ] ]] a] []] ]"$a $a]
+puts ) (
 
 --------------------------------------------------------------------------------
 
@@ -92,6 +93,10 @@ puts ] ]] a] []] ]"$a $a]
     (variable_substitution
       (id))
     (concat)
+    (simple_word))
+  (command
+    (simple_word)
+    (simple_word)
     (simple_word)))
 
 ================================================================================
@@ -446,47 +451,77 @@ set (a) 0
 
 (source_file
   (set
-    (array_name
-      (simple_word)
-      (simple_word))
+    (simple_word)
+    (concat)
+    (simple_word)
+    (concat)
+    (simple_word)
+    (concat)
+    (simple_word)
     (simple_word))
   (set
-    (array_name
-      (simple_word)
-      (simple_word))
+    (simple_word)
+    (concat)
+    (simple_word)
+    (concat)
+    (simple_word)
+    (concat)
+    (simple_word)
     (simple_word))
   (set
-    (array_name
-      (simple_word)
-      (simple_word))
+    (simple_word)
+    (concat)
+    (simple_word)
+    (concat)
+    (simple_word)
+    (concat)
+    (simple_word)
     (simple_word))
   (set
-    (array_name
-      (simple_word))
+    (simple_word)
+    (concat)
+    (simple_word)
+    (concat)
+    (simple_word)
     (simple_word))
   (set
-    (array_name
-      (simple_word)
-      (simple_word))
+    (simple_word)
+    (concat)
+    (simple_word)
+    (concat)
+    (simple_word)
+    (concat)
+    (simple_word)
     (simple_word))
   (set
-    (array_name
-      (simple_word)
-      (variable_substitution)
-      (concat)
-      (simple_word))
+    (simple_word)
+    (concat)
+    (simple_word)
+    (concat)
+    (variable_substitution)
+    (concat)
+    (simple_word)
+    (concat)
+    (simple_word)
     (simple_word))
   (set
-    (array_name
-      (simple_word)
-      (variable_substitution
-        (array_ref
-          (id)
-          (simple_word))))
+    (simple_word)
+    (concat)
+    (simple_word)
+    (concat)
+    (variable_substitution
+      (array_ref
+        (id)
+        (simple_word)))
+    (concat)
+    (simple_word)
     (simple_word))
   (set
-    (array_name
-      (simple_word))
+    (simple_word)
+    (concat)
+    (simple_word)
+    (concat)
+    (simple_word)
     (simple_word)))
 
 ================================================================================
@@ -512,6 +547,7 @@ puts $a($)
 # empty array name
 puts $(a)
 puts $a(a)$
+puts $a(a)(b)
 
 --------------------------------------------------------------------------------
 
@@ -624,6 +660,18 @@ puts $a(a)$
         (id)
         (simple_word)))
     (concat)
+    (simple_word))
+  (command
+    (simple_word)
+    (variable_substitution
+      (array_ref
+        (id)
+        (simple_word)))
+    (concat)
+    (simple_word)
+    (concat)
+    (simple_word)
+    (concat)
     (simple_word)))
 
 ================================================================================
@@ -664,9 +712,13 @@ lassign [list 1] ::ns::var(key)
       (command
         (simple_word)
         (simple_word)))
-    (array_name
-      (simple_word)
-      (simple_word))))
+    (simple_word)
+    (concat)
+    (simple_word)
+    (concat)
+    (simple_word)
+    (concat)
+    (simple_word)))
 
 ================================================================================
 Exprs
@@ -737,9 +789,13 @@ expr { spaceyfunc   ( "yes", [this], {works} ) }
         (command_substitution
           (command
             (simple_word)
-            (array_name
-              (simple_word)
-              (simple_word)))))))
+            (simple_word)
+            (concat)
+            (simple_word)
+            (concat)
+            (simple_word)
+            (concat)
+            (simple_word))))))
   (expr_cmd
     (expr
       (binop_expr

@@ -38,10 +38,6 @@
           "named": true
         },
         {
-          "type": "array_name",
-          "named": true
-        },
-        {
           "type": "command_substitution",
           "named": true
         },
@@ -59,60 +55,6 @@
         },
         {
           "type": "variable_substitution",
-          "named": true
-        }
-      ]
-    }
-  },
-  {
-    "type": "array_name",
-    "named": true,
-    "fields": {
-      "index": {
-        "multiple": true,
-        "required": true,
-        "types": [
-          {
-            "type": "(",
-            "named": false
-          },
-          {
-            "type": ")",
-            "named": false
-          },
-          {
-            "type": "array_name",
-            "named": true
-          },
-          {
-            "type": "command_substitution",
-            "named": true
-          },
-          {
-            "type": "concat",
-            "named": true
-          },
-          {
-            "type": "escape_sequence",
-            "named": true
-          },
-          {
-            "type": "simple_word",
-            "named": true
-          },
-          {
-            "type": "variable_substitution",
-            "named": true
-          }
-        ]
-      }
-    },
-    "children": {
-      "multiple": false,
-      "required": false,
-      "types": [
-        {
-          "type": "simple_word",
           "named": true
         }
       ]
@@ -172,10 +114,6 @@
       "multiple": true,
       "required": true,
       "types": [
-        {
-          "type": "array_name",
-          "named": true
-        },
         {
           "type": "binop_expr",
           "named": true
@@ -253,10 +191,6 @@
       "required": true,
       "types": [
         {
-          "type": "array_name",
-          "named": true
-        },
-        {
           "type": "braced_word",
           "named": true
         },
@@ -304,10 +238,6 @@
         "required": false,
         "types": [
           {
-            "type": "array_name",
-            "named": true
-          },
-          {
             "type": "braced_word",
             "named": true
           },
@@ -349,10 +279,6 @@
         "multiple": true,
         "required": true,
         "types": [
-          {
-            "type": "array_name",
-            "named": true
-          },
           {
             "type": "braced_word",
             "named": true
@@ -599,10 +525,6 @@
       "required": false,
       "types": [
         {
-          "type": "array_name",
-          "named": true
-        },
-        {
           "type": "braced_word",
           "named": true
         },
@@ -702,10 +624,6 @@
       "multiple": true,
       "required": true,
       "types": [
-        {
-          "type": "array_name",
-          "named": true
-        },
         {
           "type": "braced_word",
           "named": true
@@ -854,10 +772,6 @@
       "required": false,
       "types": [
         {
-          "type": "array_name",
-          "named": true
-        },
-        {
           "type": "braced_word",
           "named": true
         },
@@ -937,10 +851,6 @@
       "required": false,
       "types": [
         {
-          "type": "array_name",
-          "named": true
-        },
-        {
           "type": "braced_word",
           "named": true
         },
@@ -1007,10 +917,6 @@
         "multiple": true,
         "required": true,
         "types": [
-          {
-            "type": "array_name",
-            "named": true
-          },
           {
             "type": "braced_word",
             "named": true
@@ -1093,10 +999,6 @@
       "multiple": true,
       "required": false,
       "types": [
-        {
-          "type": "array_name",
-          "named": true
-        },
         {
           "type": "catch",
           "named": true
@@ -1184,10 +1086,6 @@
       "multiple": true,
       "required": true,
       "types": [
-        {
-          "type": "array_name",
-          "named": true
-        },
         {
           "type": "braced_word",
           "named": true
@@ -1298,10 +1196,6 @@
         "multiple": true,
         "required": true,
         "types": [
-          {
-            "type": "array_name",
-            "named": true
-          },
           {
             "type": "braced_word",
             "named": true
@@ -1434,10 +1328,6 @@
       "multiple": true,
       "required": true,
       "types": [
-        {
-          "type": "array_name",
-          "named": true
-        },
         {
           "type": "braced_word",
           "named": true

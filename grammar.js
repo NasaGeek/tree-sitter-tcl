@@ -233,6 +233,8 @@ module.exports = grammar({
     $._cmdsub_start,
     $._cmdsub_end,
     $._nl,
+    $._array_reference_index_start,
+    $._array_reference_index_end,
     // Not used in the grammar, but used in the external scanner to check for error state.
     // This relies on the tree-sitter behavior that when an error is encountered the external
     // scanner is called with all symobls marked as valid.
@@ -525,7 +527,7 @@ module.exports = grammar({
         $.command_substitution,
         $.variable_substitution,
         $.simple_word,
-        $.array_name,
+        // $.array_name,
       ),
       $.concat,
     ),
@@ -576,9 +578,11 @@ module.exports = grammar({
     ),
 
     _array_reference_index: $ => seq(
+      $._array_reference_index_start,
       token.immediate('('),
       optional($._concat_word_array_index),
       token(')'),
+      $._array_reference_index_end,
     ),
 
     array_name: $ => seq(optional($.simple_word), field('index', $._array_index)),
