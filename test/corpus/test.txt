@@ -1019,6 +1019,14 @@ switch j {
     }
 }
 
+# Another case for not turning flag parsing back on for switches
+switch f p {
+    k {
+         1 2 3 4 5 6 7 8 9 10
+    }
+}
+
+
 
 --------------------------------------------------------------------------------
 
@@ -1064,6 +1072,24 @@ switch j {
       (raw_word)
       (script
         (command
+          (simple_word)
+          (simple_word)
+          (simple_word)
+          (simple_word)
+          (simple_word)
+          (simple_word)
+          (simple_word)
+          (simple_word)
+          (simple_word)))))
+  (comment)
+  (switch
+    (simple_word)
+    (simple_word)
+    (switch_body
+      (raw_word)
+      (script
+        (command
+          (simple_word)
           (simple_word)
           (simple_word)
           (simple_word)
