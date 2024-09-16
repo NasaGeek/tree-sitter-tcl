@@ -71,11 +71,13 @@ const expr_seq = (seqfn, suffix) => {
       alias($[binop_expr], $.binop_expr),
       alias($[ternary_expr], $.ternary_expr),
       alias($[func_call], $.func_call),
+      $.command_substitution,
+      $.quoted_word,
+      $.variable_substitution,
       $.braced_word,
       $.int_literal,
       $.float_literal,
       $.bool_literal,
-      $._concat_word_expr,
     ),
 
     [func_call]: $ => seqfn($,
@@ -112,8 +114,8 @@ const expr_seq = (seqfn, suffix) => {
       prec.left(PREC.equal_string, seqfn($, $[_expr], "eq", $[_expr])),
       prec.left(PREC.equal_string, seqfn($, $[_expr], "ne", $[_expr])),
 
-      prec.left(PREC.contain,      seqfn($, $[_expr], "in", $._word)),
-      prec.left(PREC.contain,      seqfn($, $[_expr], "ni", $._word)),
+      prec.left(PREC.contain,      seqfn($, $[_expr], "in", $[_expr])),
+      prec.left(PREC.contain,      seqfn($, $[_expr], "ni", $[_expr])),
 
       prec.left(PREC.and_bit,      seqfn($, $[_expr], "&", $[_expr])),
       prec.left(PREC.xor_bit,      seqfn($, $[_expr], "^", $[_expr])),
@@ -538,22 +540,6 @@ module.exports = grammar({
         $.command_substitution,
         $.variable_substitution,
         alias($.array_reference_index_word, $.simple_word),
-      ),
-    ),
-
-    // bare words are a no-no inside of expr's, but quoted is okay. The rules
-    // in expr's are generally much looser, too, meaning we don't need the
-    // concat check.
-    // Actually, turns out expr substitution rules are their own flavor of
-    // wacky, so this will need some reworking (e.g. expr {[][]} and expr {$a$a}
-    // are not allowed). It's probably the case that they can't be repeated
-    // as such and must each be their own operand.
-    _concat_word_expr: $ => repeat1(
-      choice(
-        $.escape_sequence,
-        $.command_substitution,
-        $.quoted_word,
-        $.variable_substitution,
       ),
     ),
 

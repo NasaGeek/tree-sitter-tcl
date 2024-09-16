@@ -737,6 +737,7 @@ expr {$a >0}
 expr {"str"eq"str"}
 expr { $arr}
 expr { spaceyfunc   ( "yes", [this], {works} ) }
+expr { (1 in {1 2 4}) }
 
 
 --------------------------------------------------------------------------------
@@ -834,7 +835,12 @@ expr { spaceyfunc   ( "yes", [this], {works} ) }
           (command_substitution
             (command
               (simple_word)))
-          (braced_word))))))
+          (braced_word)))))
+  (expr_cmd
+    (expr
+      (binop_expr
+        (int_literal)
+        (braced_word)))))
 
 ================================================================================
 Exprs in other places

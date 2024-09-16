@@ -1170,30 +1170,6 @@
         ]
       }
     },
-    "_concat_word_expr": {
-      "type": "REPEAT1",
-      "content": {
-        "type": "CHOICE",
-        "members": [
-          {
-            "type": "SYMBOL",
-            "name": "escape_sequence"
-          },
-          {
-            "type": "SYMBOL",
-            "name": "command_substitution"
-          },
-          {
-            "type": "SYMBOL",
-            "name": "quoted_word"
-          },
-          {
-            "type": "SYMBOL",
-            "name": "variable_substitution"
-          }
-        ]
-      }
-    },
     "_ident": {
       "type": "IMMEDIATE_TOKEN",
       "content": {
@@ -1788,6 +1764,18 @@
         },
         {
           "type": "SYMBOL",
+          "name": "command_substitution"
+        },
+        {
+          "type": "SYMBOL",
+          "name": "quoted_word"
+        },
+        {
+          "type": "SYMBOL",
+          "name": "variable_substitution"
+        },
+        {
+          "type": "SYMBOL",
           "name": "braced_word"
         },
         {
@@ -1801,10 +1789,6 @@
         {
           "type": "SYMBOL",
           "name": "bool_literal"
-        },
-        {
-          "type": "SYMBOL",
-          "name": "_concat_word_expr"
         }
       ]
     },
@@ -2268,7 +2252,7 @@
               },
               {
                 "type": "SYMBOL",
-                "name": "_word"
+                "name": "_expr"
               }
             ]
           }
@@ -2289,7 +2273,7 @@
               },
               {
                 "type": "SYMBOL",
-                "name": "_word"
+                "name": "_expr"
               }
             ]
           }
@@ -2488,6 +2472,18 @@
         },
         {
           "type": "SYMBOL",
+          "name": "command_substitution"
+        },
+        {
+          "type": "SYMBOL",
+          "name": "quoted_word"
+        },
+        {
+          "type": "SYMBOL",
+          "name": "variable_substitution"
+        },
+        {
+          "type": "SYMBOL",
           "name": "braced_word"
         },
         {
@@ -2501,10 +2497,6 @@
         {
           "type": "SYMBOL",
           "name": "bool_literal"
-        },
-        {
-          "type": "SYMBOL",
-          "name": "_concat_word_expr"
         }
       ]
     },
@@ -2968,7 +2960,7 @@
               },
               {
                 "type": "SYMBOL",
-                "name": "_word"
+                "name": "_expr_nl"
               }
             ]
           }
@@ -2989,7 +2981,7 @@
               },
               {
                 "type": "SYMBOL",
-                "name": "_word"
+                "name": "_expr_nl"
               }
             ]
           }
